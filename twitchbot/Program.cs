@@ -28,6 +28,7 @@ namespace twitchbot
             }, authentication);
 
             bot.RegisterCommand<Uptime>("uptime");
+            bot.RegisterCommand<Christmas>("christmas");
 
             if (bot.Start() != 0)
             {
