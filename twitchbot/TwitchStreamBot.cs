@@ -16,6 +16,7 @@ namespace twitchbot
         private readonly TwitchConnection _connection;
         private readonly Auth _authentication;
         private readonly IDictionary<string, Type> _commands;
+        private readonly IDictionary<string, ITwitchCommand> _instances;
 
         public string Error { get; private set; }
 
@@ -24,6 +25,7 @@ namespace twitchbot
             _connection = connection;
             _authentication = authentication;
             _commands = new Dictionary<string, Type>();
+            _instances = new Dictionary<string, ITwitchCommand>();
         }
 
         public int Start()
@@ -94,7 +96,6 @@ namespace twitchbot
 
         private void ListenForMessages(StreamReader reader, StreamWriter writer)
         {
-            bool result = false;
             string inputBuffer = string.Empty;
             string basicMessageRegex =
                 @":(?<user>.*)!(.*)@(.*)\.tmi\.twitch\.tv\s(?<irccommand>.*)\s#(?<channel>.*)\s:!(?<command>.*)";
@@ -117,6 +118,25 @@ namespace twitchbot
 
                             if (_commands.ContainsKey(commandName))
                             {
+                                if (!_instances.ContainsKey(commandName))
+                                {
+                                    var instance = BuildInstanceOfCommand(_commands[commandName]);
+
+                                    if (instance != null)
+                                    {
+                                        _instances.Add(commandName, instance);
+                                    }
+                                }
+
+                                if (_instances.ContainsKey(commandName))
+                                {
+                                    var commandResult = _instances[commandName].Execute();
+
+                                    if (!string.IsNullOrEmpty(commandResult))
+                                    {
+                                        writer.SendMessage(_connection.Channel, commandResult);
+                                    }
+                                }
                             }
                             else
                             {
@@ -134,6 +154,24 @@ namespace twitchbot
             {
                 Error = exception.Message;
             }
+        }
+
+        private ITwitchCommand BuildInstanceOfCommand(Type commandType)
+        {
+            var constructorsWithParameters = (from c in commandType.GetConstructors()
+                where c.GetParameters().Length > 0
+                select c).Any();
+
+            if (constructorsWithParameters)
+            {
+                // do complex stuff
+            }
+            else
+            {
+                return (ITwitchCommand) Activator.CreateInstance(commandType);
+            }
+
+            return null;
         }
     }
 }
