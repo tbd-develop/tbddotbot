@@ -99,7 +99,7 @@ namespace twitchbot
         {
             string inputBuffer = string.Empty;
             string basicMessageRegex =
-                @":(?<user>.*)!(.*)@(.*)\.tmi\.twitch\.tv\s(?<irccommand>.*)\s#(?<channel>.*)\s:!(?<command>.*)";
+                @":(?<user>.*)!(.*)@(.*)\.tmi\.twitch\.tv\s(?<irccommand>.*)\s#(?<channel>.*)\s:!(?<command>[\w\d]+)\s?(?<arguments>.*)?";
             try
             {
                 while ((inputBuffer = reader.ReadLine()) != null)
