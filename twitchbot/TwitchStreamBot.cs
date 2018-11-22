@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using twitchbot.infrastructure;
@@ -160,18 +161,22 @@ namespace twitchbot
         {
             var constructorsWithParameters = (from c in commandType.GetConstructors()
                 where c.GetParameters().Length > 0
-                select c).Any();
+                select c).ToList();
 
-            if (constructorsWithParameters)
+            if (constructorsWithParameters.Any())
             {
-                // do complex stuff
-            }
-            else
-            {
-                return (ITwitchCommand) Activator.CreateInstance(commandType);
+                var constructor = constructorsWithParameters.First();
+
+                var parameters = from p in constructor.GetParameters()
+                    let arg = (from x in GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                        where x.FieldType == p.ParameterType
+                        select x).FirstOrDefault()
+                    select arg.GetValue(this);
+
+                return (ITwitchCommand) constructor.Invoke(parameters.ToArray());
             }
 
-            return null;
+            return (ITwitchCommand) Activator.CreateInstance(commandType);
         }
     }
 }
