@@ -30,6 +30,7 @@ namespace twitchbot
             bot.RegisterCommand<Uptime>("uptime");
             bot.RegisterCommand<Christmas>("christmas");
             bot.RegisterCommand<EightBall>("8ball");
+            bot.RegisterCommand<DiceRoller>("roll");
 
             if (bot.Start() != 0)
             {
