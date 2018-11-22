@@ -131,7 +131,17 @@ namespace twitchbot
 
                                 if (_instances.ContainsKey(commandName))
                                 {
-                                    var commandResult = _instances[commandName].Execute();
+                                    string commandResult = string.Empty;
+
+                                    if (matches.Groups["arguments"].Success)
+                                    {
+                                        commandResult = _instances[commandName]
+                                            .Execute(matches.Groups["arguments"].Value.Split(' '));
+                                    }
+                                    else
+                                    {
+                                        commandResult = _instances[commandName].Execute();
+                                    }
 
                                     if (!string.IsNullOrEmpty(commandResult))
                                     {
