@@ -21,10 +21,16 @@ namespace twitchbot.commands
         {
             var statistics = GetStreamStatistics();
 
+            if (statistics?.Stream == null)
+            {
+                return "Stream is currently not active";
+            }
+            
             var elapsed = DateTime.UtcNow.Subtract(statistics.Stream.CreatedAt);
 
             return
                 $"Stream has been up for {elapsed.Hours:#0} hours {elapsed.Minutes:#0} minutes";
+
         }
 
         private TwitchData GetStreamStatistics()
