@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
-using twitchbot.infrastructure;
-using twitchbot.models;
+using twitchstreambot;
+using twitchstreambot.infrastructure;
+using twitchstreambot.models;
 
 namespace twitchbot.commands
 {

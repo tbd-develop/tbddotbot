@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace twitchbot
+namespace twitchstreambot.infrastructure
 {
     public class CommandArgs : EventArgs
     {

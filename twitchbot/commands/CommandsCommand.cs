@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using twitchbot.infrastructure;
+using twitchstreambot.infrastructure;
 
 namespace twitchbot.commands
 {

@@ -1,6 +1,6 @@
 using System;
 
-namespace twitchbot.infrastructure
+namespace twitchstreambot.infrastructure
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class TwitchCommandAttribute : Attribute

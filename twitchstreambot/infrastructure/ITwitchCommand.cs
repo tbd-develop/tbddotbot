@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace twitchbot.infrastructure
+namespace twitchstreambot.infrastructure
 {
     public interface ITwitchCommand
     {

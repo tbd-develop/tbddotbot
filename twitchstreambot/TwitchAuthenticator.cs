@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Net.Http;
 using Newtonsoft.Json;
-using twitchbot.models;
+using twitchstreambot.models;
 
-namespace twitchbot
+namespace twitchstreambot
 {
     public class TwitchAuthenticator
     {
