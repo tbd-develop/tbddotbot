@@ -4,6 +4,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using twitchbot.commands;
 using twitchbot.infrastructure;
+using twitchbot.infrastructure.DependencyInjection;
 using twitchbot.models;
 
 namespace twitchbot
@@ -12,17 +13,13 @@ namespace twitchbot
     {
         static void Main(string[] args)
         {
-            TwitchAuthenticator authenticator = new TwitchAuthenticator("auth.json");
+            var container = RegisterTypes();
+
+            TwitchAuthenticator authenticator = container.GetInstance<TwitchAuthenticator>();
 
             if (authenticator.Authenticate())
             {
-                TwitchStreamBot bot = new TwitchStreamBot(new TwitchConnection
-                {
-                    BotName = "tbddotbot",
-                    HostName = "irc.chat.twitch.tv",
-                    Channel = "tbdgamer",
-                    Port = 6667
-                }, authenticator.AuthenticationToken);
+                TwitchStreamBot bot = container.GetInstance<TwitchStreamBot>();
 
                 if (bot.Start() != 0)
                 {
@@ -34,6 +31,32 @@ namespace twitchbot
             {
                 Console.WriteLine("Bot is unable to authenticate with Twitch");
             }
+        }
+
+        private static IContainer RegisterTypes()
+        {
+            var container = new Container();
+
+            container
+                .When<TwitchAuthenticator>().Use(c => new TwitchAuthenticator("auth.json"))
+                .When<TwitchStreamBot>().Use(c =>
+                {
+                    var authenticator = c.GetInstance<TwitchAuthenticator>();
+
+                    return new TwitchStreamBot(new TwitchConnection
+                    {
+                        BotName = "tbddotbot",
+                        HostName = "irc.chat.twitch.tv",
+                        Channel = "tbdgamer",
+                        Port = 6667
+                    }, authenticator.AuthenticationToken);
+                })
+                .When<Christmas>().Use<Christmas>()
+                .When<DiceRoller>().Use<DiceRoller>()
+                .When<EightBall>().Use<EightBall>()
+                .When<Uptime>().Use<Uptime>();
+
+            return container;
         }
     }
 }
