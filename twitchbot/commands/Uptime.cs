@@ -9,12 +9,12 @@ namespace twitchbot.commands
     [TwitchCommand("uptime")]
     public class Uptime : ITwitchCommand
     {
-        private readonly Auth _authentication;
+        private readonly TwitchAuthenticator _authenticator;
         private readonly TwitchConnection _connection;
 
-        public Uptime(Auth authentication, TwitchConnection connection)
+        public Uptime(TwitchAuthenticator authenticator, TwitchConnection connection)
         {
-            _authentication = authentication;
+            _authenticator = authenticator;
             _connection = connection;
         }
 
@@ -37,7 +37,7 @@ namespace twitchbot.commands
         {
             using (HttpClient client = new HttpClient {BaseAddress = new Uri("https://api.twitch.tv/kraken/")})
             {
-                var response = client.GetAsync($"streams/{_connection.Channel}?client_id={_authentication.ClientId}")
+                var response = client.GetAsync($"streams/{_connection.Channel}?client_id={_authenticator.ClientIdentifier}")
                     .Result;
 
                 if (response.IsSuccessStatusCode)

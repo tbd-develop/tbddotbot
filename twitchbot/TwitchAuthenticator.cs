@@ -9,6 +9,7 @@ namespace twitchbot
     public class TwitchAuthenticator
     {
         private readonly string _authFilePath;
+        public string ClientIdentifier { get; private set; }
         public bool IsAuthenticated { get; private set; }
         public string AuthenticationToken { get; private set; }
 
@@ -43,10 +44,11 @@ namespace twitchbot
 //            }
 //            else
 //            {
-                IsAuthenticated = true;
-                AuthenticationToken = details.AuthToken;
+            IsAuthenticated = true;
+            AuthenticationToken = details.AuthToken;
+            ClientIdentifier = details.ClientId;
 //            }
-            
+
             return result;
         }
 
