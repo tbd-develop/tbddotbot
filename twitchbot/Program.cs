@@ -32,7 +32,6 @@ namespace twitchbot
                 Console.WriteLine("Bot is unable to authenticate with Twitch");
             }
         }
-
         private static IContainer RegisterTypes()
         {
             var container = new Container();

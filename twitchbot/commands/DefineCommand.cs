@@ -18,6 +18,19 @@ namespace twitchbot.commands
             _commandFactory = commandFactory;
         }
 
+        public bool CanExecute(IDictionary<string, string> headers)
+        {
+            if (headers.ContainsKey("badges"))
+            {
+                var badges = headers["badges"].ToLower();
+
+                return badges.Contains("broadcaster") ||
+                       badges.Contains("moderator");
+            }
+
+            return false;
+        }
+
         public string Execute(params string[] args)
         {
             if (!args.Any() || args.Length < 2)

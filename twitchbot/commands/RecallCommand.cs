@@ -23,6 +23,11 @@ namespace twitchbot.commands
             _command = command;
         }
 
+        public bool CanExecute(IDictionary<string, string> headers)
+        {
+            return true;
+        }
+
         public string Execute(params string[] args)
         {
             string commandDefinition = string.Empty;

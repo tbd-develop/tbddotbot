@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using twitchbot.infrastructure;
 
@@ -19,7 +20,12 @@ namespace twitchbot.commands
             "As I see it, yes.",
             "Without a doubt"
         };
-        
+
+        public bool CanExecute(IDictionary<string, string> headers)
+        {
+            return true;
+        }
+
         public string Execute(params string[] args)
         {
             if (!args.Any())

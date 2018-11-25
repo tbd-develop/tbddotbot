@@ -10,6 +10,11 @@ namespace twitchbot.commands
     [TwitchCommand("roll")]
     public class DiceRollerCommand : ITwitchCommand
     {
+        public bool CanExecute(IDictionary<string, string> headers)
+        {
+            return true;
+        }
+
         public string Execute(params string[] args)
         {
             var seed = new Random();

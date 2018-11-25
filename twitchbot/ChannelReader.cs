@@ -6,36 +6,6 @@ using System.Text.RegularExpressions;
 
 namespace twitchbot
 {
-    public class CommandArgs : EventArgs
-    {
-        public int UserId { get; }
-        public string UserName { get; }
-        public string Command { get; }
-        public IEnumerable<string> Arguments { get; }
-
-        public CommandArgs(int userId, string user, string command, params string[] args)
-        {
-            UserId = userId;
-            UserName = user;
-            Command = command;
-            Arguments = args;
-        }
-    }
-
-    public class MessageReceivedArgs : EventArgs
-    {
-        public string UserName { get; }
-        public string Message { get; }
-        public IDictionary<string, string> Headers { get; }
-
-        public MessageReceivedArgs(string userName, string message, IDictionary<string, string> headers)
-        {
-            Headers = headers;
-            Message = message;
-            UserName = userName;
-        }
-    }
-
     public class ChannelReader : StreamReader
     {
         public delegate void CommandReceivedHandler(ChannelReader sender, CommandArgs args);
@@ -114,8 +84,11 @@ namespace twitchbot
                     var command = message.GetCommand();
 
                     OnCommandReceived?.Invoke(this,
-                        new CommandArgs(Int32.Parse(message.Headers["user-id"]), message.UserName, command.name,
-                            command.arguments));
+                        new CommandArgs(Int32.Parse(message.Headers["user-id"]), message.UserName, command.name)
+                        {
+                            Arguments = command.arguments,
+                            Headers = message.Headers
+                        });
                 }
                 else
                 {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using twitchbot.infrastructure;
 
 namespace twitchbot.commands
@@ -6,6 +7,11 @@ namespace twitchbot.commands
     [TwitchCommand("christmas")]
     public class ChristmasCommand : ITwitchCommand
     {
+        public bool CanExecute(IDictionary<string, string> headers)
+        {
+            return true;
+        }
+
         public string Execute(params string[] args)
         {
             var now = DateTime.UtcNow;
