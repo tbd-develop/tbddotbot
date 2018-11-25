@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using twitchbot.infrastructure;
-using twitchbot.models;
+using twitchstreambot.infrastructure;
+using twitchstreambot.models;
 
-namespace twitchbot.commands
+namespace twitchstreambot.commands
 {
     [TwitchCommand("define")]
     public class DefineCommand : ITwitchCommand

@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace twitchbot.models
+namespace twitchstreambot.models
 {
     public class TwitchData
     {

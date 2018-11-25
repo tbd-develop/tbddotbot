@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using twitchbot.infrastructure;
+using twitchstreambot.infrastructure;
 
 namespace twitchbot.commands
 {

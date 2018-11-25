@@ -1,6 +1,6 @@
 using System;
 
-namespace twitchbot.infrastructure.DependencyInjection
+namespace twitchstreambot.infrastructure.DependencyInjection
 {
     public class ContainerRegistration<T>
         where T : class

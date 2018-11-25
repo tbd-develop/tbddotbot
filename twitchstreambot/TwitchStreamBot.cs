@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using twitchbot.infrastructure;
-using twitchbot.models;
+using twitchstreambot.infrastructure;
 
-namespace twitchbot
+namespace twitchstreambot
 {
     public class TwitchStreamBot
     {

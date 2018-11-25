@@ -1,11 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Net.Http;
-using Newtonsoft.Json;
-using twitchbot.commands;
-using twitchbot.infrastructure;
-using twitchbot.infrastructure.DependencyInjection;
-using twitchbot.models;
+using System.Reflection;
+using twitchstreambot;
+using twitchstreambot.infrastructure;
+using twitchstreambot.infrastructure.DependencyInjection;
 
 namespace twitchbot
 {
@@ -32,6 +29,7 @@ namespace twitchbot
                 Console.WriteLine("Bot is unable to authenticate with Twitch");
             }
         }
+
         private static IContainer RegisterTypes()
         {
             var container = new Container();
@@ -52,6 +50,14 @@ namespace twitchbot
                     var connectionDetails = c.GetInstance<TwitchConnection>();
 
                     return new TwitchStreamBot(connectionDetails, authenticator.AuthenticationToken, commandFactory);
+                })
+                .When<CommandFactory>().Use(c =>
+                {
+                    var result = new CommandFactory(c);
+
+                    result.LoadFromAssembly(Assembly.GetExecutingAssembly());
+
+                    return result;
                 });
 
             return container;

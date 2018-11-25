@@ -1,4 +1,4 @@
-﻿namespace twitchbot.infrastructure
+﻿namespace twitchstreambot.infrastructure
 {
     public class TwitchConnection
     {

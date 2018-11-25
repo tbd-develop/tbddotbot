@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
-using twitchbot.commands;
-using twitchbot.infrastructure.DependencyInjection;
-using twitchbot.models;
+using twitchstreambot.commands;
+using twitchstreambot.infrastructure.DependencyInjection;
+using twitchstreambot.models;
 
-namespace twitchbot.infrastructure
+namespace twitchstreambot.infrastructure
 {
     public class CommandFactory
     {
@@ -26,12 +26,21 @@ namespace twitchbot.infrastructure
             _commands = new Dictionary<string, Type>();
             _customCommands = new List<string>();
 
-            RegisterAvailableCommands();
+            RegisterCommandsInAssembly(Assembly.GetExecutingAssembly());
+
+            LoadCustomCommands();
         }
 
-        private void RegisterAvailableCommands()
+        public CommandFactory LoadFromAssembly(Assembly loadAssembly)
         {
-            var commands = from t in Assembly.GetExecutingAssembly().GetTypes()
+            RegisterCommandsInAssembly(loadAssembly);
+
+            return this;
+        }
+
+        private void RegisterCommandsInAssembly(Assembly assembly)
+        {
+            var commands = from t in assembly.GetTypes()
                 let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
                 where attribute != null && !string.IsNullOrEmpty(attribute.IdentifyWith) && !attribute.Ignore
                 select new
@@ -44,8 +53,6 @@ namespace twitchbot.infrastructure
             {
                 _commands.Add(command.IdentifyWith, command.Type);
             }
-
-            LoadCustomCommands();
         }
 
         public ITwitchCommand GetCommand(string command)

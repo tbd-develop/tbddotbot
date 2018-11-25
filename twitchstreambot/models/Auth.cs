@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace twitchbot.models
+namespace twitchstreambot.models
 {
     public class Auth
     {
