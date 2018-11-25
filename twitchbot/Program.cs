@@ -54,10 +54,11 @@ namespace twitchbot
 
                     return new TwitchStreamBot(connectionDetails, authenticator.AuthenticationToken, commandFactory);
                 })
-                .When<Christmas>().Use<Christmas>()
-                .When<DiceRoller>().Use<DiceRoller>()
-                .When<EightBall>().Use<EightBall>()
-                .When<Uptime>().Use<Uptime>()
+                .When<ChristmasCommand>().Use<ChristmasCommand>()
+                .When<DiceRollerCommand>().Use<DiceRollerCommand>()
+                .When<EightBallCommand>().Use<EightBallCommand>()
+                .When<UptimeCommand>().Use<UptimeCommand>()
+                .When<DefineCommand>().Use<DefineCommand>()
                 .When<CommandFactory>().Use<CommandFactory>();
 
             return container;

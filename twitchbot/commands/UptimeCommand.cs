@@ -7,12 +7,12 @@ using twitchbot.models;
 namespace twitchbot.commands
 {
     [TwitchCommand("uptime")]
-    public class Uptime : ITwitchCommand
+    public class UptimeCommand : ITwitchCommand
     {
         private readonly TwitchAuthenticator _authenticator;
         private readonly TwitchConnection _connection;
 
-        public Uptime(TwitchAuthenticator authenticator, TwitchConnection connection)
+        public UptimeCommand(TwitchAuthenticator authenticator, TwitchConnection connection)
         {
             _authenticator = authenticator;
             _connection = connection;

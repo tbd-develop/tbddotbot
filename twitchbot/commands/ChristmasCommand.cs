@@ -4,7 +4,7 @@ using twitchbot.infrastructure;
 namespace twitchbot.commands
 {
     [TwitchCommand("christmas")]
-    public class Christmas : ITwitchCommand
+    public class ChristmasCommand : ITwitchCommand
     {
         public string Execute(params string[] args)
         {
