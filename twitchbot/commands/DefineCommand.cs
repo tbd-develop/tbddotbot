@@ -11,6 +11,13 @@ namespace twitchbot.commands
     [TwitchCommand("define")]
     public class DefineCommand : ITwitchCommand
     {
+        private readonly CommandFactory _commandFactory;
+
+        public DefineCommand(CommandFactory commandFactory)
+        {
+            _commandFactory = commandFactory;
+        }
+
         public string Execute(params string[] args)
         {
             if (!args.Any() || args.Length < 2)
@@ -27,6 +34,8 @@ namespace twitchbot.commands
             if (!definitions.Any(d => d.Command.Equals(command, StringComparison.CurrentCultureIgnoreCase)))
             {
                 definitions.Add(new CommandDefinition {Command = command, Content = content});
+
+                _commandFactory.AddTextCommand(command);
 
                 hasChanged = true;
             }
