@@ -16,7 +16,7 @@ namespace twitchbot.infrastructure.DependencyInjection
             _dependencies = new Dictionary<Type, Func<IContainer, object>>();
             _typeDependencies = new Dictionary<Type, Type>();
             _instances = new Dictionary<Type, object>();
-            
+
             _dependencies.Add(typeof(IContainer), ctx => ctx);
         }
 
@@ -92,6 +92,17 @@ namespace twitchbot.infrastructure.DependencyInjection
                 _instances.Add(typeof(TInstance), result);
 
                 return result;
+            }
+
+            Type instanceType = typeof(TInstance);
+
+            if (instanceType.IsClass &&
+                !instanceType.IsAbstract &&
+                instanceType.IsPublic)
+            {
+                _typeDependencies.Add(typeof(TInstance), typeof(TInstance));
+
+                return GetInstance<TInstance>();
             }
 
             return null;

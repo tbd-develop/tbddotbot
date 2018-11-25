@@ -10,7 +10,15 @@ namespace twitchbot.commands
         {
             var now = DateTime.UtcNow;
 
-            return $"{new DateTime(now.Year, 12, 25).Subtract(now).TotalDays:##0} days until Christmas";
+            var duration = new DateTime(now.Year, 12, 25, 0, 0, 0).Subtract(now);
+
+            if (duration.Days > 30)
+            {
+                return $"{duration.Days:##0} days until Christmas";
+            }
+
+            return
+                $"{duration.Days:#0} days {duration.Hours} hours {duration.Minutes} minutes until Christmas {now.Year}";
         }
     }
 }
