@@ -9,4 +9,11 @@
       <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="definitions.json" />
+      <Content Include="definitions.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

@@ -5,7 +5,7 @@ using twitchbot.infrastructure;
 namespace twitchbot.commands
 {
     [TwitchCommand("8ball")]
-    public class EightBall : ITwitchCommand
+    public class EightBallCommand : ITwitchCommand
     {
         private readonly string[] _answers = new[]
         {
