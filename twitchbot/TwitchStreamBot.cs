@@ -15,18 +15,20 @@ namespace twitchbot
     public class TwitchStreamBot
     {
         private readonly TwitchConnection _connection;
-        private readonly Auth _authentication;
+        private readonly string _authToken;
         private readonly IDictionary<string, Type> _commands;
         private readonly IDictionary<string, ITwitchCommand> _instances;
 
         public string Error { get; private set; }
 
-        public TwitchStreamBot(TwitchConnection connection, Auth authentication)
+        public TwitchStreamBot(TwitchConnection connection, string authToken)
         {
             _connection = connection;
-            _authentication = authentication;
+            _authToken = authToken;
             _commands = new Dictionary<string, Type>();
             _instances = new Dictionary<string, ITwitchCommand>();
+
+            RegisterAvailableCommands();
         }
 
         public int Start()
@@ -44,6 +46,9 @@ namespace twitchbot
                         return -1;
                     }
 
+//                    SendTwitchCommand(writer, reader, "CAP REQ :twitch.tv/membership");
+//                    SendTwitchCommand(writer, reader, "CAP REQ :twitch.tv/tags twitch.tv/commands");
+
                     ListenForMessages(reader, writer);
                 }
             }
@@ -51,15 +56,35 @@ namespace twitchbot
             return 0;
         }
 
-        public void RegisterCommand<T>(string command)
-            where T : ITwitchCommand
+        private void RegisterAvailableCommands()
         {
-            _commands.Add(command, typeof(T));
+            var commands = from t in Assembly.GetExecutingAssembly().GetTypes()
+                let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
+                where attribute != null
+                select new
+                {
+                    attribute.IdentifyWith,
+                    Type = t
+                };
+
+            foreach (var command in commands)
+            {
+                _commands.Add(command.IdentifyWith, command.Type);
+            }
+        }
+
+        private void SendTwitchCommand(StreamWriter writer, StreamReader reader, string command)
+        {
+            writer.SendCommand(command);
+
+            string response = reader.ReadLine();
+
+            Console.WriteLine(response);
         }
 
         private void Authenticate(StreamWriter writer)
         {
-            writer.WriteLine($"PASS oauth:{_authentication.AuthToken}");
+            writer.WriteLine($"PASS oauth:{_authToken}");
             writer.WriteLine($"NICK {_connection.BotName}");
             writer.WriteLine($"JOIN #{_connection.Channel}");
         }
@@ -157,6 +182,10 @@ namespace twitchbot
                                         $"Available commands; {string.Join(",", _commands.Keys)}");
                                 }
                             }
+                        }
+                        else
+                        {
+                            Console.WriteLine(inputBuffer);
                         }
                     }
                 }

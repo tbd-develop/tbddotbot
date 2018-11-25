@@ -3,6 +3,7 @@ using twitchbot.infrastructure;
 
 namespace twitchbot.commands
 {
+    [TwitchCommand("christmas")]
     public class Christmas : ITwitchCommand
     {
         public string Execute(params string[] args)
