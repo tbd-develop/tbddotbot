@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using Newtonsoft.Json;
 using twitchbot.infrastructure;
@@ -16,6 +17,11 @@ namespace twitchbot.commands
         {
             _authenticator = authenticator;
             _connection = connection;
+        }
+
+        public bool CanExecute(IDictionary<string, string> headers)
+        {
+            return true;
         }
 
         public string Execute(params string[] args)

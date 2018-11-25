@@ -68,7 +68,12 @@ namespace twitchbot
 
             if (commandToExecute != null)
             {
-                string response = commandToExecute.Execute(args.Arguments.ToArray());
+                string response = "Can't help you with that one";
+                
+                if (commandToExecute.CanExecute(args.Headers))
+                {
+                    response = commandToExecute.Execute(args.Arguments.ToArray());
+                }
 
                 SendToStream(response);
 
@@ -81,7 +86,7 @@ namespace twitchbot
             _streamWriter.SendMessage(message);
         }
 
-        private void SendTwitchCommand(StreamWriter writer, StreamReader reader, string command)
+        private void SendTwitchCommand(ChannelWriter writer, ChannelReader reader, string command)
         {
             writer.SendCommand(command);
 
