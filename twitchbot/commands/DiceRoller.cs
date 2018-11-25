@@ -7,6 +7,7 @@ using twitchbot.infrastructure;
 
 namespace twitchbot.commands
 {
+    [TwitchCommand("roll")]
     public class DiceRoller : ITwitchCommand
     {
         public string Execute(params string[] args)

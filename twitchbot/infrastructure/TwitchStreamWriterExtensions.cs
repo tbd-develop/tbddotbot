@@ -9,5 +9,11 @@ namespace twitchbot.infrastructure
             writer.WriteLine($"PRIVMSG #{channel} :{message}");
             writer.Flush();
         }
+
+        public static void SendCommand(this StreamWriter writer, string command)
+        {
+            writer.WriteLine(command);
+            writer.Flush();
+        }
     }
 }
