@@ -5,14 +5,6 @@ using System.Reflection;
 
 namespace twitchbot.infrastructure.DependencyInjection
 {
-    public interface IContainer
-    {
-        TInstance GetInstance<TInstance>() where TInstance : class;
-        ContainerRegistration<T> When<T>() where T : class;
-        void Register(Type @interface, Func<IContainer, object> @instance);
-        void Register(Type @interface, Type @instance);
-    }
-
     public class Container : IContainer
     {
         private readonly Dictionary<Type, Func<IContainer, object>> _dependencies;
@@ -24,6 +16,8 @@ namespace twitchbot.infrastructure.DependencyInjection
             _dependencies = new Dictionary<Type, Func<IContainer, object>>();
             _typeDependencies = new Dictionary<Type, Type>();
             _instances = new Dictionary<Type, object>();
+            
+            _dependencies.Add(typeof(IContainer), ctx => ctx);
         }
 
         public ContainerRegistration<T> When<T>()
@@ -42,7 +36,7 @@ namespace twitchbot.infrastructure.DependencyInjection
             _typeDependencies.Add(@interface, @instance);
         }
 
-        private object GetInstance(Type t)
+        public object GetInstance(Type t)
         {
             var getInstance = (from m in GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 where m.Name == "GetInstance" && m.IsGenericMethod
@@ -71,7 +65,7 @@ namespace twitchbot.infrastructure.DependencyInjection
 
             if (_typeDependencies.ContainsKey(typeof(TInstance)))
             {
-                TInstance result = null;
+                TInstance result;
                 var resultingType = _typeDependencies[typeof(TInstance)];
 
                 var matchingConstructors =
@@ -90,7 +84,7 @@ namespace twitchbot.infrastructure.DependencyInjection
                 else
                 {
                     var parameters = from p in constructor.GetParameters()
-                                        select GetInstance(p.ParameterType);
+                        select GetInstance(p.ParameterType);
 
                     result = (TInstance) constructor.Invoke(parameters.ToArray());
                 }
@@ -101,32 +95,6 @@ namespace twitchbot.infrastructure.DependencyInjection
             }
 
             return null;
-        }
-    }
-
-    public class ContainerRegistration<T>
-        where T : class
-    {
-        private readonly IContainer _container;
-
-        public ContainerRegistration(IContainer container)
-        {
-            _container = container;
-        }
-
-        public IContainer Use(Func<IContainer, T> createWith)
-        {
-            _container.Register(typeof(T), createWith);
-
-            return _container;
-        }
-
-        public IContainer Use<TResult>()
-            where TResult : T
-        {
-            _container.Register(typeof(T), typeof(TResult));
-
-            return _container;
         }
     }
 }

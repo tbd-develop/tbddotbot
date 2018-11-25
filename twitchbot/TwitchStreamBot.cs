@@ -16,19 +16,15 @@ namespace twitchbot
     {
         private readonly TwitchConnection _connection;
         private readonly string _authToken;
-        private readonly IDictionary<string, Type> _commands;
-        private readonly IDictionary<string, ITwitchCommand> _instances;
+        private readonly CommandFactory _commandFactory;
 
         public string Error { get; private set; }
 
-        public TwitchStreamBot(TwitchConnection connection, string authToken)
+        public TwitchStreamBot(TwitchConnection connection, string authToken, CommandFactory commandFactory)
         {
             _connection = connection;
             _authToken = authToken;
-            _commands = new Dictionary<string, Type>();
-            _instances = new Dictionary<string, ITwitchCommand>();
-
-            RegisterAvailableCommands();
+            _commandFactory = commandFactory;
         }
 
         public int Start()
@@ -54,23 +50,6 @@ namespace twitchbot
             }
 
             return 0;
-        }
-
-        private void RegisterAvailableCommands()
-        {
-            var commands = from t in Assembly.GetExecutingAssembly().GetTypes()
-                let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
-                where attribute != null
-                select new
-                {
-                    attribute.IdentifyWith,
-                    Type = t
-                };
-
-            foreach (var command in commands)
-            {
-                _commands.Add(command.IdentifyWith, command.Type);
-            }
         }
 
         private void SendTwitchCommand(StreamWriter writer, StreamReader reader, string command)
@@ -141,37 +120,24 @@ namespace twitchbot
                         if (matches.Success)
                         {
                             var commandName = matches.Groups["command"].Value;
+                            var instance = _commandFactory.GetCommand(commandName);
 
-                            if (_commands.ContainsKey(commandName))
+                            if (instance != null)
                             {
-                                if (!_instances.ContainsKey(commandName))
-                                {
-                                    var instance = BuildInstanceOfCommand(_commands[commandName]);
+                                string commandResult = string.Empty;
 
-                                    if (instance != null)
-                                    {
-                                        _instances.Add(commandName, instance);
-                                    }
+                                if (matches.Groups["arguments"].Success)
+                                {
+                                    commandResult = instance.Execute(matches.Groups["arguments"].Value.Split(' '));
+                                }
+                                else
+                                {
+                                    commandResult = instance.Execute();
                                 }
 
-                                if (_instances.ContainsKey(commandName))
+                                if (!string.IsNullOrEmpty(commandResult))
                                 {
-                                    string commandResult = string.Empty;
-
-                                    if (matches.Groups["arguments"].Success)
-                                    {
-                                        commandResult = _instances[commandName]
-                                            .Execute(matches.Groups["arguments"].Value.Split(' '));
-                                    }
-                                    else
-                                    {
-                                        commandResult = _instances[commandName].Execute();
-                                    }
-
-                                    if (!string.IsNullOrEmpty(commandResult))
-                                    {
-                                        writer.SendMessage(_connection.Channel, commandResult);
-                                    }
+                                    writer.SendMessage(_connection.Channel, commandResult);
                                 }
                             }
                             else
@@ -179,7 +145,7 @@ namespace twitchbot
                                 if (commandName.Equals("commands", StringComparison.CurrentCultureIgnoreCase))
                                 {
                                     writer.SendMessage(_connection.Channel,
-                                        $"Available commands; {string.Join(",", _commands.Keys)}");
+                                        $"Available commands; {string.Join(",", _commandFactory.AvailableCommands)}");
                                 }
                             }
                         }
@@ -194,28 +160,6 @@ namespace twitchbot
             {
                 Error = exception.Message;
             }
-        }
-
-        private ITwitchCommand BuildInstanceOfCommand(Type commandType)
-        {
-            var constructorsWithParameters = (from c in commandType.GetConstructors()
-                where c.GetParameters().Length > 0
-                select c).ToList();
-
-            if (constructorsWithParameters.Any())
-            {
-                var constructor = constructorsWithParameters.First();
-
-                var parameters = from p in constructor.GetParameters()
-                    let arg = (from x in GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
-                        where x.FieldType == p.ParameterType
-                        select x).FirstOrDefault()
-                    select arg.GetValue(this);
-
-                return (ITwitchCommand) constructor.Invoke(parameters.ToArray());
-            }
-
-            return (ITwitchCommand) Activator.CreateInstance(commandType);
         }
     }
 }

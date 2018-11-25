@@ -39,22 +39,26 @@ namespace twitchbot
 
             container
                 .When<TwitchAuthenticator>().Use(c => new TwitchAuthenticator("auth.json"))
+                .When<TwitchConnection>().Use(c => new TwitchConnection
+                {
+                    BotName = "tbddotbot",
+                    HostName = "irc.chat.twitch.tv",
+                    Channel = "tbdgamer",
+                    Port = 6667
+                })
                 .When<TwitchStreamBot>().Use(c =>
                 {
                     var authenticator = c.GetInstance<TwitchAuthenticator>();
+                    var commandFactory = c.GetInstance<CommandFactory>();
+                    var connectionDetails = c.GetInstance<TwitchConnection>();
 
-                    return new TwitchStreamBot(new TwitchConnection
-                    {
-                        BotName = "tbddotbot",
-                        HostName = "irc.chat.twitch.tv",
-                        Channel = "tbdgamer",
-                        Port = 6667
-                    }, authenticator.AuthenticationToken);
+                    return new TwitchStreamBot(connectionDetails, authenticator.AuthenticationToken, commandFactory);
                 })
                 .When<Christmas>().Use<Christmas>()
                 .When<DiceRoller>().Use<DiceRoller>()
                 .When<EightBall>().Use<EightBall>()
-                .When<Uptime>().Use<Uptime>();
+                .When<Uptime>().Use<Uptime>()
+                .When<CommandFactory>().Use<CommandFactory>();
 
             return container;
         }
