@@ -53,13 +53,7 @@ namespace twitchbot
                     var connectionDetails = c.GetInstance<TwitchConnection>();
 
                     return new TwitchStreamBot(connectionDetails, authenticator.AuthenticationToken, commandFactory);
-                })
-                .When<ChristmasCommand>().Use<ChristmasCommand>()
-                .When<DiceRollerCommand>().Use<DiceRollerCommand>()
-                .When<EightBallCommand>().Use<EightBallCommand>()
-                .When<UptimeCommand>().Use<UptimeCommand>()
-                .When<DefineCommand>().Use<DefineCommand>()
-                .When<CommandFactory>().Use<CommandFactory>();
+                });
 
             return container;
         }
