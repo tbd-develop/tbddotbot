@@ -6,6 +6,7 @@ namespace twitchbot.infrastructure
     public class TwitchCommandAttribute : Attribute
     {
         public string IdentifyWith { get; }
+        public bool Ignore { get; set; }
 
         public TwitchCommandAttribute(string identifyWith)
         {

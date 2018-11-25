@@ -33,7 +33,7 @@ namespace twitchbot.infrastructure
         {
             var commands = from t in Assembly.GetExecutingAssembly().GetTypes()
                 let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
-                where attribute != null
+                where attribute != null && !string.IsNullOrEmpty(attribute.IdentifyWith) && !attribute.Ignore
                 select new
                 {
                     attribute.IdentifyWith,
