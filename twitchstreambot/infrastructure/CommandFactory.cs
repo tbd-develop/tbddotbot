@@ -77,18 +77,21 @@ namespace twitchstreambot.infrastructure
 
         private void LoadCustomCommands()
         {
-            using (StreamReader reader = new StreamReader("definitions.json"))
+            if (File.Exists("definitions.json"))
             {
-                string content = reader.ReadToEnd();
-
-                if (!string.IsNullOrEmpty(content))
+                using (StreamReader reader = new StreamReader("definitions.json"))
                 {
-                    IEnumerable<CommandDefinition> definedCommmands =
-                        JsonConvert.DeserializeObject<IEnumerable<CommandDefinition>>(content);
+                    string content = reader.ReadToEnd();
 
-                    foreach (var definition in definedCommmands)
+                    if (!string.IsNullOrEmpty(content))
                     {
-                        _customCommands.Add(definition.Command);
+                        IEnumerable<CommandDefinition> definedCommmands =
+                            JsonConvert.DeserializeObject<IEnumerable<CommandDefinition>>(content);
+
+                        foreach (var definition in definedCommmands)
+                        {
+                            _customCommands.Add(definition.Command);
+                        }
                     }
                 }
             }
