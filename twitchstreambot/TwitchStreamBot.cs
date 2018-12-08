@@ -62,21 +62,24 @@ namespace twitchstreambot
             if (commandToExecute != null)
             {
                 string response = "Can't help you with that one";
-                
+
                 if (commandToExecute.CanExecute(args.Headers))
                 {
                     response = commandToExecute.Execute(args.Arguments.ToArray());
                 }
 
                 SendToStream(response);
-
-                OnCommandReceived?.Invoke(this, args);
             }
+
+            OnCommandReceived?.Invoke(this, args);
         }
 
         public void SendToStream(string message)
         {
-            _streamWriter.SendMessage(message);
+            if (!string.IsNullOrEmpty(message))
+            {
+                _streamWriter.SendMessage(message);
+            }
         }
 
         private void SendTwitchCommand(ChannelWriter writer, ChannelReader reader, string command)
