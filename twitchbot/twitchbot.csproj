@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+      <PackageReference Include="Topshelf" Version="4.2.0" />
     </ItemGroup>
 
 </Project>

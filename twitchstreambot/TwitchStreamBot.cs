@@ -50,6 +50,11 @@ namespace twitchstreambot
             return 0;
         }
 
+        public void Stop()
+        {
+            _channelReader.SignalShutdown();
+        }
+
         private void ReaderOnOnMessageReceived(ChannelReader sender, MessageReceivedArgs args)
         {
             Console.WriteLine(args.Message);

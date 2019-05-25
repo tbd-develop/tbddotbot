@@ -42,6 +42,11 @@ namespace twitchbot.commands
                         }
                     case "/":
                         {
+                            if (right == 0)
+                            {
+                                return $"Try it again punk!";
+                            }
+
                             return $"the answer is ... {left / right}";
                         }
                     case "*":
