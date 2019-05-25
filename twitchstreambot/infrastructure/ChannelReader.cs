@@ -20,8 +20,11 @@ namespace twitchstreambot.infrastructure
         private const string _messagePattern =
             @"(.+)\s:(?<user>[\w\d]*)\!([\w\d]*@[\w\d]*\.tmi\.twitch\.tv\s)(?<command>[\w]*)\s#(?<channel>[\w\d]*)\s:(?<message>.*)";
 
+        private bool _exiting;
+
         public ChannelReader(Stream stream) : base(stream)
         {
+            _exiting = false;
         }
 
         public ChannelReader(Stream stream, bool detectEncodingFromByteOrderMarks) : base(stream,
@@ -75,7 +78,7 @@ namespace twitchstreambot.infrastructure
         {
             string buffer = string.Empty;
 
-            while ((buffer = ReadLine()) != null)
+            while ((buffer = ReadLine()) != null && !_exiting)
             {
                 var message = ExtractMessageInformation(buffer);
 
@@ -96,6 +99,11 @@ namespace twitchstreambot.infrastructure
                         new MessageReceivedArgs(message.UserName, message.Content, message.Headers));
                 }
             }
+        }
+
+        public void SignalShutdown()
+        {
+            _exiting = true;
         }
 
         private static RetrievedMessage ExtractMessageInformation(string buffer)
