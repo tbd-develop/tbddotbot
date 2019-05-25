@@ -20,7 +20,7 @@ namespace twitchstreambot
             AuthenticationToken = string.Empty;
         }
 
-        public bool Authenticate()
+        public bool Authenticate(bool refresh = false)
         {
             bool result = true;
             Auth details;
@@ -30,31 +30,21 @@ namespace twitchstreambot
                 details = JsonConvert.DeserializeObject<Auth>(reader.ReadToEnd());
             }
 
-//            if (details.Expiration == null || details.Expiration < DateTime.UtcNow)
-//            {
-//                result = RefreshAuthToken(ref details);
-//
-//                if (result)
-//                {
-//                    IsAuthenticated = true;
-//                    AuthenticationToken = details.AuthToken;
-//                    
-//                    SaveAuthentication(details);
-//                }
-//            }
-//            else
-//            {
+            if (refresh)
+            {
+                RefreshAuthToken(ref details);
+            }
+
             IsAuthenticated = true;
             AuthenticationToken = details.AuthToken;
             ClientIdentifier = details.ClientId;
-//            }
 
             return result;
         }
 
         private bool RefreshAuthToken(ref Auth details)
         {
-            using (HttpClient client = new HttpClient {BaseAddress = new Uri("https://id.twitch.tv/oauth2/")})
+            using (HttpClient client = new HttpClient { BaseAddress = new Uri("https://id.twitch.tv/oauth2/") })
             {
                 string requestUrl =
                     $"token?client_id={details.ClientId}&client_secret={details.Secret}&grant_type=client_credentials&scope={Uri.EscapeDataString(details.Scope)}";

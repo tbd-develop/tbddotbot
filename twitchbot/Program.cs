@@ -14,7 +14,7 @@ namespace twitchbot
 
             TwitchAuthenticator authenticator = container.GetInstance<TwitchAuthenticator>();
 
-            if (authenticator.Authenticate())
+            if (authenticator.Authenticate(false))
             {
                 TwitchStreamBot bot = container.GetInstance<TwitchStreamBot>();
 
