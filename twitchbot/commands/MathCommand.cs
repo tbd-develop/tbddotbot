@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Linq;
 using System.Text.RegularExpressions;
+using twitchbot.commands.TwitchMath;
 using twitchstreambot.infrastructure;
 
 namespace twitchbot.commands
@@ -9,6 +10,7 @@ namespace twitchbot.commands
     [TwitchCommand("math")]
     public class MathCommand : ITwitchCommand
     {
+        private string _usageString = "usage: Math x +-/* y i.e. 4+4, 2*4";
         public bool CanExecute(IDictionary<string, string> headers)
         {
             return true;
@@ -16,59 +18,59 @@ namespace twitchbot.commands
 
         public string Execute(params string[] args)
         {
-            string pattern = @"(?<left>[\d]*)(?<operator>[+-\/*]?)(?<right>[\d]*)";
+            string pattern = @"^\s*(?<left>[\d.]*)\s*(?<operator>[+-\/*]?)\s*(?<right>[\d.]*)";
 
-            var value = Regex.Match(args[0], pattern);
+            var value = Regex.Match(string.Join(' ', args), pattern);
 
             if (value.Success)
             {
-                long left = GetValue(value.Groups["left"].Value);
-                long right = GetValue(value.Groups["right"].Value);
+                string left = value.Groups["left"].Value;
+                string right = value.Groups["right"].Value;
+                string @operator = value.Groups["operator"].Value;
 
-                if (left <= 0 && right <= 0)
-                {
-                    return "Really, I have my limits!";
-                }
+                var math = TwitchMathBase.GetMath(left, right);
 
-                switch (value.Groups["operator"].Value)
-                {
-                    case "+":
-                        {
-                            return $"the answer is ... {left + right}";
-                        }
-                    case "-":
-                        {
-                            return $"the answer is ... {left - right}";
-                        }
-                    case "/":
-                        {
-                            if (right == 0)
-                            {
-                                return $"Try it again punk!";
-                            }
-
-                            return $"the answer is ... {left / right}";
-                        }
-                    case "*":
-                        {
-                            return $"the answer is ... {left * right}";
-                        }
-                }
+                return $"The answer is {math.GetResult(left, right, @operator)}";
             }
 
-            return "Unfortunately, I can't finish";
+            return _usageString;
         }
 
-        private long GetValue(string value)
+
+        public string DoTheMath(long left, long right, string @operator)
         {
-            long result;
-
-            if (long.TryParse(value, out result))
+            if (left <= 0 && right <= 0)
             {
-                return result;
+                return "Really, I have my limits!";
             }
 
-            return 0;
+            switch (@operator)
+            {
+                case "+":
+                    {
+                        return $"the answer is ... {left + right}";
+                    }
+                case "-":
+                    {
+                        return $"the answer is ... {left - right}";
+                    }
+                case "/":
+                    {
+                        if (right == 0)
+                        {
+                            return $"Try it again punk!";
+                        }
+
+                        return $"the answer is ... {(float)left / right}";
+                    }
+                case "*":
+                    {
+                        return $"the answer is ... {left * right}";
+                    }
+            }
+
+            return "Huh?";
         }
+
     }
 }

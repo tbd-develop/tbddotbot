@@ -33,7 +33,7 @@ namespace twitchstreambot
                 using (var stream = client.GetStream())
                 using (_channelReader = new ChannelReader(stream))
                 using (_streamWriter = new ChannelWriter(stream)
-                    {Channel = _connection.Channel, BotName = _connection.BotName, AuthToken = _authToken})
+                { Channel = _connection.Channel, BotName = _connection.BotName, AuthToken = _authToken })
                 {
                     _channelReader.OnCommandReceived += ReaderOnCommandReceived;
                     _channelReader.OnMessageReceived += ReaderOnOnMessageReceived;
@@ -57,7 +57,10 @@ namespace twitchstreambot
 
         private void ReaderOnOnMessageReceived(ChannelReader sender, MessageReceivedArgs args)
         {
-            Console.WriteLine(args.Message);
+            if (!string.IsNullOrEmpty(args.Message))
+            {
+                Console.WriteLine($"{args.Message}");
+            }
         }
 
         private void ReaderOnCommandReceived(ChannelReader sender, CommandArgs args)
