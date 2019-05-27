@@ -56,7 +56,7 @@ namespace twitchbot.commands
                 return string.Join(", ", results.ToArray());
             }
 
-            return "Roll what??!";
+            return "Format is <Dice>W<Sides> i. 2W6 (2 six sided dice)";
         }
 
         private string FlipCoin(Random rnd)

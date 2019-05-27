@@ -136,7 +136,7 @@ namespace twitchstreambot.infrastructure
 
     internal class RetrievedMessage
     {
-        private const string _commmandPattern = @"!(?<command>[\w]+){1}(\s(?<arguments>.*))?$";
+        private const string _commmandPattern = @"^!(?<command>[\w]+){1}(\s(?<arguments>.*))?$";
 
         public IDictionary<string, string> Headers { get; set; }
         public string UserName { get; set; }

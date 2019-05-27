@@ -1,8 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twitchbot", "twitchbot\twitchbot.csproj", "{EFA00FBE-737C-49ED-837F-A32687A9F6A3}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28922.388
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twitchbot", "twitchbot\twitchbot.csproj", "{EFA00FBE-737C-49ED-837F-A32687A9F6A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twitchstreambot", "twitchstreambot\twitchstreambot.csproj", "{68282A79-C0F3-40BA-9AEB-2D5A756265AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twitchstreambot", "twitchstreambot\twitchstreambot.csproj", "{68282A79-C0F3-40BA-9AEB-2D5A756265AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twitchbot.tests", "twitchbot.tests\twitchbot.tests.csproj", "{DD9A0471-8C04-4590-BEEE-8ED6438055DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +23,15 @@ Global
 		{68282A79-C0F3-40BA-9AEB-2D5A756265AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68282A79-C0F3-40BA-9AEB-2D5A756265AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68282A79-C0F3-40BA-9AEB-2D5A756265AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD9A0471-8C04-4590-BEEE-8ED6438055DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD9A0471-8C04-4590-BEEE-8ED6438055DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD9A0471-8C04-4590-BEEE-8ED6438055DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD9A0471-8C04-4590-BEEE-8ED6438055DF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {88371644-27A4-4293-A24B-AB75A8BEA0BA}
 	EndGlobalSection
 EndGlobal
