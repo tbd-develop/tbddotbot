@@ -5,15 +5,11 @@ namespace twitchstreambot.infrastructure
 {
     public class MessageReceivedArgs : EventArgs
     {
-        public string UserName { get; }
         public string Message { get; }
-        public IDictionary<string, string> Headers { get; }
 
-        public MessageReceivedArgs(string userName, string message, IDictionary<string, string> headers)
+        public MessageReceivedArgs(string message)
         {
-            Headers = headers;
             Message = message;
-            UserName = userName;
         }
     }
 }

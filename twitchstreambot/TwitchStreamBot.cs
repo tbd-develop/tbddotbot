@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
+using System.Threading;
+using Sprache;
 using twitchstreambot.infrastructure;
 
 namespace twitchstreambot
@@ -11,7 +14,7 @@ namespace twitchstreambot
         private readonly string _authToken;
         private readonly CommandFactory _commandFactory;
         private ChannelReader _channelReader;
-        private ChannelWriter _streamWriter;
+        private ChannelWriter _channelWriter;
 
         public delegate void CommandReceivedHandler(TwitchStreamBot streamer, CommandArgs args);
 
@@ -32,16 +35,15 @@ namespace twitchstreambot
             {
                 using (var stream = client.GetStream())
                 using (_channelReader = new ChannelReader(stream))
-                using (_streamWriter = new ChannelWriter(stream)
+                using (_channelWriter = new ChannelWriter(stream)
                 { Channel = _connection.Channel, BotName = _connection.BotName, AuthToken = _authToken })
                 {
-                    _channelReader.OnCommandReceived += ReaderOnCommandReceived;
-                    _channelReader.OnMessageReceived += ReaderOnOnMessageReceived;
+                    _channelReader.OnMessageReceived += ReaderOnMessageReceived;
 
-                    _streamWriter.Authenticate();
+                    _channelWriter.Authenticate();
 
-                    SendTwitchCommand(_streamWriter, _channelReader, "CAP REQ :twitch.tv/membership");
-                    SendTwitchCommand(_streamWriter, _channelReader, "CAP REQ :twitch.tv/tags twitch.tv/commands");
+                    SendTwitchCommand("CAP REQ :twitch.tv/membership");
+                    SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
 
                     _channelReader.ListenForMessages();
                 }
@@ -55,12 +57,16 @@ namespace twitchstreambot
             _channelReader.SignalShutdown();
         }
 
-        private void ReaderOnOnMessageReceived(ChannelReader sender, MessageReceivedArgs args)
+        private void ReaderOnMessageReceived(ChannelReader sender, MessageReceivedArgs args)
         {
-            if (!string.IsNullOrEmpty(args.Message))
+            if (args.Message.StartsWith("PING"))
             {
-                Console.WriteLine($"{args.Message}");
+                SendTwitchCommand("PONG", false);
             }
+            else
+            {
+                
+            } 
         }
 
         private void ReaderOnCommandReceived(ChannelReader sender, CommandArgs args)
@@ -86,17 +92,20 @@ namespace twitchstreambot
         {
             if (!string.IsNullOrEmpty(message))
             {
-                _streamWriter.SendMessage(message);
+                _channelWriter.SendMessage(message);
             }
         }
 
-        private void SendTwitchCommand(ChannelWriter writer, ChannelReader reader, string command)
+        private void SendTwitchCommand(string command, bool awaitResponse = true)
         {
-            writer.SendCommand(command);
+            _channelWriter.SendCommand(command);
 
-            string response = reader.ReadLine();
+            if (awaitResponse)
+            {
+                string response = _channelReader.ReadLine();
 
-            Console.WriteLine(response);
+                Console.WriteLine(response);
+            }
         }
     }
 }
