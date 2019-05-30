@@ -5,48 +5,46 @@ namespace twitchstreambot.Parsing
 {
     public class TwitchCommandParser
     {
-        private static Parser<TwitchCommands> _commandParser = Parse.String("PRIVMSG").Select(_ => TwitchCommands.PRIVMSG)
-            .Or(Parse.String("JOIN").Select(_ => TwitchCommands.JOIN))
-            .Or(Parse.String("PART").Select(_ => TwitchCommands.PART))
-            .Or(Parse.String("USERNOTICE").Select(_ => TwitchCommands.USERNOTICE))
-            .Or(Parse.String("USERSTATE").Select(_ => TwitchCommands.USERSTATE));
+        private static readonly Parser<TwitchCommand> CommandParser = Parse.String("PRIVMSG").Select(_ => TwitchCommand.PRIVMSG)
+            .Or(Parse.String("JOIN").Select(_ => TwitchCommand.JOIN))
+            .Or(Parse.String("PART").Select(_ => TwitchCommand.PART))
+            .Or(Parse.String("USERNOTICE").Select(_ => TwitchCommand.USERNOTICE))
+            .Or(Parse.String("USERSTATE").Select(_ => TwitchCommand.USERSTATE));
 
-        private static Func<Parser<TwitchCommands>, Parser<TwitchCommands>> _lineParser = (Parser<TwitchCommands> p) => from x in Parse.AnyChar.Until(Parse.String(".twitch.tv"))
-            from l in Parse.WhiteSpace
-            from c in p
-            from lr in Parse.WhiteSpace
-            from r in Parse.AnyChar.Many()
-            select c;
+        private static readonly Func<Parser<TwitchCommand>, Parser<TwitchCommand>> LineParser = p => from x in Parse.AnyChar.Until(Parse.String(".twitch.tv"))
+                                                                                                                     from l in Parse.WhiteSpace
+                                                                                                                     from c in p
+                                                                                                                     from lr in Parse.WhiteSpace
+                                                                                                                     from r in Parse.AnyChar.Many()
+                                                                                                                     select c;
 
 
-        public static Func<string, bool> IsMatch = (string input) =>
-        {
-            return _lineParser(_commandParser).TryParse(input).WasSuccessful;
-        };
+        public static Func<string, bool> IsMatch = input =>
+            LineParser(CommandParser).TryParse(input).WasSuccessful;
 
         public static TwitchMessage Gather(string input)
         {
-            var command = _lineParser(_commandParser).Parse(input);
+            var command = LineParser(CommandParser).Parse(input);
 
             switch (command)
             {
-                case TwitchCommands.USERNOTICE:
-                {
-                    return new ParseNoticeMessage().Do(input);
-                }
-                case TwitchCommands.PRIVMSG:
-                {
-                    return new ParsePrivMessage().Do(input);
-                }
-                case TwitchCommands.USERSTATE:
-                {
-                    return new ParseUserState().Do(input);
-                }
-                case TwitchCommands.PART:
-                case TwitchCommands.JOIN:
-                {
-                    return new ParseEnterExit(command.ToString()).Do(input);
-                }
+                case TwitchCommand.USERNOTICE:
+                    {
+                        return new ParseNoticeMessage().Do(input);
+                    }
+                case TwitchCommand.PRIVMSG:
+                    {
+                        return new ParsePrivMessage().Do(input);
+                    }
+                case TwitchCommand.USERSTATE:
+                    {
+                        return new ParseUserState().Do(input);
+                    }
+                case TwitchCommand.PART:
+                case TwitchCommand.JOIN:
+                    {
+                        return new ParseEnterExit(command).Do(input);
+                    }
             }
 
             return null;

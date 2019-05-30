@@ -3,13 +3,13 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace twitchbot.commands.TwitchMath
 {
-    public class TwitchIntMath : TwitchMath<int>
+    public class TwitchIntMath : TwitchMath<long>
     {
         public override bool CanConvert(string left, string right)
         {
-            int lefta, righta;
+            long lefta, righta;
 
-            if (Int32.TryParse(left, out lefta) && Int32.TryParse(right, out righta))
+            if (long.TryParse(left, out lefta) && long.TryParse(right, out righta))
             {
                 return true;
             }
@@ -26,22 +26,22 @@ namespace twitchbot.commands.TwitchMath
             return answer;
         }
 
-        public override object Add(int left, int right)
+        public override object Add(long left, long right)
         {
             return left + right;
         }
 
-        public override object Subtract(int left, int right)
+        public override object Subtract(long left, long right)
         {
             return left - right;
         }
 
-        public override object Multiply(int left, int right)
+        public override object Multiply(long left, long right)
         {
             return left * right;
         }
 
-        public override object Divide(int left, int right)
+        public override object Divide(long left, long right)
         {
             if (right == 0)
             {

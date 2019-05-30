@@ -4,9 +4,9 @@ namespace twitchstreambot.Parsing
 {
     public class ParseEnterExit : MessageParser
     {
-        private readonly string _command;
+        private readonly TwitchCommand _command;
 
-        public ParseEnterExit(string command)
+        public ParseEnterExit(TwitchCommand command)
         {
             _command = command;
         }
@@ -23,7 +23,7 @@ namespace twitchstreambot.Parsing
             {
                 User = new TwitchMessage.TwitchUser { Name = result },
                 Message = string.Empty,
-                IRCCommand = _command,
+                IrcCommand = _command,
                 Headers = null
             };
         }

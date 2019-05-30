@@ -6,14 +6,12 @@ namespace twitchstreambot.Parsing
     {
         public override TwitchMessage Do(string input)
         {
-            Console.WriteLine("Here");
-
             var headers = GetHeaders(input);
 
             return new TwitchMessage
             {
                 User = TwitchMessage.UserFromHeaders(headers),
-                IRCCommand = "USERSTATE",
+                IrcCommand = TwitchCommand.USERSTATE,
                 Message = "",
                 Headers = headers
             };

@@ -44,22 +44,7 @@ namespace twitchbot.commands.TwitchMath
 
         public static TwitchMathBase GetMath(string left, string right)
         {
-            var math = from x in Assembly.GetExecutingAssembly().GetTypes()
-                       where typeof(TwitchMathBase).IsAssignableFrom(x) &&
-                             !x.IsAbstract
-                       select x;
-
-            foreach (var entry in math)
-            {
-                TwitchMathBase convert = (TwitchMathBase)Activator.CreateInstance(entry);
-
-                if (convert.CanConvert(left, right))
-                {
-                    return convert;
-                }
-            }
-
-            return null;
+            return new TwitchDoubleMath();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using twitchbot.commands.TwitchMath;
 using twitchstreambot.infrastructure;
@@ -24,53 +25,24 @@ namespace twitchbot.commands
 
             if (value.Success)
             {
-                string left = value.Groups["left"].Value;
-                string right = value.Groups["right"].Value;
+                string left = value.Groups["left"].Value.TrimToXChars(12);
+                string right = value.Groups["right"].Value.TrimToXChars(12);
                 string @operator = value.Groups["operator"].Value;
 
                 var math = TwitchMathBase.GetMath(left, right);
 
-                return $"The answer is {math.GetResult(left, right, @operator)}";
+                return $"The answer; {left}{@operator}{right} = {math.GetResult(left, right, @operator)}";
             }
 
             return _usageString;
         }
+    }
 
-
-        public string DoTheMath(long left, long right, string @operator)
+    public static class UnnecessaryExtensions
+    {
+        public static string TrimToXChars(this string input, int chars)
         {
-            if (left <= 0 && right <= 0)
-            {
-                return "Really, I have my limits!";
-            }
-
-            switch (@operator)
-            {
-                case "+":
-                    {
-                        return $"the answer is ... {left + right}";
-                    }
-                case "-":
-                    {
-                        return $"the answer is ... {left - right}";
-                    }
-                case "/":
-                    {
-                        if (right == 0)
-                        {
-                            return $"Try it again punk!";
-                        }
-
-                        return $"the answer is ... {(float)left / right}";
-                    }
-                case "*":
-                    {
-                        return $"the answer is ... {left * right}";
-                    }
-            }
-
-            return "Huh?";
+            return input.Substring(0, input.Length > chars ? chars : input.Length);
         }
-
     }
 }
