@@ -1,6 +1,6 @@
 ﻿namespace twitchstreambot.Parsing
 {
-    public enum TwitchCommands
+    public enum TwitchCommand
     {
         NONE,
         PRIVMSG,

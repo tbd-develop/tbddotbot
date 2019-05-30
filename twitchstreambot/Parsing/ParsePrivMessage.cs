@@ -22,12 +22,11 @@ namespace twitchstreambot.Parsing
             var elements = extractRestOfString.Parse(input);
 
             var message = elements.ElementAt(2);
-            var command = stringSplitter.Parse(elements.ElementAt(1)).ElementAt(1);
-
+            
             return new TwitchMessage
             {
                 User = TwitchMessage.UserFromHeaders(headers),
-                IRCCommand = command,
+                IrcCommand = TwitchCommand.PRIVMSG,
                 Message = message,
                 Headers = headers
             };

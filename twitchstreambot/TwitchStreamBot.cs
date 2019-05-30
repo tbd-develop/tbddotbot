@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Sprache;
 using twitchstreambot.infrastructure;
+using twitchstreambot.Parsing;
 
 namespace twitchstreambot
 {
@@ -65,8 +66,29 @@ namespace twitchstreambot
             }
             else
             {
-                
-            } 
+                if (TwitchCommandParser.IsMatch(args.Message))
+                {
+                    var result = TwitchCommandParser.Gather(args.Message);
+
+                    if (result.IrcCommand == TwitchCommand.PRIVMSG)
+                    {
+                        if (result.Message.StartsWith("!"))
+                        {
+                            string[] elements = result.Message.Substring(1).Split(' ');
+
+                            var command = _commandFactory.GetCommand(elements[0]);
+
+                            if (command != null)
+                            {
+                                if (command.CanExecute(result.Headers))
+                                {
+                                    SendToStream(command.Execute(elements.Skip(1).ToArray()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void ReaderOnCommandReceived(ChannelReader sender, CommandArgs args)
