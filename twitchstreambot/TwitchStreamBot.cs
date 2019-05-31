@@ -70,20 +70,17 @@ namespace twitchstreambot
                 {
                     var result = TwitchCommandParser.Gather(args.Message);
 
-                    if (result.IrcCommand == TwitchCommand.PRIVMSG)
+                    if (result.IrcCommand == TwitchCommand.PRIVMSG && result.IsBotCommand)
                     {
-                        if (result.Message.StartsWith("!"))
+                        string[] elements = result.Message.Substring(1).Split(' ');
+
+                        var command = _commandFactory.GetCommand(elements[0]);
+
+                        if (command != null)
                         {
-                            string[] elements = result.Message.Substring(1).Split(' ');
-
-                            var command = _commandFactory.GetCommand(elements[0]);
-
-                            if (command != null)
+                            if (command.CanExecute(result.Headers))
                             {
-                                if (command.CanExecute(result.Headers))
-                                {
-                                    SendToStream(command.Execute(elements.Skip(1).ToArray()));
-                                }
+                                SendToStream(command.Execute(elements.Skip(1).ToArray()));
                             }
                         }
                     }
