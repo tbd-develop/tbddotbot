@@ -2,16 +2,23 @@
 using System.Linq;
 using twitchstreambot.infrastructure;
 
-namespace twitchstreambot.commands
+namespace twitchstreambot.Commands
 {
     [TwitchCommand("so")]
     public class ShoutOutCommand : ITwitchCommand
     {
-        public bool CanExecute(IDictionary<string, string> headers)
+        private readonly IDictionary<string, string> _headers;
+
+        public ShoutOutCommand(IDictionary<string, string> headers)
         {
-            if (headers.ContainsKey("badges"))
+            _headers = headers;
+        }
+
+        public bool CanExecute()
+        {
+            if (_headers.ContainsKey("badges"))
             {
-                var badges = headers["badges"].ToLower();
+                var badges = _headers["badges"].ToLower();
 
                 return badges.Contains("broadcaster") ||
                        badges.Contains("moderator");

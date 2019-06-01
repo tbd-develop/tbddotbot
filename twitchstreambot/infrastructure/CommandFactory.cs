@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
-using twitchstreambot.commands;
+using twitchstreambot.Commands;
 using twitchstreambot.infrastructure.DependencyInjection;
 using twitchstreambot.models;
 
@@ -41,13 +41,13 @@ namespace twitchstreambot.infrastructure
         private void RegisterCommandsInAssembly(Assembly assembly)
         {
             var commands = from t in assembly.GetTypes()
-                let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
-                where attribute != null && !string.IsNullOrEmpty(attribute.IdentifyWith) && !attribute.Ignore
-                select new
-                {
-                    attribute.IdentifyWith,
-                    Type = t
-                };
+                           let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
+                           where attribute != null && !string.IsNullOrEmpty(attribute.IdentifyWith) && !attribute.Ignore
+                           select new
+                           {
+                               attribute.IdentifyWith,
+                               Type = t
+                           };
 
             foreach (var command in commands)
             {
@@ -55,11 +55,11 @@ namespace twitchstreambot.infrastructure
             }
         }
 
-        public ITwitchCommand GetCommand(string command)
+        public ITwitchCommand GetCommand(string command, Dictionary<string, string> headers)
         {
             if (_commands.ContainsKey(command))
             {
-                return (ITwitchCommand) _container.GetInstance(_commands[command]);
+                return (ITwitchCommand)_container.GetInstance(_commands[command], new Object[] { headers });
             }
 
             if (_customCommands.Contains(command))

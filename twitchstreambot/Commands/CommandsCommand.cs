@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using System.Linq;
 using twitchstreambot.infrastructure;
 
-namespace twitchbot.commands
+namespace twitchstreambot.Commands
 {
     [TwitchCommand("commands")]
     public class CommandsCommand : ITwitchCommand
@@ -14,14 +13,14 @@ namespace twitchbot.commands
             _factory = factory;
         }
 
-        public bool CanExecute(IDictionary<string, string> headers)
+        public bool CanExecute()
         {
             return true;
         }
 
         public string Execute(params string[] args)
         {
-            string commands = string.Join(", ", _factory.AvailableCommands.Except(new[] {"commands"}));
+            string commands = string.Join(", ", _factory.AvailableCommands.Except(new[] { "commands" }));
 
             return $"Available commands; {commands}";
         }

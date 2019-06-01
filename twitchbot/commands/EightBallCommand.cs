@@ -21,7 +21,7 @@ namespace twitchbot.commands
             "Without a doubt"
         };
 
-        public bool CanExecute(IDictionary<string, string> headers)
+        public bool CanExecute()
         {
             return true;
         }

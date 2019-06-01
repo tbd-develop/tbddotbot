@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
+using twitchbot.Infrastructure;
 using twitchstreambot;
 using twitchstreambot.infrastructure;
 using twitchstreambot.infrastructure.DependencyInjection;
@@ -55,6 +57,7 @@ namespace twitchbot
                     Channel = "tbdgamer",
                     Port = 6667
                 })
+                .When<IStorage>().Use(c => new LiteDbStore(Path.Combine(AppContext.BaseDirectory, "channel.db")))
                 .When<TwitchStreamBot>().Use(c =>
                 {
                     var authenticator = c.GetInstance<TwitchAuthenticator>();
@@ -81,7 +84,7 @@ namespace twitchbot
 
         private void TwitchCommandReceived(TwitchStreamBot sender, CommandArgs args)
         {
-            
+
         }
     }
 }

@@ -20,7 +20,7 @@ namespace twitchbot.commands
             _connection = connection;
         }
 
-        public bool CanExecute(IDictionary<string, string> headers)
+        public bool CanExecute()
         {
             return true;
         }

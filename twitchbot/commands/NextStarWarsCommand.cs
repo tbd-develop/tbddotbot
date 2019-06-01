@@ -9,7 +9,7 @@ namespace twitchbot.commands
     {
         private readonly DateTime _releaseDate = new DateTime(2019, 12, 20);
 
-        public bool CanExecute(IDictionary<string, string> headers)
+        public bool CanExecute()
         {
             return _releaseDate > DateTime.Now;
         }

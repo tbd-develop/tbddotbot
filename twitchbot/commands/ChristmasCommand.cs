@@ -7,7 +7,7 @@ namespace twitchbot.commands
     [TwitchCommand("christmas")]
     public class ChristmasCommand : ITwitchCommand
     {
-        public bool CanExecute(IDictionary<string, string> headers)
+        public bool CanExecute()
         {
             return true;
         }

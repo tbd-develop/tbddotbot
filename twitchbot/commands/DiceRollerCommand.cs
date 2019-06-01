@@ -9,7 +9,14 @@ namespace twitchbot.commands
     [TwitchCommand("roll")]
     public class DiceRollerCommand : ITwitchCommand
     {
-        public bool CanExecute(IDictionary<string, string> headers)
+        private readonly IDictionary<string, string> _headers;
+
+        public DiceRollerCommand(IDictionary<string, string> headers)
+        {
+            _headers = headers;
+        }
+
+        public bool CanExecute()
         {
             return true;
         }

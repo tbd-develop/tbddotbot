@@ -4,7 +4,7 @@ namespace twitchstreambot.infrastructure
 {
     public interface ITwitchCommand
     {
-        bool CanExecute(IDictionary<string, string> headers);
+        bool CanExecute();
         string Execute(params string[] args);
     }
 }

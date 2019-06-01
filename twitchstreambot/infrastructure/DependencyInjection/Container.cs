@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using twitchstreambot.Parsing;
 
 namespace twitchstreambot.infrastructure.DependencyInjection
 {
@@ -39,24 +40,40 @@ namespace twitchstreambot.infrastructure.DependencyInjection
         public object GetInstance(Type t)
         {
             var getInstance = (from m in GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                where m.Name == "GetInstance" && m.IsGenericMethod
-                select m).Single();
+                               where m.Name == "GetInstance" && m.IsGenericMethod && m.GetParameters().Length == 0
+                               select m).Single();
 
             var genericCall = getInstance.MakeGenericMethod(t);
 
             return genericCall.Invoke(this, null);
         }
 
+        public object GetInstance(Type t, object[] args)
+        {
+            var getInstance = (from m in GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                               where m.Name == "GetInstance" && m.IsGenericMethod && m.GetParameters().Length > 0
+                               select m).Single();
+
+            var genericCall = getInstance.MakeGenericMethod(t);
+
+            return genericCall.Invoke(this, new object[] { args });
+        }
+
         public TInstance GetInstance<TInstance>() where TInstance : class
+        {
+            return GetInstance<TInstance>(null);
+        }
+
+        public TInstance GetInstance<TInstance>(object[] args) where TInstance : class
         {
             if (_instances.ContainsKey(typeof(TInstance)))
             {
-                return (TInstance) _instances[typeof(TInstance)];
+                return (TInstance)_instances[typeof(TInstance)];
             }
 
             if (_dependencies.ContainsKey(typeof(TInstance)))
             {
-                var result = (TInstance) _dependencies[typeof(TInstance)](this);
+                var result = (TInstance)_dependencies[typeof(TInstance)](this);
 
                 _instances.Add(typeof(TInstance), result);
 
@@ -72,21 +89,24 @@ namespace twitchstreambot.infrastructure.DependencyInjection
                     from c in resultingType.GetConstructors()
                     where !c.GetParameters().Any() || c.GetParameters().All(p =>
                               _typeDependencies.ContainsKey(p.ParameterType) ||
-                              _dependencies.ContainsKey(p.ParameterType))
+                              _dependencies.ContainsKey(p.ParameterType) ||
+                              (args != null && args.Any(a => a.GetType() == p.ParameterType)))
                     select c;
 
                 var constructor = matchingConstructors.First();
 
                 if (!constructor.GetParameters().Any())
                 {
-                    result = (TInstance) constructor.Invoke(null);
+                    result = (TInstance)constructor.Invoke(null);
                 }
                 else
                 {
                     var parameters = from p in constructor.GetParameters()
-                        select GetInstance(p.ParameterType);
+                                     let paramArgument =
+                                         args?.SingleOrDefault(a => a.GetType() == p.ParameterType)
+                                     select paramArgument ?? GetInstance(p.ParameterType);
 
-                    result = (TInstance) constructor.Invoke(parameters.ToArray());
+                    result = (TInstance)constructor.Invoke(parameters.ToArray());
                 }
 
                 _instances.Add(typeof(TInstance), result);
@@ -102,7 +122,7 @@ namespace twitchstreambot.infrastructure.DependencyInjection
             {
                 _typeDependencies.Add(typeof(TInstance), typeof(TInstance));
 
-                return GetInstance<TInstance>();
+                return GetInstance<TInstance>(args);
             }
 
             return null;

@@ -6,23 +6,25 @@ using Newtonsoft.Json;
 using twitchstreambot.infrastructure;
 using twitchstreambot.models;
 
-namespace twitchstreambot.commands
+namespace twitchstreambot.Commands
 {
     [TwitchCommand("define")]
     public class DefineCommand : ITwitchCommand
     {
         private readonly CommandFactory _commandFactory;
+        private readonly IDictionary<string, string> _headers;
 
-        public DefineCommand(CommandFactory commandFactory)
+        public DefineCommand(CommandFactory commandFactory, IDictionary<string,string> headers)
         {
             _commandFactory = commandFactory;
+            _headers = headers;
         }
 
-        public bool CanExecute(IDictionary<string, string> headers)
+        public bool CanExecute()
         {
-            if (headers.ContainsKey("badges"))
+            if (_headers.ContainsKey("badges"))
             {
-                var badges = headers["badges"].ToLower();
+                var badges = _headers["badges"].ToLower();
 
                 return badges.Contains("broadcaster") ||
                        badges.Contains("moderator");

@@ -74,11 +74,11 @@ namespace twitchstreambot
                     {
                         string[] elements = result.Message.Substring(1).Split(' ');
 
-                        var command = _commandFactory.GetCommand(elements[0]);
+                        var command = _commandFactory.GetCommand(elements[0], result.Headers);
 
                         if (command != null)
                         {
-                            if (command.CanExecute(result.Headers))
+                            if (command.CanExecute())
                             {
                                 SendToStream(command.Execute(elements.Skip(1).ToArray()));
                             }

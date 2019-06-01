@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using twitchstreambot.infrastructure;
 using twitchstreambot.models;
 
-namespace twitchstreambot.commands
+namespace twitchstreambot.Commands
 {
     [TwitchCommand("recall", Ignore = true)]
     public class RecallCommand : ITwitchCommand
@@ -23,7 +23,7 @@ namespace twitchstreambot.commands
             _command = command;
         }
 
-        public bool CanExecute(IDictionary<string, string> headers)
+        public bool CanExecute()
         {
             return true;
         }

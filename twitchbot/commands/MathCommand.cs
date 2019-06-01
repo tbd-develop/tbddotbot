@@ -12,7 +12,7 @@ namespace twitchbot.commands
     public class MathCommand : ITwitchCommand
     {
         private string _usageString = "usage: Math x +-/* y i.e. 4+4, 2*4";
-        public bool CanExecute(IDictionary<string, string> headers)
+        public bool CanExecute()
         {
             return true;
         }
