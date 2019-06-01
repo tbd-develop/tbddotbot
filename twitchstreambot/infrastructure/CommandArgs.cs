@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
+using twitchstreambot.Parsing;
 
 namespace twitchstreambot.infrastructure
 {
     public class CommandArgs : EventArgs
     {
-        public int UserId { get; }
-        public string UserName { get; }
-        public string Command { get; }
-        public IEnumerable<string> Arguments { get; set; }
-        public IDictionary<string, string> Headers { get; set; }
+        public TwitchMessage Message { get; }
 
-        public CommandArgs(int userId, string user, string command)
+        public CommandArgs(TwitchMessage message)
         {
-            UserId = userId;
-            UserName = user;
-            Command = command;
+            Message = message;
         }
     }
 }

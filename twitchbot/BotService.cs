@@ -3,6 +3,7 @@ using System.Reflection;
 using twitchstreambot;
 using twitchstreambot.infrastructure;
 using twitchstreambot.infrastructure.DependencyInjection;
+using twitchstreambot.Parsing;
 
 namespace twitchbot
 {
@@ -60,7 +61,11 @@ namespace twitchbot
                     var commandFactory = c.GetInstance<CommandFactory>();
                     var connectionDetails = c.GetInstance<TwitchConnection>();
 
-                    return new TwitchStreamBot(connectionDetails, authenticator.AuthenticationToken, commandFactory);
+                    var bot = new TwitchStreamBot(connectionDetails, authenticator.AuthenticationToken, commandFactory);
+
+                    bot.OnCommandReceived += TwitchCommandReceived;
+
+                    return bot;
                 })
                 .When<CommandFactory>().Use(c =>
                 {
@@ -73,5 +78,11 @@ namespace twitchbot
 
             return _container;
         }
+
+        private void TwitchCommandReceived(TwitchStreamBot sender, CommandArgs args)
+        {
+            
+        }
     }
 }
+

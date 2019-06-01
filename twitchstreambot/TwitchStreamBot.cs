@@ -84,27 +84,10 @@ namespace twitchstreambot
                             }
                         }
                     }
+
+                    OnCommandReceived?.Invoke(this, new CommandArgs(result));
                 }
             }
-        }
-
-        private void ReaderOnCommandReceived(ChannelReader sender, CommandArgs args)
-        {
-            var commandToExecute = _commandFactory.GetCommand(args.Command);
-
-            if (commandToExecute != null)
-            {
-                string response = "Can't help you with that one";
-
-                if (commandToExecute.CanExecute(args.Headers))
-                {
-                    response = commandToExecute.Execute(args.Arguments.ToArray());
-                }
-
-                SendToStream(response);
-            }
-
-            OnCommandReceived?.Invoke(this, args);
         }
 
         public void SendToStream(string message)
