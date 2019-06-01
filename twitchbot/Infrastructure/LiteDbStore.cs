@@ -1,4 +1,8 @@
-﻿using LiteDB;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using LiteDB;
 
 namespace twitchbot.Infrastructure
 {
@@ -18,6 +22,28 @@ namespace twitchbot.Infrastructure
                 var collection = database.GetCollection<T>();
 
                 collection.Insert(entity);
+            }
+        }
+
+        public void Update<T>(T entity)
+        {
+            using (var database = new LiteDatabase(_connectionString))
+            {
+                var collection = database.GetCollection<T>();
+
+                collection.Update(entity);
+            }
+        }
+
+        public IEnumerable<T> Query<T>(Expression<Func<T, bool>> query)
+        {
+            using (var database = new LiteDatabase(_connectionString))
+            {
+                var collection = database.GetCollection<T>();
+
+                var results = collection.Find(query).ToList();
+
+                return results;
             }
         }
     }

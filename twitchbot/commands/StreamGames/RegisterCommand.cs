@@ -13,7 +13,7 @@ namespace twitchbot.commands.StreamGames
         private readonly IStorage _storage;
         private readonly IDictionary<string, string> _headers;
 
-        public RegisterCommand(IStorage storage, Dictionary<string,string> headers)
+        public RegisterCommand(IStorage storage, Dictionary<string, string> headers)
         {
             _storage = storage;
             _headers = headers;
@@ -31,7 +31,26 @@ namespace twitchbot.commands.StreamGames
                 return "register <name>";
             }
 
-            //_storage.Store(new ChannelUser() { UserName = });
+            int twitchId = int.Parse(_headers["user-id"]);
+
+
+            var existing = _storage.Query<ChannelUser>(q => q.TwitchId == twitchId).SingleOrDefault();
+
+            if (existing != null)
+            {
+                existing.DisplayName = args[0];
+
+                _storage.Update(existing);
+            }
+            else
+            {
+                _storage.Store(new ChannelUser()
+                {
+                    UserName = _headers["display-name"],
+                    TwitchId = twitchId,
+                    DisplayName = args[0]
+                });
+            }
 
             return string.Empty;
         }
