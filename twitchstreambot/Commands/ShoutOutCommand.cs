@@ -7,9 +7,9 @@ namespace twitchstreambot.Commands
     [TwitchCommand("so")]
     public class ShoutOutCommand : ITwitchCommand
     {
-        private readonly IDictionary<string, string> _headers;
+        private readonly Dictionary<string, string> _headers;
 
-        public ShoutOutCommand(IDictionary<string, string> headers)
+        public ShoutOutCommand(Dictionary<string, string> headers)
         {
             _headers = headers;
         }

@@ -3,7 +3,6 @@ using System.Linq;
 using twitchbot.Infrastructure;
 using twitchbot.Infrastructure.Models;
 using twitchstreambot.infrastructure;
-using twitchstreambot.Parsing;
 
 namespace twitchbot.commands.StreamGames
 {

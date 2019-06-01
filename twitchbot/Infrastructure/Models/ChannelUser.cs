@@ -8,5 +8,6 @@ namespace twitchbot.Infrastructure.Models
         public string UserName { get; set; }
         public int TwitchId { get; set; }
         public string DisplayName { get; set; }
+        public int StreamPoints { get; set; }
     }
 }
