@@ -5,13 +5,13 @@ using twitchbot.Infrastructure;
 using twitchstreambot;
 using twitchstreambot.infrastructure;
 using twitchstreambot.infrastructure.DependencyInjection;
-using twitchstreambot.Parsing;
 
 namespace twitchbot
 {
     public class BotService
     {
         private readonly TwitchStreamBot _bot;
+        private readonly TimedMessagesCoordinator _coordinator;
         private Container _container;
 
         public BotService()
@@ -23,6 +23,8 @@ namespace twitchbot
             if (authenticator.Authenticate(false))
             {
                 _bot = container.GetInstance<TwitchStreamBot>();
+
+                _coordinator = new TimedMessagesCoordinator(_bot);
             }
             else
             {
@@ -32,6 +34,8 @@ namespace twitchbot
 
         public void Start()
         {
+            _coordinator.Start();
+
             if (_bot.Start() != 0)
             {
                 Console.WriteLine("Error Status");
@@ -41,6 +45,7 @@ namespace twitchbot
 
         public void Stop()
         {
+            _coordinator.Stop();
             _bot.Stop();
         }
 
@@ -84,7 +89,7 @@ namespace twitchbot
 
         private void TwitchCommandReceived(TwitchStreamBot sender, CommandArgs args)
         {
-            
+
         }
     }
 }
