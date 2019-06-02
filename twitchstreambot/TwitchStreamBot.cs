@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Sockets;
-using System.Text.RegularExpressions;
-using System.Threading;
-using Sprache;
 using twitchstreambot.infrastructure;
 using twitchstreambot.Parsing;
 
