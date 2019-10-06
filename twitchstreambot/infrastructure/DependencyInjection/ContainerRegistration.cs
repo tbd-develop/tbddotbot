@@ -6,6 +6,7 @@ namespace twitchstreambot.infrastructure.DependencyInjection
         where T : class
     {
         private readonly IContainer _container;
+        private bool _asSingleton;
 
         public ContainerRegistration(IContainer container)
         {
@@ -14,7 +15,7 @@ namespace twitchstreambot.infrastructure.DependencyInjection
 
         public IContainer Use(Func<IContainer, T> createWith)
         {
-            _container.Register(typeof(T), createWith);
+            _container.Register(typeof(T), createWith, _asSingleton);
 
             return _container;
         }
@@ -22,9 +23,16 @@ namespace twitchstreambot.infrastructure.DependencyInjection
         public IContainer Use<TResult>()
             where TResult : T
         {
-            _container.Register(typeof(T), typeof(TResult));
+            _container.Register(typeof(T), typeof(TResult), _asSingleton);
 
             return _container;
+        }
+
+        public ContainerRegistration<T> AsSingleton()
+        {
+            _asSingleton = true;
+
+            return this;
         }
     }
 }

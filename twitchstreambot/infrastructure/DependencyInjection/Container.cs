@@ -12,11 +12,14 @@ namespace twitchstreambot.infrastructure.DependencyInjection
         private readonly Dictionary<Type, Type> _typeDependencies;
         private readonly Dictionary<Type, object> _instances;
 
+        private readonly List<Type> _singletons;
+
         public Container()
         {
             _dependencies = new Dictionary<Type, Func<IContainer, object>>();
             _typeDependencies = new Dictionary<Type, Type>();
             _instances = new Dictionary<Type, object>();
+            _singletons = new List<Type>();
 
             _dependencies.Add(typeof(IContainer), ctx => ctx);
         }
@@ -27,13 +30,23 @@ namespace twitchstreambot.infrastructure.DependencyInjection
             return new ContainerRegistration<T>(this);
         }
 
-        public void Register(Type @interface, Func<IContainer, object> instance)
+        public void Register(Type @interface, Func<IContainer, object> instance, bool singleton)
         {
+            if (singleton)
+            {
+                _singletons.Add(@interface);
+            }
+
             _dependencies.Add(@interface, @instance);
         }
 
-        public void Register(Type @interface, Type @instance)
+        public void Register(Type @interface, Type @instance, bool singleton)
         {
+            if (singleton)
+            {
+                _singletons.Add(@interface);
+            }
+
             _typeDependencies.Add(@interface, @instance);
         }
 
@@ -109,7 +122,10 @@ namespace twitchstreambot.infrastructure.DependencyInjection
                     result = (TInstance)constructor.Invoke(parameters.ToArray());
                 }
 
-                _instances.Add(typeof(TInstance), result);
+                if (_singletons.Any(s => s == typeof(TInstance)))
+                {
+                    _instances.Add(typeof(TInstance), result);
+                }
 
                 return result;
             }

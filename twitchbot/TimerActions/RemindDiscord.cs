@@ -1,7 +1,7 @@
 ﻿using twitchbot.Infrastructure;
 using twitchstreambot;
 
-namespace twitchbot.timers
+namespace twitchbot.TimerActions
 {
     [TwitchTimer(300)]
     public class RemindDiscord : ITwitchTimerAction

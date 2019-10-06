@@ -8,7 +8,7 @@ namespace twitchstreambot.infrastructure.DependencyInjection
         object GetInstance(Type t);
         object GetInstance(Type t, object[] args);
         ContainerRegistration<T> When<T>() where T : class;
-        void Register(Type @interface, Func<IContainer, object> @instance);
-        void Register(Type @interface, Type @instance);
+        void Register(Type @interface, Func<IContainer, object> @instance, bool singleton);
+        void Register(Type @interface, Type @instance, bool singleton);
     }
 }
