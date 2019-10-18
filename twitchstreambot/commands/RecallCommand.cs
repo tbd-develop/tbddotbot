@@ -8,7 +8,7 @@ using twitchstreambot.models;
 
 namespace twitchstreambot.Commands
 {
-    [TwitchCommand("recall", Ignore = true)]
+    [TwitchCommand("recall", Ignore = true, IsPrivate = true)]
     public class RecallCommand : ITwitchCommand
     {
         private readonly string _command;
@@ -54,11 +54,13 @@ namespace twitchstreambot.Commands
 
                 if (!string.IsNullOrEmpty(content))
                 {
-                    IEnumerable<CommandDefinition> definedCommmands =
+                    IEnumerable<CommandDefinition> definedCommands =
                         JsonConvert.DeserializeObject<IEnumerable<CommandDefinition>>(content);
 
-                    result = definedCommmands.Single(cmd =>
-                        cmd.Command.Equals(command, StringComparison.CurrentCultureIgnoreCase)).Content;
+                    var definition = definedCommands.SingleOrDefault(cmd =>
+                        cmd.Command.Equals(command, StringComparison.CurrentCultureIgnoreCase));
+
+                    result = definition?.Content ?? "No Command Found";
                 }
             }
 

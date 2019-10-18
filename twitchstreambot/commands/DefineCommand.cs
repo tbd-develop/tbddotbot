@@ -8,13 +8,13 @@ using twitchstreambot.models;
 
 namespace twitchstreambot.Commands
 {
-    [TwitchCommand("define")]
+    [TwitchCommand("define", IsPrivate = true)]
     public class DefineCommand : ITwitchCommand
     {
         private readonly CommandFactory _commandFactory;
-        private readonly IDictionary<string, string> _headers;
+        private readonly Dictionary<string, string> _headers;
 
-        public DefineCommand(CommandFactory commandFactory, IDictionary<string,string> headers)
+        public DefineCommand(Dictionary<string, string> headers, CommandFactory commandFactory)
         {
             _commandFactory = commandFactory;
             _headers = headers;
@@ -40,23 +40,25 @@ namespace twitchstreambot.Commands
                 return "define <command> <content>";
             }
 
-            string command = args[0];
+            string definedCommand = args[0].ToLower();
             string content = string.Join(" ", args.Skip(1));
-            bool hasChanged = false;
 
             var definitions = LoadDefinitions();
+            var currentDefinition = definitions.SingleOrDefault(d =>
+                d.Command.Equals(definedCommand, StringComparison.CurrentCultureIgnoreCase));
 
-            if (!definitions.Any(d => d.Command.Equals(command, StringComparison.CurrentCultureIgnoreCase)))
+            if (currentDefinition == null)
             {
-                definitions.Add(new CommandDefinition {Command = command, Content = content});
+                definitions.Add(new CommandDefinition { Command = definedCommand, Content = content });
 
-                _commandFactory.AddTextCommand(command);
+                _commandFactory.AddTextCommand(definedCommand);
 
-                hasChanged = true;
+                SaveDefinitions(definitions);
             }
-
-            if (hasChanged)
+            else
             {
+                currentDefinition.Content = content;
+
                 SaveDefinitions(definitions);
             }
 

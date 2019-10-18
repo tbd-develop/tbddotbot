@@ -1,34 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
         <LangVersion>7.3</LangVersion>
         <OutputType>Exe</OutputType>
         <StartupObject>twitchbot.Program</StartupObject>
+        <UserSecretsId>f48c4998-bbad-40a6-905a-e7cc97bc0200</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="appsettings.json" />
       <None Remove="definitions.json" />
       <Content Include="definitions.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <None Remove="auth.json" />
-      <Content Include="auth.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\twitchstreambot.basics\twitchstreambot.basics.csproj" />
       <ProjectReference Include="..\twitchstreambot\twitchstreambot.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="LiteDB" Version="4.1.4" />
       <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-      <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.1.0" />
-      <PackageReference Include="MongoDB.Driver" Version="2.8.1" />
+      <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.0" />
+      <PackageReference Include="MongoDB.Driver" Version="2.9.2" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-      <PackageReference Include="Topshelf" Version="4.2.0" />
+      <PackageReference Include="Topshelf" Version="4.2.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

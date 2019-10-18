@@ -10,8 +10,7 @@
             {
                 User = TwitchMessage.UserFromHeaders(headers),
                 Headers = headers,
-                IrcCommand = TwitchCommand.USERNOTICE,
-                Message = ""
+                IrcCommand = TwitchCommand.USERNOTICE
             };
         }
     }

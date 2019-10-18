@@ -1,14 +1,15 @@
 using System.Linq;
 using twitchstreambot.infrastructure;
+using twitchstreambot.Infrastructure;
 
 namespace twitchstreambot.Commands
 {
     [TwitchCommand("commands")]
     public class CommandsCommand : ITwitchCommand
     {
-        private readonly CommandFactory _factory;
+        private readonly ICommandFactory _factory;
 
-        public CommandsCommand(CommandFactory factory)
+        public CommandsCommand(ICommandFactory factory)
         {
             _factory = factory;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Sockets;
+using Microsoft.Extensions.Configuration;
 using twitchstreambot.infrastructure;
 using twitchstreambot.Parsing;
 
@@ -16,14 +17,17 @@ namespace twitchstreambot
 
         public delegate void CommandReceivedHandler(TwitchStreamBot streamer, CommandArgs args);
 
+        public delegate void BotConnectedHandler(TwitchStreamBot streamer);
+
         public event CommandReceivedHandler OnCommandReceived;
+        public event BotConnectedHandler OnBotConnected;
 
         public string Error { get; private set; }
 
-        public TwitchStreamBot(TwitchConnection connection, string authToken, CommandFactory commandFactory)
+        public TwitchStreamBot(TwitchConnection connection, IConfiguration configuration, CommandFactory commandFactory)
         {
             _connection = connection;
-            _authToken = authToken;
+            _authToken = configuration["twitch:auth"];
             _commandFactory = commandFactory;
         }
 
@@ -42,6 +46,8 @@ namespace twitchstreambot
 
                     SendTwitchCommand("CAP REQ :twitch.tv/membership");
                     SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
+
+                    OnBotConnected?.Invoke(this);
 
                     _channelReader.ListenForMessages();
                 }
@@ -69,15 +75,15 @@ namespace twitchstreambot
 
                     if (result.IrcCommand == TwitchCommand.PRIVMSG && result.IsBotCommand)
                     {
-                        string[] elements = result.Message.Substring(1).Split(' ');
+                        var commandToExecute = _commandFactory.GetCommand(result);
 
-                        var command = _commandFactory.GetCommand(elements[0], result.Headers);
-
-                        if (command != null)
+                        if (commandToExecute != null && commandToExecute.CanExecute())
                         {
-                            if (command.CanExecute())
+                            string response = commandToExecute.Execute(result.Command.Arguments.ToArray());
+
+                            if (!string.IsNullOrEmpty(response))
                             {
-                                SendToStream(command.Execute(elements.Skip(1).ToArray()));
+                                SendToStream(response);
                             }
                         }
                     }

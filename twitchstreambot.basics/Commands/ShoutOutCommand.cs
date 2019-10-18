@@ -4,7 +4,7 @@ using twitchstreambot.infrastructure;
 
 namespace twitchstreambot.Commands
 {
-    [TwitchCommand("so")]
+    [TwitchCommand("so", IsPrivate = true)]
     public class ShoutOutCommand : ITwitchCommand
     {
         private readonly Dictionary<string, string> _headers;
@@ -34,7 +34,9 @@ namespace twitchstreambot.Commands
                 return "so <username>";
             }
 
-            return $"Checkout {args.First()} at http://twitch.tv/{args.First()}";
+            string userName = args.First().Replace("@", "");
+
+            return $"Checkout {userName} at http://twitch.tv/{userName}";
         }
     }
 }

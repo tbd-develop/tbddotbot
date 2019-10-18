@@ -22,7 +22,6 @@ namespace twitchstreambot.Parsing
             return new TwitchMessage
             {
                 User = new TwitchMessage.TwitchUser { Name = result },
-                Message = string.Empty,
                 IrcCommand = _command,
                 Headers = null
             };

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Sprache;
 
@@ -19,30 +20,41 @@ namespace twitchstreambot.Parsing
 
             var elements = extractRestOfString.Parse(input);
 
-            var message = elements.ElementAt(2);
+            var botCommand = GetCommand(elements.ElementAt(2));
 
-            var command = GetCommand(message);
-            
             return new TwitchMessage
             {
                 User = TwitchMessage.UserFromHeaders(headers),
                 IrcCommand = TwitchCommand.PRIVMSG,
-                IsBotCommand = !string.IsNullOrEmpty(command),
-                BotCommand = command,
-                Message = message,
+                Command = botCommand,
                 Headers = headers
             };
         }
 
-        private string GetCommand(string input)
+        private BotCommand GetCommand(string input)
         {
             if (_exclamation.TryParse(input).WasSuccessful)
             {
-                var cp = from x in _exclamation
-                         from l in Parse.AnyChar.Many().Text()
-                    select l;
+                Parser<string> _wordParser =
+                    Parse.LetterOrDigit.Or(Parse.Chars('[', ']', '#', '!', ',', '.', '@', '!', '(', ')')).Many().Text()
+                        .Token();
 
-                return cp.Parse(input);
+                var arguments =
+                    Parse.Repeat(from leading in _wordParser
+                                 from rest in Parse.WhiteSpace.Many()
+                                 select leading, 75);
+
+                var parser = from leading in _exclamation
+                             from first in _wordParser
+                             from after in Parse.AnyChar.Many().Text()
+                             select new { Command = first, Arguments = arguments.Parse(after) };
+
+                var result = parser.Parse(input);
+
+                if (result.Command != null)
+                {
+                    return new BotCommand { Action = result.Command, Arguments = result.Arguments };
+                }
             }
 
             return null;

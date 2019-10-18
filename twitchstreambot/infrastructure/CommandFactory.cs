@@ -6,24 +6,27 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using twitchstreambot.Commands;
+using twitchstreambot.Infrastructure;
 using twitchstreambot.infrastructure.DependencyInjection;
 using twitchstreambot.models;
+using twitchstreambot.Parsing;
 
 namespace twitchstreambot.infrastructure
 {
-    public class CommandFactory
+    public class CommandFactory : ICommandFactory
     {
         private readonly IContainer _container;
-        private readonly IDictionary<string, Type> _commands;
+        private readonly IDictionary<string, CommandInfo> _commands;
         private readonly IList<string> _customCommands;
 
         public IReadOnlyCollection<string> AvailableCommands =>
-            new ReadOnlyCollection<string>(_commands.Keys.Union(_customCommands).OrderBy(r => r).ToList());
+            new ReadOnlyCollection<string>(_commands.Where(c => c.Value.IsListed).Select(s => s.Key)
+                .Union(_customCommands).ToList());
 
         public CommandFactory(IContainer container)
         {
             _container = container;
-            _commands = new Dictionary<string, Type>();
+            _commands = new Dictionary<string, CommandInfo>();
             _customCommands = new List<string>();
 
             RegisterCommandsInAssembly(Assembly.GetExecutingAssembly());
@@ -38,33 +41,17 @@ namespace twitchstreambot.infrastructure
             return this;
         }
 
-        private void RegisterCommandsInAssembly(Assembly assembly)
+        public ITwitchCommand GetCommand(TwitchMessage message)
         {
-            var commands = from t in assembly.GetTypes()
-                           let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
-                           where attribute != null && !string.IsNullOrEmpty(attribute.IdentifyWith) && !attribute.Ignore
-                           select new
-                           {
-                               attribute.IdentifyWith,
-                               Type = t
-                           };
-
-            foreach (var command in commands)
+            if (_commands.ContainsKey(message.Command.Action))
             {
-                _commands.Add(command.IdentifyWith, command.Type);
-            }
-        }
-
-        public ITwitchCommand GetCommand(string command, Dictionary<string, string> headers)
-        {
-            if (_commands.ContainsKey(command))
-            {
-                return (ITwitchCommand)_container.GetInstance(_commands[command], new Object[] { headers });
+                return (ITwitchCommand)_container.GetInstance(_commands[message.Command.Action].CommandType,
+                    new Object[] { message.Headers });
             }
 
-            if (_customCommands.Contains(command))
+            if (_customCommands.Contains(message.Command.Action))
             {
-                return new RecallCommand(command);
+                return new RecallCommand(message.Command.Action);
             }
 
             return null;
@@ -73,6 +60,25 @@ namespace twitchstreambot.infrastructure
         public void AddTextCommand(string command)
         {
             _customCommands.Add(command);
+        }
+
+        private void RegisterCommandsInAssembly(Assembly assembly)
+        {
+            var commands = from t in assembly.GetTypes()
+                let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
+                where attribute != null && !string.IsNullOrEmpty(attribute.Action) && !attribute.Ignore
+                select new
+                {
+                    Action = attribute.Action,
+                    attribute.IsPrivate,
+                    Type = t
+                };
+
+            foreach (var command in commands)
+            {
+                _commands.Add(command.Action,
+                    new CommandInfo { CommandType = command.Type, IsListed = !command.IsPrivate });
+            }
         }
 
         private void LoadCustomCommands()
@@ -85,10 +91,10 @@ namespace twitchstreambot.infrastructure
 
                     if (!string.IsNullOrEmpty(content))
                     {
-                        IEnumerable<CommandDefinition> definedCommmands =
+                        IEnumerable<CommandDefinition> definedCommands =
                             JsonConvert.DeserializeObject<IEnumerable<CommandDefinition>>(content);
 
-                        foreach (var definition in definedCommmands)
+                        foreach (var definition in definedCommands)
                         {
                             _customCommands.Add(definition.Command);
                         }
@@ -96,5 +102,12 @@ namespace twitchstreambot.infrastructure
                 }
             }
         }
+
+        internal class CommandInfo
+        {
+            public Type CommandType { get; set; }
+            public bool IsListed { get; set; }
+        }
+
     }
 }

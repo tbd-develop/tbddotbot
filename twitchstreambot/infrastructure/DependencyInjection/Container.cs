@@ -100,10 +100,11 @@ namespace twitchstreambot.infrastructure.DependencyInjection
 
                 var matchingConstructors =
                     from c in resultingType.GetConstructors()
-                    where !c.GetParameters().Any() || c.GetParameters().All(p =>
+                    where !c.GetParameters().Any() || c.GetParameters().All
+                          (p =>
                               _typeDependencies.ContainsKey(p.ParameterType) ||
                               _dependencies.ContainsKey(p.ParameterType) ||
-                              (args != null && args.Any(a => a.GetType() == p.ParameterType)))
+                              args != null && args.Any(a => a.GetType() == p.ParameterType))
                     select c;
 
                 var constructor = matchingConstructors.First();

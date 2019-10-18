@@ -5,12 +5,13 @@ namespace twitchstreambot.infrastructure
     [AttributeUsage(AttributeTargets.Class)]
     public class TwitchCommandAttribute : Attribute
     {
-        public string IdentifyWith { get; }
+        public string Action { get; }
         public bool Ignore { get; set; }
+        public bool IsPrivate { get; set; } 
 
-        public TwitchCommandAttribute(string identifyWith)
+        public TwitchCommandAttribute(string actionName)
         {
-            IdentifyWith = identifyWith;
+            Action = actionName;
         }
     }
 }
