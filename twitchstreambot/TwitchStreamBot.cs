@@ -71,24 +71,27 @@ namespace twitchstreambot
             {
                 if (TwitchCommandParser.IsMatch(args.Message))
                 {
-                    var result = TwitchCommandParser.Gather(args.Message);
+                    var message = TwitchCommandParser.Gather(args.Message);
 
-                    if (result.IrcCommand == TwitchCommand.PRIVMSG && result.IsBotCommand)
+                    if (message.IrcCommand == TwitchCommand.PRIVMSG && message.IsBotCommand)
                     {
-                        var commandToExecute = _commandFactory.GetCommand(result);
+                        // executor.SendTwitchCommand(message);
 
-                        if (commandToExecute != null && commandToExecute.CanExecute())
-                        {
-                            string response = commandToExecute.Execute(result.Command.Arguments.ToArray());
 
-                            if (!string.IsNullOrEmpty(response))
-                            {
-                                SendToStream(response);
-                            }
-                        }
+                        //var commandToExecute = _commandFactory.GetCommand(result);
+
+                        //if (commandToExecute != null && commandToExecute.CanExecute())
+                        //{
+                        //    string response = commandToExecute.Execute(result.Command.Arguments.ToArray());
+
+                        //    if (!string.IsNullOrEmpty(response))
+                        //    {
+                        //        SendToStream(response);
+                        //    }
+                        //}
                     }
 
-                    OnCommandReceived?.Invoke(this, new CommandArgs(result));
+                    OnCommandReceived?.Invoke(this, new CommandArgs(message));
                 }
             }
         }
