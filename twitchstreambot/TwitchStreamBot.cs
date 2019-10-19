@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Sockets;
 using Microsoft.Extensions.Configuration;
 using twitchstreambot.infrastructure;
+using twitchstreambot.Infrastructure.@new;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot
@@ -10,8 +11,8 @@ namespace twitchstreambot
     public class TwitchStreamBot
     {
         private readonly TwitchConnection _connection;
+        private readonly CommandDispatcher _dispatcher;
         private readonly string _authToken;
-        private readonly CommandFactory _commandFactory;
         private ChannelReader _channelReader;
         private ChannelWriter _channelWriter;
 
@@ -24,11 +25,11 @@ namespace twitchstreambot
 
         public string Error { get; private set; }
 
-        public TwitchStreamBot(TwitchConnection connection, IConfiguration configuration, CommandFactory commandFactory)
+        public TwitchStreamBot(TwitchConnection connection, IConfiguration configuration, CommandDispatcher dispatcher)
         {
             _connection = connection;
+            _dispatcher = dispatcher;
             _authToken = configuration["twitch:auth"];
-            _commandFactory = commandFactory;
         }
 
         public int Start()
@@ -75,20 +76,7 @@ namespace twitchstreambot
 
                     if (message.IrcCommand == TwitchCommand.PRIVMSG && message.IsBotCommand)
                     {
-                        // executor.SendTwitchCommand(message);
-
-
-                        //var commandToExecute = _commandFactory.GetCommand(result);
-
-                        //if (commandToExecute != null && commandToExecute.CanExecute())
-                        //{
-                        //    string response = commandToExecute.Execute(result.Command.Arguments.ToArray());
-
-                        //    if (!string.IsNullOrEmpty(response))
-                        //    {
-                        //        SendToStream(response);
-                        //    }
-                        //}
+                        SendToStream(_dispatcher.SendTwitchCommand(message));
                     }
 
                     OnCommandReceived?.Invoke(this, new CommandArgs(message));

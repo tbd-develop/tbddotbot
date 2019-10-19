@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using twitchbot.Infrastructure;
 using twitchstreambot;
+using twitchstreambot.basics;
 using twitchstreambot.Commands;
 using twitchstreambot.infrastructure;
 using twitchstreambot.infrastructure.DependencyInjection;
+using twitchstreambot.Infrastructure.@new;
 
 namespace twitchbot
 {
@@ -79,21 +81,12 @@ namespace twitchbot
                     Channel = "tbdgamer",
                     Port = 6667
                 })
-                .When<IStorage>().Use<MongoDbStore>()
                 .When<TwitchStreamBot>().AsSingleton().Use<TwitchStreamBot>()
-                .When<CommandFactory>().AsSingleton().Use(c =>
-                {
-                    var result = new CommandFactory(c);
-
-                    result.LoadFromAssembly(Assembly.GetExecutingAssembly());
-                    result.LoadFromAssembly(typeof(CommandsCommand).Assembly);
-
-                    return result;
-                })
+                .When<CommandDispatcher>().AsSingleton().Use(c => new CommandDispatcher(new CommandSet(new[] { new BasicsRegistry() }), c))
                 .When<SignalRClient>().AsSingleton().Use(c => SignalRClient.Instance);
 
             return _container;
-        }  
+        }
     }
 }
 

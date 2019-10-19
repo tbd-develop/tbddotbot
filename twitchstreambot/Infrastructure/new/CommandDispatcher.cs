@@ -20,13 +20,10 @@ namespace twitchstreambot.Infrastructure.@new
             var commandType = _commandSet.GetCommand(twitchMessage);
 
             var command = (ITwitchCommand)_container.GetInstance(commandType);
-
-            if (command != null)
+            
+            if (command?.CanExecute(twitchMessage) != null)
             {
-                if (command.CanExecute(twitchMessage))
-                {
-                    return command.Execute(twitchMessage);
-                }
+                return command.Execute(twitchMessage);
             }
 
             return null;
