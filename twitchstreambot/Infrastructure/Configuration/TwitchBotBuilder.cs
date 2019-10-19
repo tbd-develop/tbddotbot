@@ -1,5 +1,4 @@
-﻿using twitchstreambot.infrastructure;
-using twitchstreambot.Parsing;
+﻿using twitchstreambot.Parsing;
 
 namespace twitchstreambot.Infrastructure.Configuration
 {

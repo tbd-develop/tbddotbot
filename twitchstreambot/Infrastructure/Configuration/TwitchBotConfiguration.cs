@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using twitchstreambot.infrastructure;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot.Infrastructure.Configuration

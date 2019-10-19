@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
+using twitchstreambot.Infrastructure;
 using twitchstreambot.Parsing;
 
-namespace twitchstreambot.Infrastructure.@new
+namespace twitchstreambot.command.CommandDispatch
 {
     public class CommandSet : ICommandSet
     {

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace twitchstreambot.infrastructure
+namespace twitchstreambot.Infrastructure.Attributes
 {
     public class TwitchAttributesCollection : IEnumerable<TwitchAttribute>
     {

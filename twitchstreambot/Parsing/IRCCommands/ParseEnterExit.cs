@@ -1,6 +1,6 @@
 ﻿using Sprache;
 
-namespace twitchstreambot.Parsing
+namespace twitchstreambot.Parsing.IRCCommands
 {
     public class ParseEnterExit : MessageParser
     {

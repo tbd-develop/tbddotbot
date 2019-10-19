@@ -1,8 +1,8 @@
-﻿using twitchstreambot.infrastructure;
-using twitchstreambot.infrastructure.DependencyInjection;
+﻿using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 
-namespace twitchstreambot.Infrastructure.@new
+namespace twitchstreambot.command.CommandDispatch
 {
     public class CommandDispatcher
     {

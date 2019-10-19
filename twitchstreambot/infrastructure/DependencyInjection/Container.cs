@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using twitchstreambot.Parsing;
 
-namespace twitchstreambot.infrastructure.DependencyInjection
+namespace twitchstreambot.Infrastructure.DependencyInjection
 {
     public class Container : IContainer
     {

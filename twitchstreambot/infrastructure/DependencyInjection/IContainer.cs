@@ -1,6 +1,6 @@
 using System;
 
-namespace twitchstreambot.infrastructure.DependencyInjection
+namespace twitchstreambot.Infrastructure.DependencyInjection
 {
     public interface IContainer
     {

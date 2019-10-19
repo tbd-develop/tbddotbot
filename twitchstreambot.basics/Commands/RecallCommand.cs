@@ -3,27 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using twitchstreambot.infrastructure;
+using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.Attributes;
 using twitchstreambot.models;
 using twitchstreambot.Parsing;
 
-namespace twitchstreambot.Commands
+namespace twitchstreambot.command.Commands
 {
     [TwitchCommand("recall", Ignore = true, IsPrivate = true)]
     public class RecallCommand : ITwitchCommand
     {
-        private readonly string _command;
-
-        public RecallCommand()
-        {
-            _command = String.Empty;
-        }
-
-        public RecallCommand(string command)
-        {
-            _command = command;
-        }
-
         public bool CanExecute(TwitchMessage message)
         {
             return true;
@@ -31,19 +20,14 @@ namespace twitchstreambot.Commands
 
         public string Execute(TwitchMessage message)
         {
-            return string.Empty;
-            //string commandDefinition = string.Empty;
+            string commandDefinition = string.Empty;
 
-            //if (!string.IsNullOrEmpty(_command))
-            //{
-            //    commandDefinition = LoadCommand(_command);
-            //}
-            //else if (args.Length > 0)
-            //{
-            //    commandDefinition = LoadCommand(args[0]);
-            //}
+            if (!string.IsNullOrEmpty(message.Command.Action))
+            {
+                commandDefinition = LoadCommand(message.Command.Action);
+            }
 
-            //return commandDefinition;
+            return commandDefinition;
         }
 
         private string LoadCommand(string command)

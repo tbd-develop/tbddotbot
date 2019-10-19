@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using twitchstreambot.infrastructure.DependencyInjection;
+using twitchstreambot.Infrastructure.DependencyInjection;
 
 namespace twitchstreambot.tests.ConcerningDI
 {

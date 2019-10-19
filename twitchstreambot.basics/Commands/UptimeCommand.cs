@@ -4,7 +4,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using twitchstreambot.infrastructure;
+using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.Attributes;
 using twitchstreambot.models;
 using twitchstreambot.Parsing;
 

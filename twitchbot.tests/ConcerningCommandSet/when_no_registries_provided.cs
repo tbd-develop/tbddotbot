@@ -3,7 +3,7 @@ using System.Collections;
 using FluentAssertions;
 using MongoDB.Bson;
 using NUnit.Framework;
-using twitchstreambot.Infrastructure.@new;
+using twitchstreambot.command.CommandDispatch;
 
 namespace twitchbot.tests.ConcerningCommandSet
 {

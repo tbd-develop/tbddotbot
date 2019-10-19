@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace twitchstreambot.Parsing
+﻿namespace twitchstreambot.Parsing.IRCCommands
 {
     public class ParseUserState : MessageParser
     {

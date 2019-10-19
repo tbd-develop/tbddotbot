@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using twitchstreambot.Parsing;
 
-namespace twitchstreambot.infrastructure
+namespace twitchstreambot.Infrastructure
 {
     public interface ITwitchCommand
     {

@@ -1,4 +1,4 @@
-﻿namespace twitchstreambot.infrastructure
+﻿namespace twitchstreambot.Infrastructure.Attributes
 {
     public class TwitchAttribute
     {

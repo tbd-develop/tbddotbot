@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using twitchstreambot.infrastructure;
+﻿using System.Linq;
+using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.Attributes;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot.Commands

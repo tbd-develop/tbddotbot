@@ -7,10 +7,10 @@ using twitchbot.Infrastructure;
 using twitchstreambot;
 using twitchstreambot.basics;
 using twitchstreambot.command;
-using twitchstreambot.infrastructure;
+using twitchstreambot.command.CommandDispatch;
+using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Configuration;
-using twitchstreambot.infrastructure.DependencyInjection;
-using twitchstreambot.Infrastructure.@new;
+using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 
 namespace twitchbot
@@ -92,9 +92,12 @@ namespace twitchbot
 
                     return new TwitchStreamBot(configuration, c);
                 })
-
-                //.When<TwitchStreamBot>().AsSingleton().Use<TwitchStreamBot>()
-                .When<CommandDispatcher>().AsSingleton().Use(c => new CommandDispatcher(new CommandSet(new[] { new BasicsRegistry() }), c))
+                .When<CommandDispatcher>().AsSingleton().Use(c =>
+                {
+                    return new CommandDispatcher(
+                            new CommandSet(new ICommandRegistry[]
+                                {new BasicsRegistry(), new DefinedCommandsRegistry()}), c);
+                })
                 .When<SignalRClient>().AsSingleton().Use(c => SignalRClient.Instance);
 
             return _container;

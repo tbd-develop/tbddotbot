@@ -1,5 +1,5 @@
-﻿using twitchstreambot.Infrastructure;
-using twitchstreambot.Infrastructure.@new;
+﻿using twitchstreambot.command.CommandDispatch;
+using twitchstreambot.Infrastructure;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot.command

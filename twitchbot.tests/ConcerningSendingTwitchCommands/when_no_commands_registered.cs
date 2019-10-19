@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using twitchstreambot.infrastructure.DependencyInjection;
-using twitchstreambot.Infrastructure.@new;
+using twitchstreambot.command.CommandDispatch;
+using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 
 namespace twitchbot.tests.ConcerningCommandExecutor

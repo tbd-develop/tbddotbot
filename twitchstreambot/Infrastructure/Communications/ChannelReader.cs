@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 
-namespace twitchstreambot.infrastructure
+namespace twitchstreambot.Infrastructure.Communications
 {
     public class ChannelReader : StreamReader
     {

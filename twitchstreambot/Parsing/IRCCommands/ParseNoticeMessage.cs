@@ -1,4 +1,4 @@
-﻿namespace twitchstreambot.Parsing
+﻿namespace twitchstreambot.Parsing.IRCCommands
 {
     public class ParseNoticeMessage : MessageParser
     {

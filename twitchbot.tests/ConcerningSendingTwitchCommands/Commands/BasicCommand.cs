@@ -1,4 +1,4 @@
-﻿using twitchstreambot.infrastructure;
+﻿using twitchstreambot.Infrastructure;
 using twitchstreambot.Parsing;
 
 namespace twitchbot.tests.ConcerningCommandExecutor.Commands

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace twitchstreambot.infrastructure
+namespace twitchstreambot.Infrastructure.Communications
 {
     public class ChannelWriter : StreamWriter
     {

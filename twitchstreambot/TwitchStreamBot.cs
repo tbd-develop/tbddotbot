@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net.Sockets;
-using twitchstreambot.infrastructure;
 using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.Communications;
 using twitchstreambot.Infrastructure.Configuration;
-using twitchstreambot.infrastructure.DependencyInjection;
+using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot

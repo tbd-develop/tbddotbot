@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Sprache;
 
-namespace twitchstreambot.Parsing
+namespace twitchstreambot.Parsing.IRCCommands
 {
     public class ParsePrivMessage : MessageParser
     {

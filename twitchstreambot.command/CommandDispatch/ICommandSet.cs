@@ -1,7 +1,7 @@
 ﻿using System;
 using twitchstreambot.Parsing;
 
-namespace twitchstreambot.Infrastructure.@new
+namespace twitchstreambot.command.CommandDispatch
 {
     public interface ICommandSet
     {

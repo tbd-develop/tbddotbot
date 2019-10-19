@@ -5,8 +5,8 @@ using NUnit.Framework;
 using twitchbot.tests.ConcerningCommandExecutor.Commands;
 using twitchbot.tests.ConcerningCommandSet;
 using twitchbot.tests.ConcerningCommandSet.Commands;
-using twitchstreambot.infrastructure.DependencyInjection;
-using twitchstreambot.Infrastructure.@new;
+using twitchstreambot.command.CommandDispatch;
+using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 
 namespace twitchbot.tests.ConcerningCommandExecutor

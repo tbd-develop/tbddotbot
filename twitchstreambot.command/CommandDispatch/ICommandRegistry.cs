@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace twitchstreambot.Infrastructure.@new
+namespace twitchstreambot.command.CommandDispatch
 {
     public interface ICommandRegistry
     {
