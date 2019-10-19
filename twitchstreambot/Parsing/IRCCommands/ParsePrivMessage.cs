@@ -25,7 +25,7 @@ namespace twitchstreambot.Parsing
             return new TwitchMessage
             {
                 User = TwitchMessage.UserFromHeaders(headers),
-                IrcCommand = TwitchCommand.PRIVMSG,
+                MessageType = IRCMessageType.PRIVMSG,
                 Command = botCommand,
                 Headers = headers
             };
@@ -36,7 +36,7 @@ namespace twitchstreambot.Parsing
             if (_exclamation.TryParse(input).WasSuccessful)
             {
                 Parser<string> _wordParser =
-                    Parse.LetterOrDigit.Or(Parse.Chars('[', ']', '#', '!', ',', '.', '@', '!', '(', ')')).Many().Text()
+                    Parse.LetterOrDigit.Or(Parse.Chars('[', ']', '#', '!', ',', '.', '_', '@', '!', '(', ')')).Many().Text()
                         .Token();
 
                 var arguments =

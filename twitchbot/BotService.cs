@@ -1,16 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using twitchbot.Infrastructure;
 using twitchstreambot;
 using twitchstreambot.basics;
-using twitchstreambot.Commands;
+using twitchstreambot.command;
 using twitchstreambot.infrastructure;
+using twitchstreambot.Infrastructure.Configuration;
 using twitchstreambot.infrastructure.DependencyInjection;
 using twitchstreambot.Infrastructure.@new;
+using twitchstreambot.Parsing;
 
 namespace twitchbot
 {
@@ -48,7 +49,6 @@ namespace twitchbot
             if (_bot.Start() != 0)
             {
                 Console.WriteLine("Error Status");
-                Console.WriteLine(_bot.Error);
             }
         }
 
@@ -81,7 +81,19 @@ namespace twitchbot
                     Channel = "tbdgamer",
                     Port = 6667
                 })
-                .When<TwitchStreamBot>().AsSingleton().Use<TwitchStreamBot>()
+                .When<TwitchStreamBot>().AsSingleton().Use(c =>
+                {
+                    var configuration =
+                        new TwitchBotBuilder()
+                            .WithAuthentication(c.GetInstance<IConfiguration>()["twitch:auth"])
+                            .WithConnection(c.GetInstance<TwitchConnection>())
+                            .WithCommands(b => { b.AddHandler<IRCCommandHandler>(IRCMessageType.PRIVMSG); })
+                            .Build();
+
+                    return new TwitchStreamBot(configuration, c);
+                })
+
+                //.When<TwitchStreamBot>().AsSingleton().Use<TwitchStreamBot>()
                 .When<CommandDispatcher>().AsSingleton().Use(c => new CommandDispatcher(new CommandSet(new[] { new BasicsRegistry() }), c))
                 .When<SignalRClient>().AsSingleton().Use(c => SignalRClient.Instance);
 

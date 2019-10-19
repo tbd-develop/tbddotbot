@@ -11,7 +11,7 @@ namespace twitchstreambot.Parsing
             return new TwitchMessage
             {
                 User = TwitchMessage.UserFromHeaders(headers),
-                IrcCommand = TwitchCommand.USERSTATE,
+                MessageType = IRCMessageType.USERSTATE,
                 Headers = headers
             };
         }

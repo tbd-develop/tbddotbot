@@ -18,6 +18,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\twitchstreambot.basics\twitchstreambot.basics.csproj" />
+      <ProjectReference Include="..\twitchstreambot.command\twitchstreambot.command.csproj" />
       <ProjectReference Include="..\twitchstreambot\twitchstreambot.csproj" />
     </ItemGroup>
 

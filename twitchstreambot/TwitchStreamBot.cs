@@ -1,45 +1,39 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Sockets;
-using Microsoft.Extensions.Configuration;
 using twitchstreambot.infrastructure;
-using twitchstreambot.Infrastructure.@new;
+using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.Configuration;
+using twitchstreambot.infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot
 {
     public class TwitchStreamBot
     {
-        private readonly TwitchConnection _connection;
-        private readonly CommandDispatcher _dispatcher;
-        private readonly string _authToken;
+        private readonly TwitchBotConfiguration _configuration;
+        private readonly IContainer _container;
         private ChannelReader _channelReader;
         private ChannelWriter _channelWriter;
 
-        public delegate void CommandReceivedHandler(TwitchStreamBot streamer, CommandArgs args);
-
         public delegate void BotConnectedHandler(TwitchStreamBot streamer);
-
-        public event CommandReceivedHandler OnCommandReceived;
         public event BotConnectedHandler OnBotConnected;
 
-        public string Error { get; private set; }
-
-        public TwitchStreamBot(TwitchConnection connection, IConfiguration configuration, CommandDispatcher dispatcher)
+        public TwitchStreamBot(TwitchBotConfiguration configuration, IContainer container)
         {
-            _connection = connection;
-            _dispatcher = dispatcher;
-            _authToken = configuration["twitch:auth"];
+            _configuration = configuration;
+            _container = container;
         }
 
         public int Start()
         {
-            using (var client = new TcpClient(_connection.HostName, _connection.Port))
+            var connection = _configuration.Connection;
+
+            using (var client = new TcpClient(connection.HostName, connection.Port))
             {
                 using (var stream = client.GetStream())
                 using (_channelReader = new ChannelReader(stream))
                 using (_channelWriter = new ChannelWriter(stream)
-                { Channel = _connection.Channel, BotName = _connection.BotName, AuthToken = _authToken })
+                { Channel = connection.Channel, BotName = connection.BotName, AuthToken = _configuration.AuthToken })
                 {
                     _channelReader.OnMessageReceived += ReaderOnMessageReceived;
 
@@ -74,12 +68,12 @@ namespace twitchstreambot
                 {
                     var message = TwitchCommandParser.Gather(args.Message);
 
-                    if (message.IrcCommand == TwitchCommand.PRIVMSG && message.IsBotCommand)
+                    if (_configuration.Handlers.ContainsKey(message.MessageType))
                     {
-                        SendToStream(_dispatcher.SendTwitchCommand(message));
-                    }
+                        var handler = (IRCHandler)_container.GetInstance(_configuration.Handlers[message.MessageType]);
 
-                    OnCommandReceived?.Invoke(this, new CommandArgs(message));
+                        handler.Handle(message);
+                    }
                 }
             }
         }

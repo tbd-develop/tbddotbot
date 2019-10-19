@@ -1,6 +1,6 @@
 ﻿namespace twitchstreambot.Parsing
 {
-    public enum TwitchCommand
+    public enum IRCMessageType
     {
         NONE,
         PRIVMSG,

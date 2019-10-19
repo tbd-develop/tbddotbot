@@ -71,7 +71,7 @@ namespace twitchstreambot.infrastructure
 
         public void ListenForMessages()
         {
-            string buffer = string.Empty;
+            string buffer;
 
             while ((buffer = ReadLine()) != null && !_exiting)
             {

@@ -6,7 +6,7 @@ namespace twitchstreambot.Parsing
     public class TwitchMessage
     {
         public TwitchUser User { get; set; }
-        public TwitchCommand IrcCommand { get; set; }
+        public IRCMessageType MessageType { get; set; }
         public BotCommand Command { get; set; }
         public Dictionary<string, string> Headers { get; set; }
 
