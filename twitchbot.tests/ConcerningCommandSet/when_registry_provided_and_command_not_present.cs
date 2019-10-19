@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using twitchstreambot.Infrastructure.@new;
 using twitchstreambot.Parsing;
 
 namespace twitchbot.tests.ConcerningCommandSet

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using twitchstreambot.infrastructure;
+using twitchstreambot.Parsing;
 
 namespace twitchstreambot.Commands
 {
@@ -14,7 +15,7 @@ namespace twitchstreambot.Commands
             _headers = headers;
         }
 
-        public bool CanExecute()
+        public bool CanExecute(TwitchMessage message)
         {
             if (_headers.ContainsKey("badges"))
             {
@@ -27,16 +28,17 @@ namespace twitchstreambot.Commands
             return false;
         }
 
-        public string Execute(params string[] args)
+        public string Execute(TwitchMessage message)
         {
-            if (!args.Any())
-            {
-                return "so <username>";
-            }
+            //if (!args.Any())
+            //{
+            //    return "so <username>";
+            //}
 
-            string userName = args.First().Replace("@", "");
+            //string userName = args.First().Replace("@", "");
 
-            return $"Checkout {userName} at http://twitch.tv/{userName}";
+            //return $"Checkout {userName} at http://twitch.tv/{userName}";
+            return string.Empty;
         }
     }
 }

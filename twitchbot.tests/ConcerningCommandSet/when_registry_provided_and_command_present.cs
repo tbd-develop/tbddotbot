@@ -1,9 +1,9 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using twitchstreambot.infrastructure;
+using twitchbot.tests.ConcerningCommandSet.Commands;
+using twitchstreambot.Infrastructure.@new;
 using twitchstreambot.Parsing;
 
 namespace twitchbot.tests.ConcerningCommandSet
@@ -34,25 +34,6 @@ namespace twitchbot.tests.ConcerningCommandSet
 
             Registry.Verify(rg => rg.CanProvide(It.Is<string>(s => s == AcceptedCommand)), Times.Once);
             Registry.Verify(rg => rg.Get(It.Is<string>(s => s == AcceptedCommand)), Times.Once);
-        }
-    }
-
-    public interface ICommandRegistry
-    {
-        bool CanProvide(string command);
-        Type Get(string command);
-    }
-
-    public class SampleCommand : ITwitchCommand
-    {
-        public bool CanExecute()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public string Execute(params string[] args)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

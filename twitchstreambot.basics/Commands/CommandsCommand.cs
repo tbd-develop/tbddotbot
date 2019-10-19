@@ -1,6 +1,7 @@
 using System.Linq;
 using twitchstreambot.infrastructure;
 using twitchstreambot.Infrastructure;
+using twitchstreambot.Parsing;
 
 namespace twitchstreambot.Commands
 {
@@ -14,12 +15,12 @@ namespace twitchstreambot.Commands
             _factory = factory;
         }
 
-        public bool CanExecute()
+        public bool CanExecute(TwitchMessage message)
         {
             return true;
         }
 
-        public string Execute(params string[] args)
+        public string Execute(TwitchMessage message)
         {
             string commands = string.Join(", ", _factory.AvailableCommands.Except(new[] { "commands" }));
 
