@@ -70,9 +70,13 @@ namespace twitchstreambot
 
                     if (_configuration.Handlers.ContainsKey(message.MessageType))
                     {
-                        var handler = (IRCHandler)_container.GetInstance(_configuration.Handlers[message.MessageType]);
+                        foreach (var messageHandlerType in _configuration.Handlers[message.MessageType])
+                        {
+                            var handler =
+                                (IRCHandler)_container.GetInstance(messageHandlerType);
 
-                        handler.Handle(message);
+                            handler.Handle(message);
+                        }
                     }
                 }
             }

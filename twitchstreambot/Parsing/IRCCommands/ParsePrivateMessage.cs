@@ -35,14 +35,14 @@ namespace twitchstreambot.Parsing.IRCCommands
             return null;
         }
 
-        private static string[] GetEverythingAfterTheFirstSpace(string input)
-        {
-            return input.Substring(input.IndexOf(' ') + 1).Split(' ');
-        }
-
         private static string GetEverythingUpToFirstSpace(string input)
         {
-            return input.Substring(1, input.IndexOf(' ') - 1);
+            return input.IndexOf(' ') > -1 ? input.Substring(1, input.IndexOf(' ') - 1) : input.Substring(1);
+        }
+
+        private static string[] GetEverythingAfterTheFirstSpace(string input)
+        {
+            return input.IndexOf(' ') > -1 ? input.Substring(input.IndexOf(' ') + 1).Split(' ') : new string[0];
         }
     }
 }
