@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
-using FluentAssertions;
-using MongoDB.Bson;
 using NUnit.Framework;
 using twitchstreambot.command.CommandDispatch;
 
-namespace twitchbot.tests.ConcerningCommandSet
+namespace twitchstreambot.tests.ConcerningCommandSet
 {
     [TestFixture]
     public class when_no_registries_provided

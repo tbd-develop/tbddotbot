@@ -5,7 +5,7 @@ using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 
-namespace twitchbot.tests.ConcerningCommandExecutor
+namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
 {
     [TestFixture]
     public class when_no_commands_registered

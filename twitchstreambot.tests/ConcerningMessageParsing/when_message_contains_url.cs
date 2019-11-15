@@ -2,14 +2,14 @@
 using NUnit.Framework;
 using twitchstreambot.Parsing.IRCCommands;
 
-namespace twitchbot.tests.ConcerningMessageParsing
+namespace twitchstreambot.tests.ConcerningMessageParsing
 {
     [TestFixture]
-    public class when_command_contains_url
+    public class when_message_contains_url
     {
         public ParsePrivateMessage Subject;
         public string MessageStarter = @"@badge-info=;badges=broadcaster/1,premium/1;user-type= :user!user@user.tmi.twitch.tv PRIVMSG #user :";
-        public string MessageContent = "!test there is a url here http://test.twitch.tv/gohere";
+        public string MessageContent = "Test http://twitch.tv is a url";
         public string MessageToParse;
 
         [SetUp]
@@ -20,11 +20,12 @@ namespace twitchbot.tests.ConcerningMessageParsing
         }
 
         [Test]
-        public void is_identified_as_bot_command()
+        public void message_is_not_treated_as_bot_message()
         {
             var result = Subject.Do(MessageToParse);
 
-            result.IsBotCommand.Should().BeTrue();
+            result.IsBotCommand.Should().BeFalse();
+            result.Command.Should().BeNull();
         }
 
         [Test]
@@ -33,14 +34,6 @@ namespace twitchbot.tests.ConcerningMessageParsing
             var result = Subject.Do(MessageToParse);
 
             result.Content.Should().Be(MessageContent);
-        }
-
-        [Test]
-        public void url_is_available_in_arguments()
-        {
-            var result = Subject.Do(MessageToParse);
-
-            result.Command.Arguments.Should().Contain("http://test.twitch.tv/gohere");
         }
     }
 }

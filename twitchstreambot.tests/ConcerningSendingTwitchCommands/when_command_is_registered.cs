@@ -2,12 +2,12 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using twitchbot.tests.ConcerningCommandExecutor.Commands;
 using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
+using twitchstreambot.tests.ConcerningSendingTwitchCommands.Commands;
 
-namespace twitchbot.tests.ConcerningCommandExecutor
+namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
 {
     [TestFixture]
     public class when_command_is_registered

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using twitchbot.Infrastructure;
@@ -87,7 +85,10 @@ namespace twitchbot
                         new TwitchBotBuilder()
                             .WithAuthentication(c.GetInstance<IConfiguration>()["twitch:auth"])
                             .WithConnection(c.GetInstance<TwitchConnection>())
-                            .WithCommands(b => { b.AddHandler<IRCCommandHandler>(IRCMessageType.PRIVMSG); })
+                            .WithCommands(b =>
+                            {
+                                b.AddHandler<IRCCommandHandler>(IRCMessageType.PRIVMSG);
+                            })
                             .Build();
 
                     return new TwitchStreamBot(configuration, c);
@@ -95,8 +96,8 @@ namespace twitchbot
                 .When<CommandDispatcher>().AsSingleton().Use(c =>
                 {
                     return new CommandDispatcher(
-                            new CommandSet(new ICommandRegistry[]
-                                {new BasicsRegistry(), new DefinedCommandsRegistry()}), c);
+                        new CommandSet(new ICommandRegistry[]
+                            {new BasicsRegistry(), new DefinedCommandsRegistry()}), c);
                 })
                 .When<SignalRClient>().AsSingleton().Use(c => SignalRClient.Instance);
 

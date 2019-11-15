@@ -1,7 +1,7 @@
 ﻿using twitchstreambot.Infrastructure;
 using twitchstreambot.Parsing;
 
-namespace twitchbot.tests.ConcerningCommandSet.Commands
+namespace twitchstreambot.tests.ConcerningCommandSet.Commands
 {
     public class SampleCommand : ITwitchCommand
     {

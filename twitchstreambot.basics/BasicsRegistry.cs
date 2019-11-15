@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using twitchstreambot.command.CommandDispatch;
-using twitchstreambot.Commands;
 using twitchstreambot.Infrastructure.Attributes;
 
 namespace twitchstreambot.basics

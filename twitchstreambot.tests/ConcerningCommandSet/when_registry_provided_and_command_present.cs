@@ -1,12 +1,11 @@
-﻿using System.Runtime.CompilerServices;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using twitchbot.tests.ConcerningCommandSet.Commands;
 using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.Parsing;
+using twitchstreambot.tests.ConcerningCommandSet.Commands;
 
-namespace twitchbot.tests.ConcerningCommandSet
+namespace twitchstreambot.tests.ConcerningCommandSet
 {
     [TestFixture]
     public class when_registry_provided_and_command_present

@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using twitchstreambot.Parsing.IRCCommands;
 
-namespace twitchbot.tests.ConcerningMessageParsing
+namespace twitchstreambot.tests.ConcerningMessageParsing
 {
     [TestFixture]
     public class when_message_contains_command

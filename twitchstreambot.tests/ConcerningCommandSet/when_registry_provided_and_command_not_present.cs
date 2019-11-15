@@ -4,7 +4,7 @@ using NUnit.Framework;
 using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.Parsing;
 
-namespace twitchbot.tests.ConcerningCommandSet
+namespace twitchstreambot.tests.ConcerningCommandSet
 {
     [TestFixture]
     public class when_registry_provided_and_command_not_present
