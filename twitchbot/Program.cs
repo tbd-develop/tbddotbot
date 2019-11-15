@@ -1,4 +1,5 @@
-﻿using Topshelf;
+﻿using System;
+using Topshelf;
 
 namespace twitchbot
 {
@@ -19,6 +20,7 @@ namespace twitchbot
                 cfg.SetDisplayName("TBDDOTBOT");
                 cfg.SetServiceName("TwitchChannelBot");
                 cfg.SetInstanceName("tbddotbot");
+                cfg.OnException(Console.WriteLine);
             });
         }
     }

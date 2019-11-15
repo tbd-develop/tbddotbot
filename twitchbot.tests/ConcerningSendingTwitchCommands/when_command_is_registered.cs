@@ -3,8 +3,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using twitchbot.tests.ConcerningCommandExecutor.Commands;
-using twitchbot.tests.ConcerningCommandSet;
-using twitchbot.tests.ConcerningCommandSet.Commands;
 using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;

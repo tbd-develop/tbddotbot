@@ -9,6 +9,7 @@ namespace twitchstreambot.Parsing
         public IRCMessageType MessageType { get; set; }
         public BotCommand Command { get; set; }
         public Dictionary<string, string> Headers { get; set; }
+        public string Content { get; set; }
 
         public bool IsBotCommand => Command != null;
 
