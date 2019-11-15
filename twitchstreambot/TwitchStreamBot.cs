@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Communications;
 using twitchstreambot.Infrastructure.Configuration;
@@ -24,7 +25,7 @@ namespace twitchstreambot
             _container = container;
         }
 
-        public int Start()
+        public async Task<int> Start()
         {
             var connection = _configuration.Connection;
 

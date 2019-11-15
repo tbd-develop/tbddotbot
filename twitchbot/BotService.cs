@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using twitchbot.Infrastructure;
 using twitchstreambot;
 using twitchstreambot.basics;
 using twitchstreambot.command;
@@ -16,7 +15,6 @@ namespace twitchbot
     public class BotService
     {
         private readonly TwitchStreamBot _bot;
-        private readonly TimedMessagesCoordinator _coordinator;
         private Container _container;
 
         public BotService()
@@ -26,8 +24,6 @@ namespace twitchbot
             _bot = container.GetInstance<TwitchStreamBot>();
 
             _bot.OnBotConnected += _bot_OnBotConnected;
-
-            _coordinator = new TimedMessagesCoordinator(_bot);
         }
 
         private void _bot_OnBotConnected(TwitchStreamBot streamer)
@@ -42,9 +38,7 @@ namespace twitchbot
 
         public async Task StartAsync()
         {
-            _coordinator.Start();
-
-            if (_bot.Start() != 0)
+            if (await _bot.Start() != 0)
             {
                 Console.WriteLine("Error Status");
             }
@@ -57,8 +51,6 @@ namespace twitchbot
 
         public async Task StopAsync()
         {
-            _coordinator.Stop();
-
             _bot.Stop();
         }
 
@@ -85,21 +77,14 @@ namespace twitchbot
                         new TwitchBotBuilder()
                             .WithAuthentication(c.GetInstance<IConfiguration>()["twitch:auth"])
                             .WithConnection(c.GetInstance<TwitchConnection>())
-                            .WithCommands(b =>
-                            {
-                                b.AddHandler<IRCCommandHandler>(IRCMessageType.PRIVMSG);
-                            })
+                            .WithCommands(b => { b.AddHandler<IRCCommandHandler>(IRCMessageType.PRIVMSG); })
                             .Build();
 
                     return new TwitchStreamBot(configuration, c);
                 })
-                .When<CommandDispatcher>().AsSingleton().Use(c =>
-                {
-                    return new CommandDispatcher(
-                        new CommandSet(new ICommandRegistry[]
-                            {new BasicsRegistry(), new DefinedCommandsRegistry()}), c);
-                })
-                .When<SignalRClient>().AsSingleton().Use(c => SignalRClient.Instance);
+                .When<CommandDispatcher>().AsSingleton().Use(c => new CommandDispatcher(
+                    new CommandSet(new ICommandRegistry[]
+                        {new BasicsRegistry(), new DefinedCommandsRegistry()}), c));
 
             return _container;
         }

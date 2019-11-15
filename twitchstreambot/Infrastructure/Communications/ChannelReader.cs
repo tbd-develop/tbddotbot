@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace twitchstreambot.Infrastructure.Communications
 {
@@ -66,11 +67,11 @@ namespace twitchstreambot.Infrastructure.Communications
         {
         }
 
-        public void ListenForMessages()
+        public async Task ListenForMessages()
         {
             string buffer;
 
-            while ((buffer = ReadLine()) != null && !_exiting)
+            while ((buffer = await ReadLineAsync()) != null && !_exiting)
             {
                 OnMessageReceived?.Invoke(this, new MessageReceivedArgs(buffer));
             }
