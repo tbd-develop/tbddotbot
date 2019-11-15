@@ -1,27 +1,21 @@
 ﻿using System;
-using Topshelf;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace twitchbot
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            HostFactory.Run(cfg =>
-            {
-                cfg.Service<BotService>(svc =>
-                {
-                    svc.ConstructUsing(() => new BotService());
-                    svc.WhenStarted(s => s.Start());
-                    svc.WhenStopped(s => s.Stop());
-                });
+            await CreateHostedService(args).Build().RunAsync();
+        }
 
-                cfg.SetDescription("Twitch Channel Bot");
-                cfg.SetDisplayName("TBDDOTBOT");
-                cfg.SetServiceName("TwitchChannelBot");
-                cfg.SetInstanceName("tbddotbot");
-                cfg.OnException(Console.WriteLine);
-            });
+        private static IHostBuilder CreateHostedService(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureServices(services => { services.AddHostedService<BotService>(); });
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using twitchstreambot;
 using twitchstreambot.basics;
 using twitchstreambot.command;
@@ -12,7 +14,7 @@ using twitchstreambot.Parsing;
 
 namespace twitchbot
 {
-    public class BotService
+    public class BotService : IHostedService
     {
         private readonly TwitchStreamBot _bot;
         private Container _container;
@@ -28,30 +30,20 @@ namespace twitchbot
 
         private void _bot_OnBotConnected(TwitchStreamBot streamer)
         {
-            streamer.SendToStream("tbdDOTbot is up and ready to rumble");
+            streamer.SendToStream("The Bot is Up and Running");
         }
 
-        public void Start()
-        {
-            StartAsync().Wait();
-        }
-
-        public async Task StartAsync()
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             if (await _bot.Start() != 0)
             {
-                Console.WriteLine("Error Status");
+                Console.WriteLine("Unable to start Bot");
             }
         }
 
-        public void Stop()
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
-            StopAsync().Wait();
-        }
-
-        public async Task StopAsync()
-        {
-            _bot.Stop();
+            await _bot.Stop();
         }
 
         private IContainer RegisterTypes()

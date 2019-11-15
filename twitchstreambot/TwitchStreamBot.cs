@@ -52,9 +52,9 @@ namespace twitchstreambot
             return 0;
         }
 
-        public void Stop()
+        public async Task Stop()
         {
-            _channelReader.SignalShutdown();
+            await Task.Run(() => _channelReader.SignalShutdown());
         }
 
         private void ReaderOnMessageReceived(ChannelReader sender, MessageReceivedArgs args)
