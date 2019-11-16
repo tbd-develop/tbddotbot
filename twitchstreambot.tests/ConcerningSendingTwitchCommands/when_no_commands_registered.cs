@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using twitchstreambot.command.CommandDispatch;
@@ -11,13 +12,13 @@ namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
     public class when_no_commands_registered
     {
         private CommandDispatcher Subject;
-        private Mock<IContainer> Container;
+        private Mock<IServiceProvider> Container;
         private Mock<ICommandSet> CommandSet;
 
         [SetUp]
         public void SetUp()
         {
-            Container = new Mock<IContainer>();
+            Container = new Mock<IServiceProvider>();
 
             CommandSet = new Mock<ICommandSet>();
             CommandSet.Setup(cmd => cmd.GetCommand(It.IsAny<TwitchMessage>())).Returns(() => null);

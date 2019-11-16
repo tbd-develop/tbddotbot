@@ -11,14 +11,14 @@ namespace twitchstreambot.tests.ConcerningCommandSet
     {
         private CommandSet Subject;
         private TwitchMessage Message;
-        private Mock<ICommandRegistry> Registry;
+        private Mock<CommandRegistry> Registry;
         private string NotPresentCommand;
 
         [SetUp]
         public void SetUp()
         {
             NotPresentCommand = "notpresent";
-            Registry = new Mock<ICommandRegistry>();
+            Registry = new Mock<CommandRegistry>();
             Registry.Setup(rg => rg.CanProvide(It.Is<string>(s => s == NotPresentCommand))).Returns(false);
 
             Subject = new CommandSet(new[] { Registry.Object });

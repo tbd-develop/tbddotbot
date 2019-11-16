@@ -1,5 +1,5 @@
-﻿using twitchstreambot.Infrastructure;
-using twitchstreambot.Infrastructure.DependencyInjection;
+﻿using System;
+using twitchstreambot.Infrastructure;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot.command.CommandDispatch
@@ -7,20 +7,20 @@ namespace twitchstreambot.command.CommandDispatch
     public class CommandDispatcher
     {
         private readonly ICommandSet _commandSet;
-        private readonly IContainer _container;
+        private readonly IServiceProvider _serviceProvider;
 
-        public CommandDispatcher(ICommandSet commandSet, IContainer container)
+        public CommandDispatcher(ICommandSet commandSet, IServiceProvider serviceProvider)
         {
             _commandSet = commandSet;
-            _container = container;
+            _serviceProvider = serviceProvider;
         }
 
         public string SendTwitchCommand(TwitchMessage twitchMessage)
         {
             var commandType = _commandSet.GetCommand(twitchMessage);
 
-            var command = (ITwitchCommand)_container.GetInstance(commandType);
-            
+            var command = (ITwitchCommand)_serviceProvider.GetService(commandType);
+
             if (command?.CanExecute(twitchMessage) != null)
             {
                 return command.Execute(twitchMessage);

@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.Infrastructure.Attributes;
 
 namespace twitchstreambot.basics
 {
-    public class BasicsRegistry : ICommandRegistry
+    public class BasicsRegistry : CommandRegistry
     {
         private readonly Dictionary<string, Type> _availableCommands;
 
-        public BasicsRegistry()
+        public BasicsRegistry(IServiceCollection serviceCollection) : base(serviceCollection)
         {
             _availableCommands = (from t in GetType().Assembly.GetTypes()
                                   let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
@@ -21,14 +22,19 @@ namespace twitchstreambot.basics
                                       Action = attribute.Action.ToLower(),
                                       Type = t
                                   }).ToDictionary(k => k.Action, k => k.Type);
+
+            foreach (var command in _availableCommands)
+            {
+                ServiceCollection.AddTransient(command.Value);
+            }
         }
 
-        public bool CanProvide(string command)
+        public override bool CanProvide(string command)
         {
             return _availableCommands.ContainsKey(command.ToLower());
         }
 
-        public Type Get(string command)
+        public override Type Get(string command)
         {
             return _availableCommands[command.ToLower()];
         }

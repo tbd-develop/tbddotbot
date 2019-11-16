@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Communications;
 using twitchstreambot.Infrastructure.Configuration;
-using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot
@@ -12,14 +11,14 @@ namespace twitchstreambot
     public class TwitchStreamBot
     {
         private readonly TwitchBotConfiguration _configuration;
-        private readonly IContainer _container;
+        private readonly IServiceProvider _container;
         private ChannelReader _channelReader;
         private ChannelWriter _channelWriter;
 
         public delegate void BotConnectedHandler(TwitchStreamBot streamer);
         public event BotConnectedHandler OnBotConnected;
 
-        public TwitchStreamBot(TwitchBotConfiguration configuration, IContainer container)
+        public TwitchStreamBot(TwitchBotConfiguration configuration, IServiceProvider container)
         {
             _configuration = configuration;
             _container = container;
@@ -45,7 +44,7 @@ namespace twitchstreambot
 
                     OnBotConnected?.Invoke(this);
 
-                    _channelReader.ListenForMessages();
+                    await _channelReader.ListenForMessages();
                 }
             }
 
@@ -74,7 +73,7 @@ namespace twitchstreambot
                         foreach (var messageHandlerType in _configuration.Handlers[message.MessageType])
                         {
                             var handler =
-                                (IRCHandler)_container.GetInstance(messageHandlerType);
+                                (IRCHandler)_container.GetService(messageHandlerType);
 
                             handler.Handle(message);
                         }

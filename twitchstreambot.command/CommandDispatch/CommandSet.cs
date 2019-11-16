@@ -7,9 +7,9 @@ namespace twitchstreambot.command.CommandDispatch
 {
     public class CommandSet : ICommandSet
     {
-        private readonly ICommandRegistry[] _registries;
+        private readonly CommandRegistry[] _registries;
 
-        public CommandSet(ICommandRegistry[] registries)
+        public CommandSet(CommandRegistry[] registries)
         {
             Guard.IsNotEmpty(registries, "At least one registry must be provided for commands");
 

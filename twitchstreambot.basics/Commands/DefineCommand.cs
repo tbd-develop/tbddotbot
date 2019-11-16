@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using twitchstreambot.basics.Infrastructure;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Attributes;
 using twitchstreambot.models;
@@ -13,6 +13,13 @@ namespace twitchstreambot.command.Commands
     [TwitchCommand("define", IsPrivate = true)]
     public class DefineCommand : ITwitchCommand
     {
+        private readonly DefinedCommandsStore _commandsStore;
+
+        public DefineCommand(DefinedCommandsStore commandsStore)
+        {
+            _commandsStore = commandsStore;
+        }
+
         public bool CanExecute(TwitchMessage message)
         {
             if (message.Headers.ContainsKey("badges"))
@@ -61,26 +68,20 @@ namespace twitchstreambot.command.Commands
 
         private List<CommandDefinition> LoadDefinitions()
         {
-            using (StreamReader reader = new StreamReader("definitions.json"))
+            string content = _commandsStore.Load();
+
+            if (!string.IsNullOrEmpty(content))
             {
-                string result = reader.ReadToEnd();
-
-                if (!string.IsNullOrEmpty(result))
-                {
-                    return new List<CommandDefinition>(
-                        JsonConvert.DeserializeObject<IEnumerable<CommandDefinition>>(result));
-                }
-
-                return new List<CommandDefinition>();
+                return new List<CommandDefinition>(
+                    JsonConvert.DeserializeObject<IEnumerable<CommandDefinition>>(content));
             }
+
+            return new List<CommandDefinition>();
         }
 
         private void SaveDefinitions(IEnumerable<CommandDefinition> definitions)
         {
-            using (StreamWriter writer = new StreamWriter("definitions.json", append: false))
-            {
-                writer.Write(JsonConvert.SerializeObject(definitions));
-            }
+            _commandsStore.Save(JsonConvert.SerializeObject(definitions));
         }
     }
 }

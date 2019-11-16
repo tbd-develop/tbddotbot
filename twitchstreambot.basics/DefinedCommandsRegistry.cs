@@ -1,47 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using twitchstreambot.basics.Infrastructure;
 using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.command.Commands;
 using twitchstreambot.models;
 
 namespace twitchstreambot.basics
 {
-    public class DefinedCommandsRegistry : ICommandRegistry
+    public class DefinedCommandsRegistry : CommandRegistry
     {
-        private IList<string> _availableCommands;
+        private readonly DefinedCommandsStore _commandStore;
 
-        public DefinedCommandsRegistry()
+        public DefinedCommandsRegistry(IServiceCollection serviceCollection, DefinedCommandsStore commandStore) : base(serviceCollection)
         {
-            _availableCommands = new List<string>(LoadDefinitions().Select(c => c.Command));
+            _commandStore = commandStore;
+
+            serviceCollection.AddTransient(typeof(RecallCommand));
         }
 
-        public bool CanProvide(string command)
+        public override bool CanProvide(string command)
         {
-            return _availableCommands.Contains(command.ToLower());
+            return LoadDefinitions().Any(c => c.Command.Equals(command, StringComparison.CurrentCultureIgnoreCase));
         }
 
-        public Type Get(string command)
+        public override Type Get(string command)
         {
             return typeof(RecallCommand);
         }
 
         private List<CommandDefinition> LoadDefinitions()
         {
-            using (StreamReader reader = new StreamReader("definitions.json"))
+            var currentCommands = _commandStore.Load();
+
+            if (!string.IsNullOrEmpty(currentCommands))
             {
-                string result = reader.ReadToEnd();
-
-                if (!string.IsNullOrEmpty(result))
-                {
-                    return new List<CommandDefinition>(
-                        JsonConvert.DeserializeObject<IEnumerable<CommandDefinition>>(result));
-                }
-
-                return new List<CommandDefinition>();
+                return new List<CommandDefinition>(
+                    JsonConvert.DeserializeObject<IEnumerable<CommandDefinition>>(currentCommands));
             }
+
+            return new List<CommandDefinition>();
         }
     }
 }

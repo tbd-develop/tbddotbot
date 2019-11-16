@@ -12,13 +12,13 @@ namespace twitchstreambot.tests.ConcerningCommandSet
     {
         private CommandSet Subject;
         private TwitchMessage Message;
-        private Mock<ICommandRegistry> Registry;
+        private Mock<CommandRegistry> Registry;
         private string AcceptedCommand = "sample";
 
         [SetUp]
         public void SetUp()
         {
-            Registry = new Mock<ICommandRegistry>();
+            Registry = new Mock<CommandRegistry>();
             Registry.Setup(rg => rg.CanProvide(It.Is<string>(s => s == AcceptedCommand))).Returns(true);
             Registry.Setup(rg => rg.Get(It.Is<string>(s => s == AcceptedCommand))).Returns(typeof(SampleCommand));
 

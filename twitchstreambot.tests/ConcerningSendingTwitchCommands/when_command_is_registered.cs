@@ -14,21 +14,22 @@ namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
     {
         private CommandDispatcher Subject;
         private Mock<ICommandSet> CommandSet;
-        private Mock<IContainer> Container;
+        private Mock<IServiceProvider> ServiceProvider;
         private string CommandToExecute = "basic";
         private string ContentToReturn = "ResultingMessage";
 
         [SetUp]
         public void SetUp()
         {
-            Container = new Mock<IContainer>();
+            ServiceProvider = new Mock<IServiceProvider>();
             CommandSet = new Mock<ICommandSet>();
             CommandSet.Setup(cs => cs.GetCommand(It.Is<TwitchMessage>(m => m.Command.Action == CommandToExecute)))
                 .Returns(typeof(BasicCommand));
 
-            Container.Setup(ctn => ctn.GetInstance(typeof(BasicCommand))).Returns(new BasicCommand(ContentToReturn));
+            ServiceProvider.Setup(ctn => ctn.GetService(typeof(BasicCommand)))
+                .Returns(new BasicCommand(ContentToReturn));
 
-            Subject = new CommandDispatcher(CommandSet.Object, Container.Object);
+            Subject = new CommandDispatcher(CommandSet.Object, ServiceProvider.Object);
         }
 
         [Test]
@@ -39,7 +40,7 @@ namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
                 Command = new BotCommand { Action = CommandToExecute }
             }).Should().Be(ContentToReturn);
 
-            Container.Verify(ctn => ctn.GetInstance(It.Is<Type>(t => t == typeof(BasicCommand))), Times.Once);
+            ServiceProvider.Verify(ctn => ctn.GetService(It.Is<Type>(t => t == typeof(BasicCommand))), Times.Once);
         }
     }
 }
