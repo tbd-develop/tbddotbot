@@ -18,33 +18,37 @@ namespace twitchbot
     {
         static async Task Main(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json")
-                .AddUserSecrets<BotService>()
-                .Build();
-
-            await CreateHostedService(configuration, args).Build().RunAsync();
+            HostFactory.Run(cfg =>
+            {
+                cfg.Service<BotService>(svc =>
+                {
+=======
+            await CreateHostedService(args).Build().RunAsync();
         }
 
-        private static IHostBuilder CreateHostedService(IConfiguration configuration, string[] args)
+        private static IHostBuilder CreateHostedService(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureServices(services =>
+                .ConfigureAppConfiguration((context, builder) =>
+                {
+                    builder
+                        .SetBasePath(AppContext.BaseDirectory)
+                        .AddJsonFile("appsettings.json")
+                        .AddUserSecrets<BotService>();
+                })
+                .ConfigureServices((context, services) =>
                 {
                     var definedCommandsStore = new DefinedCommandsStore("definitions.json");
 
                     var commandSet = new CommandSet(new CommandRegistry[]
                         {new BasicsRegistry(services), new DefinedCommandsRegistry(services, definedCommandsStore)});
 
-                    services.AddSingleton(configuration);
-
                     services.AddSingleton(c => new TwitchConnection
                     {
-                        BotName = configuration["bot:name"],
-                        HostName = configuration["bot:host"],
-                        Channel = configuration["bot:channel"],
-                        Port = int.Parse(configuration["bot:port"])
+                        BotName = context.Configuration["bot:name"],
+                        HostName = context.Configuration["bot:host"],
+                        Channel = context.Configuration["bot:channel"],
+                        Port = int.Parse(context.Configuration["bot:port"])
                     });
 
                     services.AddSingleton<IRCCommandHandler>();
@@ -54,7 +58,7 @@ namespace twitchbot
                     {
                         var botConfiguration =
                             new TwitchBotBuilder()
-                                .WithAuthentication(configuration["twitch:auth"])
+                                .WithAuthentication(context.Configuration["twitch:auth"])
                                 .WithConnection(c.GetService<TwitchConnection>())
                                 .WithCommands(b => { b.AddHandler<IRCCommandHandler>(IRCMessageType.PRIVMSG); })
                                 .Build();
