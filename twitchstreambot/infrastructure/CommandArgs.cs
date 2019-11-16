@@ -1,7 +1,7 @@
 ﻿using System;
 using twitchstreambot.Parsing;
 
-namespace twitchstreambot.infrastructure
+namespace twitchstreambot.Infrastructure
 {
     public class CommandArgs : EventArgs
     {

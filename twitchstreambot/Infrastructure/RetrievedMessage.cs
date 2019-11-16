@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace twitchstreambot.infrastructure
+namespace twitchstreambot.Infrastructure
 {
     internal class RetrievedMessage
     {

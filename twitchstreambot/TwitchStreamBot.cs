@@ -1,43 +1,39 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text.RegularExpressions;
-using System.Threading;
-using Sprache;
-using twitchstreambot.infrastructure;
+using System.Threading.Tasks;
+using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.Communications;
+using twitchstreambot.Infrastructure.Configuration;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot
 {
     public class TwitchStreamBot
     {
-        private readonly TwitchConnection _connection;
-        private readonly string _authToken;
-        private readonly CommandFactory _commandFactory;
+        private readonly TwitchBotConfiguration _configuration;
+        private readonly IServiceProvider _container;
         private ChannelReader _channelReader;
         private ChannelWriter _channelWriter;
 
-        public delegate void CommandReceivedHandler(TwitchStreamBot streamer, CommandArgs args);
+        public delegate void BotConnectedHandler(TwitchStreamBot streamer);
+        public event BotConnectedHandler OnBotConnected;
 
-        public event CommandReceivedHandler OnCommandReceived;
-
-        public string Error { get; private set; }
-
-        public TwitchStreamBot(TwitchConnection connection, string authToken, CommandFactory commandFactory)
+        public TwitchStreamBot(TwitchBotConfiguration configuration, IServiceProvider container)
         {
-            _connection = connection;
-            _authToken = authToken;
-            _commandFactory = commandFactory;
+            _configuration = configuration;
+            _container = container;
         }
 
-        public int Start()
+        public async Task<int> Start()
         {
-            using (var client = new TcpClient(_connection.HostName, _connection.Port))
+            var connection = _configuration.Connection;
+
+            using (var client = new TcpClient(connection.HostName, connection.Port))
             {
                 using (var stream = client.GetStream())
                 using (_channelReader = new ChannelReader(stream))
                 using (_channelWriter = new ChannelWriter(stream)
-                { Channel = _connection.Channel, BotName = _connection.BotName, AuthToken = _authToken })
+                { Channel = connection.Channel, BotName = connection.BotName, AuthToken = _configuration.AuthToken })
                 {
                     _channelReader.OnMessageReceived += ReaderOnMessageReceived;
 
@@ -46,16 +42,18 @@ namespace twitchstreambot
                     SendTwitchCommand("CAP REQ :twitch.tv/membership");
                     SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
 
-                    _channelReader.ListenForMessages();
+                    OnBotConnected?.Invoke(this);
+
+                    await _channelReader.ListenForMessages();
                 }
             }
 
             return 0;
         }
 
-        public void Stop()
+        public async Task Stop()
         {
-            _channelReader.SignalShutdown();
+            await Task.Run(() => _channelReader.SignalShutdown());
         }
 
         private void ReaderOnMessageReceived(ChannelReader sender, MessageReceivedArgs args)
@@ -68,24 +66,18 @@ namespace twitchstreambot
             {
                 if (TwitchCommandParser.IsMatch(args.Message))
                 {
-                    var result = TwitchCommandParser.Gather(args.Message);
+                    var message = TwitchCommandParser.Gather(args.Message);
 
-                    if (result.IrcCommand == TwitchCommand.PRIVMSG && result.IsBotCommand)
+                    if (_configuration.Handlers.ContainsKey(message.MessageType))
                     {
-                        string[] elements = result.Message.Substring(1).Split(' ');
-
-                        var command = _commandFactory.GetCommand(elements[0], result.Headers);
-
-                        if (command != null)
+                        foreach (var messageHandlerType in _configuration.Handlers[message.MessageType])
                         {
-                            if (command.CanExecute())
-                            {
-                                SendToStream(command.Execute(elements.Skip(1).ToArray()));
-                            }
+                            var handler =
+                                (IRCHandler)_container.GetService(messageHandlerType);
+
+                            handler.Handle(message);
                         }
                     }
-
-                    OnCommandReceived?.Invoke(this, new CommandArgs(result));
                 }
             }
         }

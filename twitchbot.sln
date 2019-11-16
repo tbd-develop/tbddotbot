@@ -7,9 +7,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twitchbot", "twitchbot\twit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twitchstreambot", "twitchstreambot\twitchstreambot.csproj", "{68282A79-C0F3-40BA-9AEB-2D5A756265AF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twitchbot.tests", "twitchbot.tests\twitchbot.tests.csproj", "{DD9A0471-8C04-4590-BEEE-8ED6438055DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twitchstreambot.tests", "twitchstreambot.tests\twitchstreambot.tests.csproj", "{003F2F61-5062-4C83-9309-687DD9A0DD5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twitchstreambot.tests", "twitchstreambot.tests\twitchstreambot.tests.csproj", "{003F2F61-5062-4C83-9309-687DD9A0DD5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twitchstreambot.basics", "twitchstreambot.basics\twitchstreambot.basics.csproj", "{D1616488-9329-4C1F-AAC3-A0E9A2BE0084}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twitchstreambot.command", "twitchstreambot.command\twitchstreambot.command.csproj", "{1FA84236-0C1E-44CD-819D-CF5A72F3D45D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ACFD0E8E-A3D6-4133-9C90-BC27B72ADDB4}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{6EEF38D3-F023-4461-91B6-32AAF49D4F8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,17 +34,24 @@ Global
 		{68282A79-C0F3-40BA-9AEB-2D5A756265AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68282A79-C0F3-40BA-9AEB-2D5A756265AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68282A79-C0F3-40BA-9AEB-2D5A756265AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD9A0471-8C04-4590-BEEE-8ED6438055DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD9A0471-8C04-4590-BEEE-8ED6438055DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD9A0471-8C04-4590-BEEE-8ED6438055DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD9A0471-8C04-4590-BEEE-8ED6438055DF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{003F2F61-5062-4C83-9309-687DD9A0DD5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{003F2F61-5062-4C83-9309-687DD9A0DD5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{003F2F61-5062-4C83-9309-687DD9A0DD5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{003F2F61-5062-4C83-9309-687DD9A0DD5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1616488-9329-4C1F-AAC3-A0E9A2BE0084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1616488-9329-4C1F-AAC3-A0E9A2BE0084}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1616488-9329-4C1F-AAC3-A0E9A2BE0084}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1616488-9329-4C1F-AAC3-A0E9A2BE0084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FA84236-0C1E-44CD-819D-CF5A72F3D45D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FA84236-0C1E-44CD-819D-CF5A72F3D45D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FA84236-0C1E-44CD-819D-CF5A72F3D45D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FA84236-0C1E-44CD-819D-CF5A72F3D45D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EFA00FBE-737C-49ED-837F-A32687A9F6A3} = {6EEF38D3-F023-4461-91B6-32AAF49D4F8A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {88371644-27A4-4293-A24B-AB75A8BEA0BA}

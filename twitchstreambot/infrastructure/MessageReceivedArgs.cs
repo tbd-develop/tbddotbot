@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace twitchstreambot.infrastructure
+namespace twitchstreambot.Infrastructure
 {
     public class MessageReceivedArgs : EventArgs
     {

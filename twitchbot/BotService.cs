@@ -1,90 +1,38 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
-using twitchbot.Infrastructure;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using twitchstreambot;
-using twitchstreambot.infrastructure;
-using twitchstreambot.infrastructure.DependencyInjection;
-using twitchstreambot.Parsing;
 
 namespace twitchbot
 {
-    public class BotService
+    public class BotService : IHostedService
     {
         private readonly TwitchStreamBot _bot;
-        private Container _container;
 
-        public BotService()
+        public BotService(TwitchStreamBot bot)
         {
-            var container = RegisterTypes();
+            _bot = bot;
 
-            TwitchAuthenticator authenticator = container.GetInstance<TwitchAuthenticator>();
-
-            if (authenticator.Authenticate(false))
-            {
-                _bot = container.GetInstance<TwitchStreamBot>();
-            }
-            else
-            {
-                Console.WriteLine("Bot is unable to authenticate with Twitch");
-            }
+            _bot.OnBotConnected += _bot_OnBotConnected;
         }
 
-        public void Start()
+        private void _bot_OnBotConnected(TwitchStreamBot streamer)
         {
-            if (_bot.Start() != 0)
+            streamer.SendToStream("The Bot is Up and Running");
+        }
+
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            if (await _bot.Start() != 0)
             {
-                Console.WriteLine("Error Status");
-                Console.WriteLine(_bot.Error);
+                Console.WriteLine("Unable to start Bot");
             }
         }
 
-        public void Stop()
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _bot.Stop();
-        }
-
-        private IContainer RegisterTypes()
-        {
-            _container = new Container();
-
-            _container
-                .When<TwitchAuthenticator>().Use(c => new TwitchAuthenticator("auth.json"))
-                .When<TwitchConnection>().Use(c => new TwitchConnection
-                {
-                    BotName = "tbddotbot",
-                    HostName = "irc.chat.twitch.tv",
-                    Channel = "tbdgamer",
-                    Port = 6667
-                })
-                .When<IStorage>().Use(c => new LiteDbStore(Path.Combine(AppContext.BaseDirectory, "channel.db")))
-                .When<TwitchStreamBot>().Use(c =>
-                {
-                    var authenticator = c.GetInstance<TwitchAuthenticator>();
-                    var commandFactory = c.GetInstance<CommandFactory>();
-                    var connectionDetails = c.GetInstance<TwitchConnection>();
-
-                    var bot = new TwitchStreamBot(connectionDetails, authenticator.AuthenticationToken, commandFactory);
-
-                    bot.OnCommandReceived += TwitchCommandReceived;
-
-                    return bot;
-                })
-                .When<CommandFactory>().Use(c =>
-                {
-                    var result = new CommandFactory(c);
-
-                    result.LoadFromAssembly(Assembly.GetExecutingAssembly());
-
-                    return result;
-                });
-
-            return _container;
-        }
-
-        private void TwitchCommandReceived(TwitchStreamBot sender, CommandArgs args)
-        {
-
+            await _bot.Stop();
         }
     }
 }

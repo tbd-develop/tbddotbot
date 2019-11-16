@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace twitchstreambot.Parsing
+﻿namespace twitchstreambot.Parsing.IRCCommands
 {
     public class ParseUserState : MessageParser
     {
@@ -11,8 +9,7 @@ namespace twitchstreambot.Parsing
             return new TwitchMessage
             {
                 User = TwitchMessage.UserFromHeaders(headers),
-                IrcCommand = TwitchCommand.USERSTATE,
-                Message = "",
+                MessageType = IRCMessageType.USERSTATE,
                 Headers = headers
             };
         }

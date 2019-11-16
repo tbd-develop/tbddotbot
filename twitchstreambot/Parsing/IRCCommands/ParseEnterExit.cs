@@ -1,12 +1,12 @@
 ﻿using Sprache;
 
-namespace twitchstreambot.Parsing
+namespace twitchstreambot.Parsing.IRCCommands
 {
     public class ParseEnterExit : MessageParser
     {
-        private readonly TwitchCommand _command;
+        private readonly IRCMessageType _command;
 
-        public ParseEnterExit(TwitchCommand command)
+        public ParseEnterExit(IRCMessageType command)
         {
             _command = command;
         }
@@ -21,9 +21,8 @@ namespace twitchstreambot.Parsing
 
             return new TwitchMessage
             {
-                User = new TwitchMessage.TwitchUser { Name = result },
-                Message = string.Empty,
-                IrcCommand = _command,
+                User = new TwitchUser { Name = result },
+                MessageType = _command,
                 Headers = null
             };
         }

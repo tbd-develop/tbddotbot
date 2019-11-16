@@ -1,4 +1,4 @@
-﻿namespace twitchstreambot.Parsing
+﻿namespace twitchstreambot.Parsing.IRCCommands
 {
     public class ParseNoticeMessage : MessageParser
     {
@@ -10,8 +10,7 @@
             {
                 User = TwitchMessage.UserFromHeaders(headers),
                 Headers = headers,
-                IrcCommand = TwitchCommand.USERNOTICE,
-                Message = ""
+                MessageType = IRCMessageType.USERNOTICE
             };
         }
     }

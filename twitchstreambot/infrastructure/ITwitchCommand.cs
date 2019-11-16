@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+using twitchstreambot.Parsing;
 
-namespace twitchstreambot.infrastructure
+namespace twitchstreambot.Infrastructure
 {
     public interface ITwitchCommand
     {
-        bool CanExecute();
-        string Execute(params string[] args);
+        bool CanExecute(TwitchMessage message);
+        string Execute(TwitchMessage message);
     }
 }
