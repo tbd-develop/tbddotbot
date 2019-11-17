@@ -21,7 +21,7 @@ namespace twitchstreambot.command.CommandDispatch
 
             var command = (ITwitchCommand)_serviceProvider.GetService(commandType);
 
-            if (command?.CanExecute(twitchMessage) != null)
+            if (command != null && command.CanExecute(twitchMessage))
             {
                 return command.Execute(twitchMessage);
             }
