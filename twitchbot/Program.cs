@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using twitchstreambot;
+using twitchstreambot.api;
+using twitchstreambot.api.Configuration;
 using twitchstreambot.basics;
 using twitchstreambot.basics.Infrastructure;
 using twitchstreambot.command;
@@ -18,11 +20,6 @@ namespace twitchbot
     {
         static async Task Main(string[] args)
         {
-            HostFactory.Run(cfg =>
-            {
-                cfg.Service<BotService>(svc =>
-                {
-=======
             await CreateHostedService(args).Build().RunAsync();
         }
 
@@ -41,7 +38,10 @@ namespace twitchbot
                     var definedCommandsStore = new DefinedCommandsStore("definitions.json");
 
                     var commandSet = new CommandSet(new CommandRegistry[]
-                        {new BasicsRegistry(services), new DefinedCommandsRegistry(services, definedCommandsStore)});
+                    {
+                        new BasicsRegistry(services),
+                        new DefinedCommandsRegistry(services, definedCommandsStore)
+                    });
 
                     services.AddSingleton(c => new TwitchConnection
                     {
@@ -67,6 +67,9 @@ namespace twitchbot
                     });
 
                     services.AddSingleton(c => new CommandDispatcher(commandSet, c));
+
+                    services.AddHelix(context.Configuration);
+                    services.AddKraken(context.Configuration);
 
                     services.AddHostedService<BotService>();
                 });
