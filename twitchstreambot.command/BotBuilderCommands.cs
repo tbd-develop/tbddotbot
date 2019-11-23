@@ -5,7 +5,7 @@ namespace twitchstreambot.command
 {
     public static class BotBuilderCommands
     {
-        public static TwitchBotBuilder WithCommands(this TwitchBotBuilder builder, Action<TwitchBotBuilder> action)
+        public static TwitchBotBuilder Configure(this TwitchBotBuilder builder, Action<TwitchBotBuilder> action)
         {
             action(builder);
 

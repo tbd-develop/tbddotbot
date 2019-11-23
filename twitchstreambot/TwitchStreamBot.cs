@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Communications;
@@ -15,6 +16,9 @@ namespace twitchstreambot
         private ChannelReader _channelReader;
         private ChannelWriter _channelWriter;
 
+        public string Channel => _configuration.Connection.Channel;
+        public string User => _configuration.Connection.BotName;
+
         public delegate void BotConnectedHandler(TwitchStreamBot streamer);
         public event BotConnectedHandler OnBotConnected;
 
@@ -24,31 +28,34 @@ namespace twitchstreambot
             _container = container;
         }
 
-        public async Task<int> Start()
+        public Task Start(CancellationToken cancellationToken)
         {
-            var connection = _configuration.Connection;
-
-            using (var client = new TcpClient(connection.HostName, connection.Port))
+            return Task.Run(async () =>
             {
-                using (var stream = client.GetStream())
-                using (_channelReader = new ChannelReader(stream))
-                using (_channelWriter = new ChannelWriter(stream)
-                { Channel = connection.Channel, BotName = connection.BotName, AuthToken = _configuration.AuthToken })
+                var connection = _configuration.Connection;
+
+                using (var client = new TcpClient(connection.HostName, connection.Port))
                 {
-                    _channelReader.OnMessageReceived += ReaderOnMessageReceived;
+                    using (var stream = client.GetStream())
+                    using (_channelReader = new ChannelReader(stream))
+                    using (_channelWriter = new ChannelWriter(stream)
+                    {
+                        Channel = connection.Channel, BotName = connection.BotName, AuthToken = _configuration.AuthToken
+                    })
+                    {
+                        _channelReader.OnMessageReceived += ReaderOnMessageReceived;
 
-                    _channelWriter.Authenticate();
+                        _channelWriter.Authenticate();
 
-                    SendTwitchCommand("CAP REQ :twitch.tv/membership");
-                    SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
+                        SendTwitchCommand("CAP REQ :twitch.tv/membership");
+                        SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
 
-                    OnBotConnected?.Invoke(this);
+                        OnBotConnected?.Invoke(this);
 
-                    await _channelReader.ListenForMessages();
+                        await _channelReader.ListenForMessages(cancellationToken);
+                    }
                 }
-            }
-
-            return 0;
+            }, cancellationToken);
         }
 
         public async Task Stop()

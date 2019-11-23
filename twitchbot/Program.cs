@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using twitchstreambot;
-using twitchstreambot.api;
 using twitchstreambot.api.Configuration;
 using twitchstreambot.basics;
 using twitchstreambot.basics.Infrastructure;
@@ -13,6 +12,7 @@ using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Configuration;
 using twitchstreambot.Parsing;
+using twitchstreambot.pubsub;
 
 namespace twitchbot
 {
@@ -60,7 +60,7 @@ namespace twitchbot
                             new TwitchBotBuilder()
                                 .WithAuthentication(context.Configuration["twitch:auth"])
                                 .WithConnection(c.GetService<TwitchConnection>())
-                                .WithCommands(b => { b.AddHandler<IRCCommandHandler>(IRCMessageType.PRIVMSG); })
+                                .WithHandler<IRCCommandHandler>(IRCMessageType.PRIVMSG)
                                 .Build();
 
                         return new TwitchStreamBot(botConfiguration, c);
@@ -70,6 +70,8 @@ namespace twitchbot
 
                     services.AddHelix(context.Configuration);
                     services.AddKraken(context.Configuration);
+
+                    services.AddTransient<TwitchPubSub>();
 
                     services.AddHostedService<BotService>();
                 });

@@ -20,18 +20,19 @@
       <ProjectReference Include="..\twitchstreambot.api\twitchstreambot.api.csproj" />
       <ProjectReference Include="..\twitchstreambot.basics\twitchstreambot.basics.csproj" />
       <ProjectReference Include="..\twitchstreambot.command\twitchstreambot.command.csproj" />
+      <ProjectReference Include="..\twitchstreambot.pubsub\twitchstreambot.pubsub.csproj" />
       <ProjectReference Include="..\twitchstreambot\twitchstreambot.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
       <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.1" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     </ItemGroup>
 
