@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -24,8 +25,9 @@ namespace twitchstreambot.pubsub
         private readonly string _auth;
         private bool _exiting;
         private readonly IDictionary<string, Dictionary<string, long>> _userCache;
+        private readonly MessageProcessor _processor;
 
-        public delegate void WhisperReceivedDelegate(PubSubResponseMessage responseMessage);
+        public delegate void WhisperReceivedDelegate(PubSubResponseMessage<PubSubWhisperResponse> responseMessage);
 
         public delegate void SubscriptionErrorDelegate(string message);
 
@@ -43,6 +45,15 @@ namespace twitchstreambot.pubsub
             configuration.GetSection("twitch:pubsub").Bind(_configuration);
 
             _webSocketClient = new ClientWebSocket();
+
+            _processor = new MessageProcessor(this);
+            _processor.On("whispers", (content, publisher) =>
+            {
+                var thingToPublish =
+                    JsonConvert.DeserializeObject<PubSubResponseMessage<PubSubWhisperResponse>>(content);
+
+                publisher.OnWhisperReceived(thingToPublish);
+            });
         }
 
         public async Task Connect(CancellationToken cancellationToken)
@@ -139,7 +150,7 @@ namespace twitchstreambot.pubsub
 
                     if (response.EndOfMessage)
                     {
-                        Console.WriteLine(message.ToString());
+                        DispatchEvent(message.ToString());
 
                         message = new StringBuilder();
 
@@ -154,6 +165,57 @@ namespace twitchstreambot.pubsub
             _exiting = true;
 
             await _webSocketClient.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutting down bot", token);
+        }
+
+        private void DispatchEvent(string message)
+        {
+            var response = JsonConvert.DeserializeObject<PubSubResponseMessage>(message);
+
+            if (response.Type == "PING")
+            {
+                //SendMessage("PONG");
+            }
+
+            if (response.Type == "RECONNECT")
+            {
+                // Reconnect Client
+            }
+
+            if (response.Type == "MESSAGE")
+            {
+                File.WriteAllText(@"c:\temp\pubsub_sample.json", message);
+
+                var topicWasReceived = response.Data.Topic.Split('.')[0];
+
+                _processor.Process(topicWasReceived, message);
+            }
+        }
+    }
+
+    public class MessageProcessor
+    {
+        private readonly TwitchPubSub _client;
+        private readonly Dictionary<string, Action<string, TwitchPubSub>> _actions;
+
+        public MessageProcessor(TwitchPubSub client)
+        {
+            _client = client;
+            _actions = new Dictionary<string, Action<string, TwitchPubSub>>();
+        }
+
+        public MessageProcessor On(string message, Action<string, TwitchPubSub> action)
+        {
+            _actions.Add(message, action);
+
+            return this;
+        }
+
+        public void Process(string action, string content)
+        {
+            if (_actions.ContainsKey(action))
+            {
+                _actions[action](content, _client);
+            }
         }
     }
 }

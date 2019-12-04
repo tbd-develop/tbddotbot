@@ -36,9 +36,9 @@ namespace twitchbot
             Console.WriteLine(message);
         }
 
-        private void PubSubOnOnWhisperReceived(PubSubResponseMessage responsemessage)
+        private void PubSubOnOnWhisperReceived(PubSubResponseMessage<PubSubWhisperResponse> responsemessage)
         {
-            Console.WriteLine(responsemessage.Data.Message);
+            Console.WriteLine($"{responsemessage.Data}");
         }
 
         private void _bot_OnBotConnected(TwitchStreamBot streamer)
