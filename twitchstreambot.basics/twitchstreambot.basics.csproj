@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\twitchstreambot.api\twitchstreambot.api.csproj" />
     <ProjectReference Include="..\twitchstreambot.command\twitchstreambot.command.csproj" />
     <ProjectReference Include="..\twitchstreambot\twitchstreambot.csproj" />
   </ItemGroup>
