@@ -8,18 +8,20 @@ namespace twitchstreambot.api.Configuration
     {
         public static void AddHelix(this IServiceCollection collection, IConfiguration configuration)
         {
+            collection.AddSingleton<TwitchHelix>();
+
             collection.AddHttpClient<TwitchHelix>((provider, client) =>
             {
                 client.BaseAddress = new Uri("https://api.twitch.tv/");
                 client.DefaultRequestHeaders.Add("Authorization",
                     $"Bearer {configuration["twitch:auth"]}");
             });
-
-            collection.AddSingleton<TwitchHelix>();
         }
 
         public static void AddKraken(this IServiceCollection collection, IConfiguration configuration)
         {
+            collection.AddSingleton<TwitchKraken>();
+
             collection.AddHttpClient<TwitchKraken>((provider, client) =>
             {
                 client.BaseAddress = new Uri("https://api.twitch.tv/");
@@ -29,8 +31,6 @@ namespace twitchstreambot.api.Configuration
                     $"OAuth {configuration["twitch:auth"]}");
                 client.DefaultRequestHeaders.Add("Accept", "application/vnd.twitchtv.v5+json");
             });
-
-            collection.AddSingleton<TwitchKraken>();
         }
     }
 }

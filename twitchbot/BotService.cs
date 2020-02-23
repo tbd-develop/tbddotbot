@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using twitchstreambot;
 
 namespace twitchbot
 {
-    public class BotService : IHostedService
+    public class BotService : IHostedService, IDisposable
     {
         private readonly TwitchStreamBot _bot;
+        private readonly IConfiguration _configuration;
+        private Task _botProcess;
 
-        public BotService(TwitchStreamBot bot)
+        public BotService(TwitchStreamBot bot,
+            IConfiguration configuration)
         {
             _bot = bot;
+            _configuration = configuration;
 
             _bot.OnBotConnected += _bot_OnBotConnected;
         }
-
         private void _bot_OnBotConnected(TwitchStreamBot streamer)
         {
             streamer.SendToStream("The Bot is Up and Running");
@@ -24,15 +28,19 @@ namespace twitchbot
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            if (await _bot.Start() != 0)
-            {
-                Console.WriteLine("Unable to start Bot");
-            }
+            _botProcess = _bot.Start(cancellationToken);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             await _bot.Stop();
+
+            Task.WaitAll(_botProcess);
+        }
+
+        public void Dispose()
+        {
+            _botProcess?.Dispose();
         }
     }
 }

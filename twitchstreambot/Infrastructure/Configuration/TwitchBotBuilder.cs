@@ -25,7 +25,7 @@ namespace twitchstreambot.Infrastructure.Configuration
             return this;
         }
 
-        public TwitchBotBuilder AddHandler<THandler>(IRCMessageType key)
+        public TwitchBotBuilder WithHandler<THandler>(IRCMessageType key)
         {
             _configuration.AddHandler(key, typeof(THandler));
 
