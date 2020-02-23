@@ -10,17 +10,22 @@ namespace twitchbot
     public class BotService : IHostedService, IDisposable
     {
         private readonly TwitchStreamBot _bot;
-        private readonly IConfiguration _configuration;
         private Task _botProcess;
 
         public BotService(TwitchStreamBot bot,
             IConfiguration configuration)
         {
             _bot = bot;
-            _configuration = configuration;
 
             _bot.OnBotConnected += _bot_OnBotConnected;
+            _bot.OnBotDisconnected += _bot_OnBotDisconnected;
         }
+
+        private void _bot_OnBotDisconnected(TwitchStreamBot streamer)
+        {
+            streamer.SendToStream("Lost Connection...");
+        }
+
         private void _bot_OnBotConnected(TwitchStreamBot streamer)
         {
             streamer.SendToStream("The Bot is Up and Running");

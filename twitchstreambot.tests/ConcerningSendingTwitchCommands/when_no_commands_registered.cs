@@ -29,7 +29,7 @@ namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
         [Test]
         public void null_value_is_returned()
         {
-            Subject.SendTwitchCommand(new TwitchMessage { }).Should().BeNull();
+            Subject.ExecuteTwitchCommand(new TwitchMessage { }).Should().BeNull();
         }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Net;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -36,9 +34,6 @@ namespace twitchstreambot.api
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, "kraken/channel");
 
-            request.Headers.Add("Authorization", $"OAuth {authToken}");
-            request.Headers.Add("Accept", "application/vnd.twitchtv.v5+json");
-
             var response = await _client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -53,11 +48,38 @@ namespace twitchstreambot.api
             return 0;
         }
 
+        public async Task<IEnumerable<Member>> GetTeamMembers(string name)
+        {
+            var response = await _client.GetAsync($"kraken/teams/{name}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var team =
+                    JsonConvert.DeserializeObject<Team>(response.Content
+                        .ReadAsStringAsync().GetAwaiter().GetResult());
+
+                return team.Members;
+            }
+
+            return null;
+        }
+
         internal class TwitchChannel
         {
             public string _Id { get; set; }
         }
+
+        private class Team
+        {
+            [JsonProperty("display_name")]
+            public string DisplayName { get; set; }
+            [JsonProperty("users")]
+            public IEnumerable<Member> Members { get; set; }
+        }
+
+        public class Member
+        {
+            public string Name { get; set; }
+        }
     }
-
-
 }
