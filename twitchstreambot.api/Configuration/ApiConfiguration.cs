@@ -11,6 +11,8 @@ namespace twitchstreambot.api.Configuration
             collection.AddHttpClient<TwitchHelix>((provider, client) =>
             {
                 client.BaseAddress = new Uri("https://api.twitch.tv/");
+                client.DefaultRequestHeaders.Add("Client-Id",
+                    configuration["twitch:clientId"]);
                 client.DefaultRequestHeaders.Add("Authorization",
                     $"Bearer {configuration["twitch:auth"]}");
             });
