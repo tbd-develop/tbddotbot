@@ -16,6 +16,11 @@ namespace twitchstreambot.command.CommandDispatch
             _registries = registries;
         }
 
+        public bool IsRegistered(TwitchMessage message)
+        {
+            return _registries?.Any(r => r.CanProvide(message.Command.Action)) ?? false;
+        }
+
         public Type GetCommand(TwitchMessage message)
         {
             var registry = _registries.SingleOrDefault(r => r.CanProvide(message.Command.Action));

@@ -19,8 +19,13 @@ namespace twitchstreambot.command
         {
             if (message.IsBotCommand)
             {
-                _bot.SendToStream(_dispatcher.SendTwitchCommand(message));
+                _bot.SendToStream(_dispatcher.ExecuteTwitchCommand(message));
             }
+        }
+
+        public bool CanExecute(TwitchMessage message)
+        {
+            return message.IsBotCommand && _dispatcher.CanExecute(message);
         }
     }
 }

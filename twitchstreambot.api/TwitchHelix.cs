@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using twitchstreambot.api.Infrastructure;
+using twitchstreambot.api.Models;
 
 namespace twitchstreambot.api
 {
@@ -46,7 +46,7 @@ namespace twitchstreambot.api
             }
         }
 
-        public async Task<HelixCollectionResponse<UserMarkers>> GetMarkersForUser(string name, string videoId = null)
+        public async Task<HelixCollectionResponse<StreamMarkerData>> GetMarkersForUser(string name)
         {
             var userId = await GetUserIdByName(name);
 
@@ -58,7 +58,7 @@ namespace twitchstreambot.api
                 {
                     var content = await response.Content.ReadAsStringAsync();
 
-                    var result = JsonConvert.DeserializeObject<HelixCollectionResponse<UserMarkers>>(content);
+                    var result = JsonConvert.DeserializeObject<HelixCollectionResponse<StreamMarkerData>>(content);
 
                     return result;
                 }
@@ -66,43 +66,42 @@ namespace twitchstreambot.api
 
             return null;
         }
-    }
 
-    public class HelixCollectionResponse<T>
-    {
-        public IEnumerable<T> Data { get; set; }
-    }
+        public async Task<HelixCollectionResponse<StreamMarkerData>> GetMarkersForVideo(string id)
+        {
+            var response = await _client.GetAsync($"helix/streams/markers?video_id={id}");
 
-    public class StreamMarker
-    {
-        public string Id { get; set; }
-        [JsonProperty("created_at")]
-        public string CreatedAt { get; set; }
-        public string Description { get; set; }
-        [JsonProperty("position_seconds")]
-        public string PositionSeconds { get; set; }
-        public string Url { get; set; }
-    }
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
 
-    public class UserMarkers
-    {
-        [JsonProperty("user_id")]
-        public string UserId { get; set; }
-        [JsonProperty("user_name")]
-        public string UserName { get; set; }
-        public IEnumerable<UserVideo> Videos { get; set; }
-    }
+                var result = JsonConvert.DeserializeObject<HelixCollectionResponse<StreamMarkerData>>(content);
 
-    public class UserVideo
-    {
-        [JsonProperty("video_id")]
-        public string VideoId { get; set; }
-        public IEnumerable<StreamMarker> Markers { get; set; }
-    }
+                return result;
+            }
 
-    public class TwitchUser
-    {
-        public string Id { get; set; }
-        public string Login { get; set; }
+            return null;
+        }
+
+        public async Task<HelixCollectionResponse<TwitchVideo>> GetVideosForUser(string name, string type = "archive")
+        {
+            var userId = await GetUserIdByName(name);
+
+            if (userId > 0)
+            {
+                var response = await _client.GetAsync($"helix/videos?user_id={userId}&type={type}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    var result = JsonConvert.DeserializeObject<HelixCollectionResponse<TwitchVideo>>(content);
+
+                    return result;
+                }
+            }
+
+            return null;
+        }
     }
 }

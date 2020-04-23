@@ -15,15 +15,20 @@ namespace twitchstreambot.command.CommandDispatch
             _serviceProvider = serviceProvider;
         }
 
-        public string SendTwitchCommand(TwitchMessage twitchMessage)
+        public bool CanExecute(TwitchMessage message) => _commandSet?.IsRegistered(message) ?? false;
+
+        public string ExecuteTwitchCommand(TwitchMessage twitchMessage)
         {
-            var commandType = _commandSet.GetCommand(twitchMessage);
-
-            var command = (ITwitchCommand)_serviceProvider.GetService(commandType);
-
-            if (command != null && command.CanExecute(twitchMessage))
+            if (_commandSet.IsRegistered(twitchMessage))
             {
-                return command.Execute(twitchMessage);
+                var commandType = _commandSet.GetCommand(twitchMessage);
+
+                var command = (ITwitchCommand)_serviceProvider.GetService(commandType);
+
+                if (command != null && command.CanExecute(twitchMessage))
+                {
+                    return command.Execute(twitchMessage);
+                }
             }
 
             return null;

@@ -35,7 +35,7 @@ namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
         [Test]
         public void returned_value_is_content_of_command()
         {
-            Subject.SendTwitchCommand(new TwitchMessage
+            Subject.ExecuteTwitchCommand(new TwitchMessage
             {
                 Command = new BotCommand { Action = CommandToExecute }
             }).Should().Be(ContentToReturn);

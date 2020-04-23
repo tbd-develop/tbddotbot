@@ -16,11 +16,12 @@ namespace twitchstreambot
         private ChannelReader _channelReader;
         private ChannelWriter _channelWriter;
 
-        public string Channel => _configuration.Connection.Channel;
         public string User => _configuration.Connection.BotName;
+        public string Channel => _configuration.Connection.Channel;
 
         public delegate void BotConnectedHandler(TwitchStreamBot streamer);
         public event BotConnectedHandler OnBotConnected;
+        public event BotConnectedHandler OnBotDisconnected;
 
         public TwitchStreamBot(TwitchBotConfiguration configuration, IServiceProvider container)
         {
@@ -34,25 +35,41 @@ namespace twitchstreambot
             {
                 var connection = _configuration.Connection;
 
-                using (var client = new TcpClient(connection.HostName, connection.Port))
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    using (var stream = client.GetStream())
-                    using (_channelReader = new ChannelReader(stream))
-                    using (_channelWriter = new ChannelWriter(stream)
+                    try
                     {
-                        Channel = connection.Channel, BotName = connection.BotName, AuthToken = _configuration.AuthToken
-                    })
+                        using (var client = new TcpClient(connection.HostName, connection.Port))
+                        {
+                            using (var stream = client.GetStream())
+                            using (_channelReader = new ChannelReader(stream))
+                            using (_channelWriter = new ChannelWriter(stream)
+                            {
+                                Channel = connection.Channel,
+                                BotName = connection.BotName,
+                                AuthToken = _configuration.AuthToken
+                            })
+                            {
+                                _channelReader.OnMessageReceived += ReaderOnMessageReceived;
+
+                                _channelWriter.Authenticate();
+
+                                SendTwitchCommand("CAP REQ :twitch.tv/membership");
+                                SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
+
+                                OnBotConnected?.Invoke(this);
+
+                                await _channelReader.ListenForMessages(cancellationToken);
+                            }
+                        }
+
+                        OnBotDisconnected?.Invoke(this);
+                    }
+                    catch (Exception exception)
                     {
-                        _channelReader.OnMessageReceived += ReaderOnMessageReceived;
+                        Console.WriteLine(exception);
 
-                        _channelWriter.Authenticate();
-
-                        SendTwitchCommand("CAP REQ :twitch.tv/membership");
-                        SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
-
-                        OnBotConnected?.Invoke(this);
-
-                        await _channelReader.ListenForMessages(cancellationToken);
+                        OnBotDisconnected?.Invoke(this);
                     }
                 }
             }, cancellationToken);
@@ -60,7 +77,7 @@ namespace twitchstreambot
 
         public async Task Stop()
         {
-            await Task.Run(() => _channelReader.SignalShutdown());
+            await Task.Run(() => _channelReader?.SignalShutdown());
         }
 
         private void ReaderOnMessageReceived(ChannelReader sender, MessageReceivedArgs args)
@@ -82,7 +99,10 @@ namespace twitchstreambot
                             var handler =
                                 (IRCHandler)_container.GetService(messageHandlerType);
 
-                            handler.Handle(message);
+                            if (handler.CanExecute(message))
+                            {
+                                handler.Handle(message);
+                            }
                         }
                     }
                 }

@@ -22,15 +22,7 @@ namespace twitchstreambot.command.Commands
 
         public bool CanExecute(TwitchMessage message)
         {
-            if (message.Headers.ContainsKey("badges"))
-            {
-                var badges = message.Headers["badges"].ToLower();
-
-                return badges.Contains("broadcaster") ||
-                       badges.Contains("moderator");
-            }
-
-            return false;
+            return message.IsInRole(StreamRole.Moderator, StreamRole.Broadcaster);
         }
 
         public string Execute(TwitchMessage message)

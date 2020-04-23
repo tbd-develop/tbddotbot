@@ -28,7 +28,7 @@ namespace twitchstreambot.basics.Commands
             Task.Run(async () =>
             {
                 await _helix.CreateStreamMarkerForUser(_connection.Channel,
-                    $"{message.User.Name}: {string.Join(" ", message.Command.Arguments)}");
+                    $"{string.Join(" ", message.Command.Arguments)}");
             });
 
             return "Bookmark captured";

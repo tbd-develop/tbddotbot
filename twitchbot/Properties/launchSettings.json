@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "twitchbot": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
