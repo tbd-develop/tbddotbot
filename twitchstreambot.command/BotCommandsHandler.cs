@@ -4,12 +4,12 @@ using twitchstreambot.Parsing;
 
 namespace twitchstreambot.command
 {
-    public class IRCCommandHandler : IRCHandler
+    public class BotCommandsHandler : IRCHandler
     {
         private readonly CommandDispatcher _dispatcher;
         private readonly TwitchStreamBot _bot;
 
-        public IRCCommandHandler(CommandDispatcher dispatcher, TwitchStreamBot bot)
+        public BotCommandsHandler(CommandDispatcher dispatcher, TwitchStreamBot bot)
         {
             _dispatcher = dispatcher;
             _bot = bot;

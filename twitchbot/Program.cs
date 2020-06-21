@@ -51,7 +51,7 @@ namespace twitchbot
                         Port = int.Parse(context.Configuration["bot:port"])
                     });
 
-                    services.AddSingleton<IRCCommandHandler>();
+                    services.AddSingleton<BotCommandsHandler>();
                     services.AddSingleton(definedCommandsStore);
 
                     services.AddSingleton(c =>
@@ -60,7 +60,7 @@ namespace twitchbot
                             new TwitchBotBuilder()
                                 .WithAuthentication(context.Configuration["twitch:auth"])
                                 .WithConnection(c.GetService<TwitchConnection>())
-                                .WithHandler<IRCCommandHandler>(IRCMessageType.PRIVMSG)
+                                .WithHandler<BotCommandsHandler>(IRCMessageType.PRIVMSG)
                                 .Build();
 
                         return new TwitchStreamBot(botConfiguration, c);
@@ -70,8 +70,9 @@ namespace twitchbot
 
                     services.AddHelix(context.Configuration);
                     services.AddKraken(context.Configuration);
+                    services.AddTwitchAPI(context.Configuration);
 
-                    services.AddTransient<TwitchPubSub>();
+                    services.AddSingleton<TwitchPubSub>();
 
                     services.AddHostedService<BotService>();
                 });

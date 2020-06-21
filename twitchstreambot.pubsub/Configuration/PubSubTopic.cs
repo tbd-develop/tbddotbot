@@ -12,6 +12,9 @@ namespace twitchstreambot.pubsub.Configuration
         public static PubSubTopic Subscriptions =
             new PubSubTopic("subscriptions", "channel-subscribe-events-v1", "channelId");
 
+        public static PubSubTopic Redemptions =
+            new PubSubTopic("channel-points", "channel-points-channel-v1", "channelId");
+
         private readonly string _name;
         private readonly string _topicIdentifier;
         private readonly string _identifier;
@@ -41,7 +44,7 @@ namespace twitchstreambot.pubsub.Configuration
             return TopicsByName.Value[name];
         }
 
-        public string For(IDictionary<string, long> identifiers)
+        public string For(IDictionary<string, object> identifiers)
         {
             return $"{_topicIdentifier}.{identifiers[_identifier]}";
         }

@@ -6,6 +6,14 @@ namespace twitchstreambot.api.Configuration
 {
     public static class ApiConfiguration
     {
+        public static void AddTwitchAPI(this IServiceCollection collection, IConfiguration configuration)
+        {
+            collection.AddHttpClient<TwitchApi>((provider, client) =>
+            {
+                client.BaseAddress = new Uri("https://id.twitch.tv");
+            });
+        }
+
         public static void AddHelix(this IServiceCollection collection, IConfiguration configuration)
         {
             collection.AddHttpClient<TwitchHelix>((provider, client) =>

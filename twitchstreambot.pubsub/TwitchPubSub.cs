@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.WebSockets;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using twitchstreambot.api;
 using twitchstreambot.pubsub.Configuration;
+using twitchstreambot.pubsub.Infrastructure;
 using twitchstreambot.pubsub.Messaging;
 using twitchstreambot.pubsub.Models;
 
@@ -16,44 +18,41 @@ namespace twitchstreambot.pubsub
 {
     public class TwitchPubSub
     {
-        private readonly TwitchHelix _helix;
+        private readonly TwitchApi _api;
         private readonly TwitchKraken _kraken;
         public const int BufferSize = 1024;
 
         private readonly PubSubOptions _configuration;
         private readonly ClientWebSocket _webSocketClient;
-        private readonly string _auth;
         private bool _exiting;
-        private readonly IDictionary<string, Dictionary<string, long>> _userCache;
-        private readonly MessageProcessor _processor;
+        private readonly IDictionary<string, Dictionary<string, object>> _userData;
+        private Task _listenTask;
 
-        public delegate void WhisperReceivedDelegate(PubSubResponseMessage<PubSubWhisperResponse> responseMessage);
-
+        public delegate void PubSubConnectedDelegate(CancellationToken token);
         public delegate void SubscriptionErrorDelegate(string message);
 
-        public event WhisperReceivedDelegate OnWhisperReceived;
         public event SubscriptionErrorDelegate OnSubscriptionError;
+        public event PubSubConnectedDelegate OnPubSubConnected;
 
-        public TwitchPubSub(IConfiguration configuration, TwitchHelix helix, TwitchKraken kraken)
+        public TwitchPubSub(IConfiguration configuration, TwitchApi api, TwitchKraken kraken)
         {
-            _helix = helix;
+            _api = api;
             _kraken = kraken;
             _configuration = new PubSubOptions();
-            _auth = configuration["twitch:auth"];
-            _userCache = new Dictionary<string, Dictionary<string, long>>();
+            _userData = new Dictionary<string, Dictionary<string, object>>();
 
             configuration.GetSection("twitch:pubsub").Bind(_configuration);
 
             _webSocketClient = new ClientWebSocket();
+        }
 
-            _processor = new MessageProcessor(this);
-            _processor.On("whispers", (content, publisher) =>
-            {
-                var thingToPublish =
-                    JsonConvert.DeserializeObject<PubSubResponseMessage<PubSubWhisperResponse>>(content);
+        public async Task Stop(CancellationToken token)
+        {
+            _exiting = true;
 
-                publisher.OnWhisperReceived(thingToPublish);
-            });
+            Task.WaitAll(_listenTask);
+
+            await _webSocketClient.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutting down pub sub", token);
         }
 
         public async Task Connect(CancellationToken cancellationToken)
@@ -62,16 +61,9 @@ namespace twitchstreambot.pubsub
 
             if (_webSocketClient.State == WebSocketState.Open)
             {
-                await StartListening(cancellationToken);
+                await SubscribeToTopics(cancellationToken);
 
-                byte[] bufferContent = new byte[BufferSize];
-                var buffer = new ArraySegment<byte>(bufferContent);
-
-                var response = await _webSocketClient.ReceiveAsync(buffer, cancellationToken);
-
-                var responseContent = Encoding.UTF8.GetString(buffer.Array, 0, response.Count);
-
-                var responseObject = JsonConvert.DeserializeObject<PubSubListenResponse>(responseContent);
+                var responseObject = await GetResult<PubSubListenResponse>(cancellationToken);
 
                 if (responseObject.IsError)
                 {
@@ -80,6 +72,8 @@ namespace twitchstreambot.pubsub
 
                     OnSubscriptionError?.Invoke("Unable to subscribe to topics");
                 }
+
+                OnPubSubConnected?.Invoke(cancellationToken);
             }
             else
             {
@@ -87,57 +81,10 @@ namespace twitchstreambot.pubsub
             }
         }
 
-        private async Task StartListening(CancellationToken cancellationToken)
+        public void Listen(CancellationToken cancellationToken)
         {
-            foreach (var listen in _configuration.Monitor)
+            _listenTask = new Task(async () =>
             {
-                var message = await ConstructListenMessage(listen);
-
-                await _webSocketClient.SendAsync(
-                    new ArraySegment<byte>(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message))),
-                    WebSocketMessageType.Text, true, cancellationToken);
-            }
-        }
-
-        private async Task<ListenMessage> ConstructListenMessage(PubSubOptions.TopicMonitor monitor)
-        {
-            if (!_userCache.ContainsKey(monitor.User))
-            {
-                var subscriptionUserId = await _helix.GetUserIdByName(monitor.User);
-                var subscriptionChannelId = await _kraken.GetChannelIdUsing(_configuration.Users[monitor.User]);
-
-                _userCache.Add(monitor.User, new Dictionary<string, long>
-                {
-                    {"userId", subscriptionUserId},
-                    {"channelId", subscriptionChannelId}
-                });
-            }
-
-            List<string> topicsToSubscribeTo = new List<string>();
-
-            foreach (var topic in monitor.Topics)
-            {
-                topicsToSubscribeTo.Add(PubSubTopic.ByName(topic).For(_userCache[monitor.User]));
-            }
-
-            var message = new ListenMessage()
-            {
-                Data = new ListenMessage.ListenData
-                {
-                    AuthToken = _configuration.Users[monitor.User],
-                    Topics = topicsToSubscribeTo.ToArray()
-                }
-            };
-
-            return message;
-        }
-
-        public Task Listen(CancellationToken cancellationToken)
-        {
-            return Task.Run(async () =>
-            {
-                await Connect(cancellationToken);
-
                 byte[] bufferContent = new byte[BufferSize];
                 var buffer = new ArraySegment<byte>(bufferContent);
                 StringBuilder message = new StringBuilder();
@@ -150,72 +97,99 @@ namespace twitchstreambot.pubsub
 
                     if (response.EndOfMessage)
                     {
-                        DispatchEvent(message.ToString());
 
-                        message = new StringBuilder();
+                        var content = JObject.Parse(message.ToString());
+
+                        //await DispatchEvent(message.ToString());
+
+                        //var response = await GetResult<PubSubMessageBase>(cancellationToken);
+
+                        //if (response == null || response.Type != "PONG")
+                        //{
+                        //    await Connect(cancellationToken);
+                        //}
+
+                        message.Clear();
 
                         await Task.Delay(50, cancellationToken);
                     }
                 } while (!_exiting);
-            }, cancellationToken);
+            });
+
+            _listenTask.Start();
         }
 
-        public async Task Stop(CancellationToken token)
+        private async Task<T> GetResult<T>(CancellationToken cancellationToken)
         {
-            _exiting = true;
+            byte[] bufferContent = new byte[BufferSize];
+            var buffer = new ArraySegment<byte>(bufferContent);
 
-            await _webSocketClient.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutting down bot", token);
+            var response = await _webSocketClient.ReceiveAsync(buffer, cancellationToken);
+
+            var responseContent = Encoding.UTF8.GetString(buffer.Array, 0, response.Count);
+
+            var responseObject = JsonConvert.DeserializeObject<T>(responseContent);
+
+            return responseObject;
         }
 
-        private void DispatchEvent(string message)
+        public async Task SubscribeToTopics(CancellationToken cancellationToken)
         {
-            var response = JsonConvert.DeserializeObject<PubSubResponseMessage>(message);
-
-            if (response.Type == "PING")
+            foreach (var listen in _configuration.Monitor)
             {
-                //SendMessage("PONG");
-            }
+                var message = await ConstructListenMessage(listen);
 
-            if (response.Type == "RECONNECT")
-            {
-                // Reconnect Client
-            }
-
-            if (response.Type == "MESSAGE")
-            {
-                File.WriteAllText(@"c:\temp\pubsub_sample.json", message);
-
-                var topicWasReceived = response.Data.Topic.Split('.')[0];
-
-                _processor.Process(topicWasReceived, message);
+                await SendMessage(message, cancellationToken);
             }
         }
-    }
 
-    public class MessageProcessor
-    {
-        private readonly TwitchPubSub _client;
-        private readonly Dictionary<string, Action<string, TwitchPubSub>> _actions;
-
-        public MessageProcessor(TwitchPubSub client)
+        private async Task PingServer(CancellationToken cancellationToken)
         {
-            _client = client;
-            _actions = new Dictionary<string, Action<string, TwitchPubSub>>();
+            await SendMessage(new { Type = "PING" }, cancellationToken);
         }
 
-        public MessageProcessor On(string message, Action<string, TwitchPubSub> action)
+        private async Task SendMessage<T>(T message, CancellationToken token)
         {
-            _actions.Add(message, action);
-
-            return this;
+            await _webSocketClient.SendAsync(message.AsJsonBytesArraySegment(), WebSocketMessageType.Text, true, token);
         }
 
-        public void Process(string action, string content)
+        private async Task<ListenMessage> ConstructListenMessage(PubSubOptions.TopicMonitor monitor)
         {
-            if (_actions.ContainsKey(action))
+            if (!_userData.ContainsKey(monitor.User))
             {
-                _actions[action](content, _client);
+                var verification = await _api.Validate(_configuration.Users[monitor.User].Token);
+
+                if (verification == null)
+                {
+                    throw new InvalidCredentialException($"User {monitor.User} is not verified");
+                }
+
+                var channel = await _kraken.GetChannel(verification.ClientId, _configuration.Users[monitor.User].Token);
+
+                _userData.Add(monitor.User, new Dictionary<string, object>
+                {
+                    {"userId", verification.UserId},
+                    {"channelId", channel.Id}
+                });
             }
+
+            List<string> topicsToSubscribeTo = new List<string>();
+
+            foreach (var topic in monitor.Topics)
+            {
+                topicsToSubscribeTo.Add(PubSubTopic.ByName(topic).For(_userData[monitor.User]));
+            }
+
+            var message = new ListenMessage()
+            {
+                Data = new ListenMessage.ListenData
+                {
+                    AuthToken = _configuration.Users[monitor.User].Token,
+                    Topics = topicsToSubscribeTo.ToArray()
+                }
+            };
+
+            return message;
         }
     }
 }

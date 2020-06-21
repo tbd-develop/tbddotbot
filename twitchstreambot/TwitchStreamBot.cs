@@ -29,50 +29,47 @@ namespace twitchstreambot
             _container = container;
         }
 
-        public Task Start(CancellationToken cancellationToken)
+        public async Task Start(CancellationToken cancellationToken)
         {
-            return Task.Run(async () =>
+            var connection = _configuration.Connection;
+
+            while (!cancellationToken.IsCancellationRequested)
             {
-                var connection = _configuration.Connection;
-
-                while (!cancellationToken.IsCancellationRequested)
+                try
                 {
-                    try
+                    using (var client = new TcpClient(connection.HostName, connection.Port))
                     {
-                        using (var client = new TcpClient(connection.HostName, connection.Port))
+                        using (var stream = client.GetStream())
+                        using (_channelReader = new ChannelReader(stream))
+                        using (_channelWriter = new ChannelWriter(stream)
                         {
-                            using (var stream = client.GetStream())
-                            using (_channelReader = new ChannelReader(stream))
-                            using (_channelWriter = new ChannelWriter(stream)
-                            {
-                                Channel = connection.Channel,
-                                BotName = connection.BotName,
-                                AuthToken = _configuration.AuthToken
-                            })
-                            {
-                                _channelReader.OnMessageReceived += ReaderOnMessageReceived;
+                            Channel = connection.Channel,
+                            BotName = connection.BotName,
+                            AuthToken = _configuration.AuthToken
+                        })
+                        {
+                            _channelReader.OnMessageReceived += ReaderOnMessageReceived;
 
-                                _channelWriter.Authenticate();
+                            _channelWriter.Authenticate();
 
-                                SendTwitchCommand("CAP REQ :twitch.tv/membership");
-                                SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
+                            SendTwitchCommand("CAP REQ :twitch.tv/membership");
+                            SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
 
-                                OnBotConnected?.Invoke(this);
+                            OnBotConnected?.Invoke(this);
 
-                                await _channelReader.ListenForMessages(cancellationToken);
-                            }
+                            await _channelReader.ListenForMessages(cancellationToken);
                         }
-
-                        OnBotDisconnected?.Invoke(this);
                     }
-                    catch (Exception exception)
-                    {
-                        Console.WriteLine(exception);
 
-                        OnBotDisconnected?.Invoke(this);
-                    }
+                    OnBotDisconnected?.Invoke(this);
                 }
-            }, cancellationToken);
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+
+                    OnBotDisconnected?.Invoke(this);
+                }
+            }
         }
 
         public async Task Stop()
@@ -123,9 +120,7 @@ namespace twitchstreambot
 
             if (awaitResponse)
             {
-                string response = _channelReader.ReadLine();
-
-                Console.WriteLine(response);
+                _channelReader.ReadLine();
             }
         }
     }
