@@ -4,7 +4,7 @@ using twitchstreambot.Parsing;
 
 namespace twitchstreambot.command.CommandDispatch
 {
-    public class CommandDispatcher
+    public class CommandDispatcher : ICommandDispatcher
     {
         private readonly ICommandSet _commandSet;
         private readonly IServiceProvider _serviceProvider;

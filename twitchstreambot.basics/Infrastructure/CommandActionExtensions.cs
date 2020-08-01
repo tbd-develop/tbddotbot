@@ -1,5 +1,4 @@
 using System.Linq;
-using twitchstreambot.command.Commands;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot.basics.Infrastructure

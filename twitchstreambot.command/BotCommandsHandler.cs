@@ -6,10 +6,10 @@ namespace twitchstreambot.command
 {
     public class BotCommandsHandler : IRCHandler
     {
-        private readonly CommandDispatcher _dispatcher;
+        private readonly ICommandDispatcher _dispatcher;
         private readonly TwitchStreamBot _bot;
 
-        public BotCommandsHandler(CommandDispatcher dispatcher, TwitchStreamBot bot)
+        public BotCommandsHandler(ICommandDispatcher dispatcher, TwitchStreamBot bot)
         {
             _dispatcher = dispatcher;
             _bot = bot;

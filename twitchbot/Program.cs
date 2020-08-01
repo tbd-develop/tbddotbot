@@ -34,13 +34,10 @@ namespace twitchbot
                         .AddUserSecrets<BotService>();
                 })
                 .ConfigureServices((context, services) =>
-                {
-                    var definedCommandsStore = new DefinedCommandsStore("definitions.json");
-
+                {   
                     var commandSet = new CommandSet(new CommandRegistry[]
                     {
-                        new BasicsRegistry(services),
-                        new DefinedCommandsRegistry(services, definedCommandsStore)
+                        new BasicsRegistry(services)
                     });
 
                     services.AddSingleton(c => new TwitchConnection
@@ -52,7 +49,6 @@ namespace twitchbot
                     });
 
                     services.AddSingleton<BotCommandsHandler>();
-                    services.AddSingleton(definedCommandsStore);
 
                     services.AddSingleton(c =>
                     {
@@ -66,7 +62,7 @@ namespace twitchbot
                         return new TwitchStreamBot(botConfiguration, c);
                     });
 
-                    services.AddSingleton(c => new CommandDispatcher(commandSet, c));
+                    services.AddSingleton<ICommandDispatcher>(c => new CommandDispatcher(commandSet, c));
 
                     services.AddHelix(context.Configuration);
                     services.AddKraken(context.Configuration);
