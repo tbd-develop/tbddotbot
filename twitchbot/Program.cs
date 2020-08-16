@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using twitchstreambot;
 using twitchstreambot.api.Configuration;
 using twitchstreambot.basics;
-using twitchstreambot.basics.Infrastructure;
 using twitchstreambot.command;
 using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.Infrastructure;
@@ -34,12 +34,7 @@ namespace twitchbot
                         .AddUserSecrets<BotService>();
                 })
                 .ConfigureServices((context, services) =>
-                {   
-                    var commandSet = new CommandSet(new CommandRegistry[]
-                    {
-                        new BasicsRegistry(services)
-                    });
-
+                {
                     services.AddSingleton(c => new TwitchConnection
                     {
                         BotName = context.Configuration["bot:name"],
@@ -62,7 +57,15 @@ namespace twitchbot
                         return new TwitchStreamBot(botConfiguration, c);
                     });
 
-                    services.AddSingleton<ICommandDispatcher>(c => new CommandDispatcher(commandSet, c));
+                    // Configure your command set 
+                    services.AddSingleton<ICommandSet, BasicCommandSet>();
+
+                    // If you have created your own commandsets, you can use the merged command set
+                    // services.AddSingleton<ICommandSet>(provider => new MergedCommandSet(
+                    //    provider.GetService<BasicCommandSet>()));
+
+                    // Configure the dispatcher
+                    services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
 
                     services.AddHelix(context.Configuration);
                     services.AddKraken(context.Configuration);

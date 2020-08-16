@@ -17,7 +17,7 @@ namespace twitchstreambot.command
 
         public void Handle(TwitchMessage message)
         {
-            if (message.IsBotCommand)
+            if (message.IsBotCommand && _dispatcher.CanExecute(message))
             {
                 _bot.SendToStream(_dispatcher.ExecuteTwitchCommand(message));
             }

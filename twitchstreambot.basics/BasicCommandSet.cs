@@ -5,14 +5,15 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using twitchstreambot.command.CommandDispatch;
 using twitchstreambot.Infrastructure.Attributes;
+using twitchstreambot.Parsing;
 
 namespace twitchstreambot.basics
 {
-    public class BasicsRegistry : CommandRegistry
+    public class BasicCommandSet : ICommandSet
     {
         private readonly Dictionary<string, Type> _availableCommands;
 
-        public BasicsRegistry(IServiceCollection serviceCollection) : base(serviceCollection)
+        public BasicCommandSet(IServiceCollection serviceCollection)
         {
             _availableCommands = (from t in GetType().Assembly.GetTypes()
                                   let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
@@ -25,18 +26,18 @@ namespace twitchstreambot.basics
 
             foreach (var command in _availableCommands)
             {
-                ServiceCollection.AddTransient(command.Value);
+                serviceCollection.AddTransient(command.Value);
             }
         }
 
-        public override bool CanProvide(string command)
+        public Type GetCommand(TwitchMessage message)
         {
-            return _availableCommands.ContainsKey(command.ToLower());
+            return _availableCommands[message.Command.Action.ToLower()];
         }
 
-        public override Type Get(string command)
+        public bool IsRegistered(TwitchMessage message)
         {
-            return _availableCommands[command.ToLower()];
+            return _availableCommands.ContainsKey(message.Command.Action.ToLower());
         }
     }
 }
