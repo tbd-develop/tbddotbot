@@ -1,9 +1,8 @@
 ﻿using System;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using NUnit.Framework;
 using twitchstreambot.command.CommandDispatch;
-using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 using twitchstreambot.tests.ConcerningSendingTwitchCommands.Commands;
 
@@ -13,23 +12,24 @@ namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
     public class when_command_is_registered
     {
         private CommandDispatcher Subject;
-        private Mock<ICommandSet> CommandSet;
-        private Mock<IServiceProvider> ServiceProvider;
+        private ICommandSet CommandSet;
+        private IServiceProvider ServiceProvider;
         private string CommandToExecute = "basic";
         private string ContentToReturn = "ResultingMessage";
 
         [SetUp]
         public void SetUp()
         {
-            ServiceProvider = new Mock<IServiceProvider>();
-            CommandSet = new Mock<ICommandSet>();
-            CommandSet.Setup(cs => cs.GetCommand(It.Is<TwitchMessage>(m => m.Command.Action == CommandToExecute)))
+            ServiceProvider = Substitute.For<IServiceProvider>();
+            CommandSet = Substitute.For<ICommandSet>();
+
+            CommandSet.GetCommandType(Arg.Is<TwitchMessage>(m => m.Command.Action == CommandToExecute))
                 .Returns(typeof(BasicCommand));
 
-            ServiceProvider.Setup(ctn => ctn.GetService(typeof(BasicCommand)))
+            ServiceProvider.GetService(Arg.Is<Type>(t => t == typeof(BasicCommand)))
                 .Returns(new BasicCommand(ContentToReturn));
 
-            Subject = new CommandDispatcher(CommandSet.Object, ServiceProvider.Object);
+            Subject = new CommandDispatcher(CommandSet, ServiceProvider);
         }
 
         [Test]
@@ -40,7 +40,9 @@ namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
                 Command = new BotCommand { Action = CommandToExecute }
             }).Should().Be(ContentToReturn);
 
-            ServiceProvider.Verify(ctn => ctn.GetService(It.Is<Type>(t => t == typeof(BasicCommand))), Times.Once);
+            ServiceProvider
+                .Received(1)
+                .GetService(Arg.Is<Type>(t => t == typeof(BasicCommand)));
         }
     }
 }

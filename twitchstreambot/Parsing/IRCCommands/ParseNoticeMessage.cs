@@ -2,7 +2,7 @@
 {
     public class ParseNoticeMessage : MessageParser
     {
-        public override TwitchMessage Do(string input)
+        public override TwitchMessage? Do(string input)
         {
             var headers = GetHeaders(input);
 
@@ -10,7 +10,7 @@
             {
                 User = TwitchMessage.UserFromHeaders(headers),
                 Headers = headers,
-                MessageType = IRCMessageType.USERNOTICE
+                MessageType = IRCMessageType.UserNotice
             };
         }
     }

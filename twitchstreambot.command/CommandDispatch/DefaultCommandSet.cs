@@ -47,7 +47,7 @@ namespace twitchstreambot.command.CommandDispatch
                 };
         }
 
-        public Type GetCommand(TwitchMessage message)
+        public Type GetCommandType(TwitchMessage message)
         {
             return _commands[message.Command.Action.ToLower()];
         }

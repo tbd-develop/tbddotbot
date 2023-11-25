@@ -5,7 +5,7 @@ namespace twitchstreambot.command.CommandDispatch
 {
     public interface ICommandSet
     {
-        Type GetCommand(TwitchMessage message);
+        Type? GetCommandType(TwitchMessage message);
         bool IsRegistered(TwitchMessage message);
     }
 }

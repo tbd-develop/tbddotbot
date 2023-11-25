@@ -5,61 +5,60 @@ using System.Threading.Tasks;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Communications;
 using twitchstreambot.Infrastructure.Configuration;
-using twitchstreambot.Parsing;
 
 namespace twitchstreambot
 {
     public class TwitchStreamBot
     {
         private readonly TwitchBotConfiguration _configuration;
-        private readonly IServiceProvider _container;
-        private ChannelReader _channelReader;
-        private ChannelWriter _channelWriter;
-
-        public string User => _configuration.Connection.BotName;
-        public string Channel => _configuration.Connection.Channel;
+        private readonly IMessageDispatcher _dispatcher;
+        private readonly TwitchConnection _connection;
+        private ChannelReader? _channelReader;
+        private ChannelWriter? _channelWriter;
 
         public delegate void BotConnectedHandler(TwitchStreamBot streamer);
+
         public event BotConnectedHandler OnBotConnected;
         public event BotConnectedHandler OnBotDisconnected;
 
-        public TwitchStreamBot(TwitchBotConfiguration configuration, IServiceProvider container)
+        public TwitchStreamBot(
+            TwitchConnection connection,
+            TwitchBotConfiguration configuration,
+            IMessageDispatcher dispatcher)
         {
+            _connection = connection;
             _configuration = configuration;
-            _container = container;
+            _dispatcher = dispatcher;
         }
 
         public async Task Start(CancellationToken cancellationToken)
         {
-            var connection = _configuration.Connection;
-
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    using (var client = new TcpClient(connection.HostName, connection.Port))
+                    using var client = new TcpClient(_connection.HostName, _connection.Port);
+                    
+                    await using var stream = client.GetStream();
+
+                    _channelReader = new ChannelReader(stream);
+                    _channelWriter = new ChannelWriter(stream)
                     {
-                        using (var stream = client.GetStream())
-                        using (_channelReader = new ChannelReader(stream))
-                        using (_channelWriter = new ChannelWriter(stream)
-                        {
-                            Channel = connection.Channel,
-                            BotName = connection.BotName,
-                            AuthToken = _configuration.AuthToken
-                        })
-                        {
-                            _channelReader.OnMessageReceived += ReaderOnMessageReceived;
+                        Channel = _connection.Channel,
+                        BotName = _connection.Name,
+                        AuthToken = _configuration.AuthToken
+                    };
 
-                            _channelWriter.Authenticate();
+                    _channelReader.OnMessageReceived += ReaderOnMessageReceived;
 
-                            SendTwitchCommand("CAP REQ :twitch.tv/membership");
-                            SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
+                    _channelWriter.Authenticate();
 
-                            OnBotConnected?.Invoke(this);
+                    SendTwitchCommand("CAP REQ :twitch.tv/membership");
+                    SendTwitchCommand("CAP REQ :twitch.tv/tags twitch.tv/commands");
 
-                            await _channelReader.ListenForMessages(cancellationToken);
-                        }
-                    }
+                    OnBotConnected?.Invoke(this);
+
+                    await _channelReader.ListenForMessages(cancellationToken);
 
                     OnBotDisconnected?.Invoke(this);
                 }
@@ -74,7 +73,23 @@ namespace twitchstreambot
 
         public async Task Stop()
         {
-            await Task.Run(() => _channelReader?.SignalShutdown());
+            if (_channelReader is not null)
+            {
+                _channelReader!.SignalShutdown();
+
+                _channelReader!.Dispose();
+
+                _channelReader = null;
+            }
+
+            if (_channelWriter is not null)
+            {
+                await _channelWriter.FlushAsync();
+
+                await _channelWriter.DisposeAsync();
+
+                _channelWriter = null;
+            }
         }
 
         private void ReaderOnMessageReceived(ChannelReader sender, MessageReceivedArgs args)
@@ -82,27 +97,15 @@ namespace twitchstreambot
             if (args.Message.StartsWith("PING"))
             {
                 SendTwitchCommand("PONG", false);
+
+                return;
             }
-            else
+
+            var result = _dispatcher.Dispatch(args.Message);
+
+            if (result.IsResponse)
             {
-                if (TwitchCommandParser.IsMatch(args.Message))
-                {
-                    var message = TwitchCommandParser.Gather(args.Message);
-
-                    if (_configuration.Handlers.ContainsKey(message.MessageType))
-                    {
-                        foreach (var messageHandlerType in _configuration.Handlers[message.MessageType])
-                        {
-                            var handler =
-                                (IRCHandler)_container.GetService(messageHandlerType);
-
-                            if (handler.CanExecute(message))
-                            {
-                                handler.Handle(message);
-                            }
-                        }
-                    }
-                }
+                SendToStream(result.Content!);
             }
         }
 
@@ -114,7 +117,7 @@ namespace twitchstreambot
             }
         }
 
-        private void SendTwitchCommand(string command, bool awaitResponse = true)
+        public void SendTwitchCommand(string command, bool awaitResponse = true)
         {
             _channelWriter.SendCommand(command);
 

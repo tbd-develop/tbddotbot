@@ -1,9 +1,8 @@
 ﻿using System;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using NUnit.Framework;
 using twitchstreambot.command.CommandDispatch;
-using twitchstreambot.Infrastructure.DependencyInjection;
 using twitchstreambot.Parsing;
 
 namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
@@ -12,24 +11,30 @@ namespace twitchstreambot.tests.ConcerningSendingTwitchCommands
     public class when_no_commands_registered
     {
         private CommandDispatcher Subject;
-        private Mock<IServiceProvider> Container;
-        private Mock<ICommandSet> CommandSet;
+        private IServiceProvider Container;
+        private ICommandSet CommandSet;
 
         [SetUp]
         public void SetUp()
         {
-            Container = new Mock<IServiceProvider>();
+            Container = Substitute.For<IServiceProvider>();
 
-            CommandSet = new Mock<ICommandSet>();
-            CommandSet.Setup(cmd => cmd.GetCommand(It.IsAny<TwitchMessage>())).Returns(() => null);
+            CommandSet = Substitute.For<ICommandSet>();
 
-            Subject = new CommandDispatcher(CommandSet.Object, Container.Object);
+            CommandSet
+                .GetCommandType(Arg.Any<TwitchMessage>())
+                .Returns((Type)null);
+
+            Subject = new CommandDispatcher(CommandSet, Container);
         }
 
         [Test]
         public void null_value_is_returned()
         {
-            Subject.ExecuteTwitchCommand(new TwitchMessage { }).Should().BeNull();
+            Subject
+                .ExecuteTwitchCommand(new TwitchMessage { })
+                .Should()
+                .BeNull();
         }
     }
 }

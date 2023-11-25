@@ -5,11 +5,11 @@ namespace twitchstreambot.Parsing
 {
     public class TwitchMessage
     {
-        public TwitchUser User { get; set; }
+        public TwitchUser? User { get; set; }
         public IRCMessageType MessageType { get; set; }
-        public BotCommand Command { get; set; }
-        public Dictionary<string, string> Headers { get; set; }
-        public string Content { get; set; }
+        public BotCommand? Command { get; set; }
+        public Dictionary<string, string>? Headers { get; set; }
+        public string? Content { get; set; }
 
         public bool IsBotCommand => Command != null;
 
@@ -17,32 +17,20 @@ namespace twitchstreambot.Parsing
         {
             var result = new TwitchUser();
 
-            if (headers.ContainsKey("user-id"))
+            if (headers.TryGetValue("user-id", out var userIdHeader))
             {
-                if (int.TryParse(headers["user-id"], out int id))
+                if (int.TryParse(userIdHeader, out var id))
                 {
                     result.Id = id;
                 }
             }
 
-            if (headers.ContainsKey("display-name"))
+            if (headers.TryGetValue("display-name", out var displayNameHeader))
             {
-                result.Name = headers["display-name"];
+                result.Name = displayNameHeader;
             }
 
             return result;
         }
-    }
-
-    public class TwitchUser
-    {
-        public string Name { get; set; }
-        public int Id { get; set; }
-    }
-
-    public class BotCommand
-    {
-        public string Action { get; set; }
-        public IEnumerable<string> Arguments { get; set; }
     }
 }

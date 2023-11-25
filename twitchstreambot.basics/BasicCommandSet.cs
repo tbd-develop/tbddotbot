@@ -11,9 +11,9 @@ namespace twitchstreambot.basics
 {
     public class BasicCommandSet : ICommandSet
     {
-        private readonly Dictionary<string, Type> _availableCommands;
+        private Dictionary<string, Type> _availableCommands = null!;
 
-        public BasicCommandSet(IServiceCollection serviceCollection)
+        public void RegisterCommands(IServiceCollection serviceCollection)
         {
             _availableCommands = (from t in GetType().Assembly.GetTypes()
                                   let attribute = t.GetCustomAttribute<TwitchCommandAttribute>()
@@ -30,7 +30,7 @@ namespace twitchstreambot.basics
             }
         }
 
-        public Type GetCommand(TwitchMessage message)
+        public Type GetCommandType(TwitchMessage message)
         {
             return _availableCommands[message.Command.Action.ToLower()];
         }

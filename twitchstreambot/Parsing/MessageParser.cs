@@ -6,7 +6,7 @@ namespace twitchstreambot.Parsing
 {
     public abstract class MessageParser
     {
-        public abstract TwitchMessage Do(string input);
+        public abstract TwitchMessage? Do(string input);
 
         protected Dictionary<string, string> GetHeaders(string input)
         {

@@ -15,11 +15,15 @@ namespace twitchbot.commands
     public class UptimeCommand : ITwitchCommand
     {
         private readonly TwitchConnection _connection;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _clientId;
 
-        public UptimeCommand(TwitchConnection connection, IConfiguration configuration)
+        public UptimeCommand(TwitchConnection connection,
+            IHttpClientFactory httpClientFactory,
+            IConfiguration configuration)
         {
             _connection = connection;
+            _httpClientFactory = httpClientFactory;
             _clientId = configuration["twitch:clientId"];
         }
 
@@ -32,7 +36,8 @@ namespace twitchbot.commands
         {
             var statistics = GetStreamStatistics();
 
-            if (statistics?.Data.Length == 0)
+            if (statistics is null ||
+                statistics.Data.Length == 0)
             {
                 return "Stream is currently not active";
             }
@@ -43,24 +48,21 @@ namespace twitchbot.commands
                 $"Stream has been up for {elapsed.Hours:#0} hours {elapsed.Minutes:#0} minutes";
         }
 
-        private TwitchData GetStreamStatistics()
+        private TwitchData? GetStreamStatistics()
         {
-            using (HttpClient client = new HttpClient { BaseAddress = new Uri("https://api.twitch.tv/helix/") })
-            {
-                client.DefaultRequestHeaders.Add("Client-Id", _clientId);
+            using var client = _httpClientFactory.CreateClient();
 
-                var response = client.GetAsync($"streams/?user_login={_connection.Channel}")
-                    .Result;
+            client.BaseAddress = new Uri("https://api.twitch.tv/helix/");
+            client.DefaultRequestHeaders.Add("Client-Id", _clientId);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseData = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var response = client.GetAsync($"streams/?user_login={_connection.Channel}")
+                .Result;
 
-                    return JsonConvert.DeserializeObject<TwitchData>(responseData);
-                }
-            }
+            if (!response.IsSuccessStatusCode) return null;
 
-            return null;
+            var responseData = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+            return JsonConvert.DeserializeObject<TwitchData>(responseData)!;
         }
     }
 }

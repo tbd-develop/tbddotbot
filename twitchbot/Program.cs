@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using twitchbot.commands;
 using twitchstreambot;
 using twitchstreambot.api.Configuration;
 using twitchstreambot.basics;
 using twitchstreambot.command;
 using twitchstreambot.command.CommandDispatch;
+using twitchstreambot.Dispatch;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Configuration;
+using twitchstreambot.Infrastructure.Extensions;
 using twitchstreambot.Parsing;
 using twitchstreambot.pubsub;
 
@@ -35,37 +37,28 @@ namespace twitchbot
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddSingleton(c => new TwitchConnection
+                    services.AddSingleton(provider =>
                     {
-                        BotName = context.Configuration["bot:name"],
-                        HostName = context.Configuration["bot:host"],
-                        Channel = context.Configuration["bot:channel"],
-                        Port = int.Parse(context.Configuration["bot:port"])
+                        var twitchConnection = new TwitchConnection();
+
+                        context.Configuration.GetSection("bot").Bind(twitchConnection);
+
+                        return twitchConnection;
                     });
 
-                    services.AddSingleton<BotCommandsHandler>();
-
-                    services.AddSingleton(c =>
+                    services.AddSingleton(provider =>
                     {
-                        var botConfiguration =
-                            new TwitchBotBuilder()
-                                .WithAuthentication(context.Configuration["twitch:auth"])
-                                .WithConnection(c.GetService<TwitchConnection>())
-                                .WithHandler<BotCommandsHandler>(IRCMessageType.PRIVMSG)
-                                .Build();
+                        var twitchBotConfiguration = new TwitchBotConfiguration();
 
-                        return new TwitchStreamBot(botConfiguration, c);
+                        context.Configuration.GetSection("twitch").Bind(twitchBotConfiguration);
+
+                        return twitchBotConfiguration;
                     });
 
-                    // Configure your command set 
-                    services.AddSingleton<ICommandSet, BasicCommandSet>();
+                    services.AddCommands(typeof(UptimeCommand).Assembly);
 
-                    // If you have created your own commandsets, you can use the merged command set
-                    // services.AddSingleton<ICommandSet>(provider => new MergedCommandSet(
-                    //    provider.GetService<BasicCommandSet>()));
-
-                    // Configure the dispatcher
-                    services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
+                    services.AddSingleton<IMessageDispatcher, DefaultMessageDispatcher>();
+                    services.AddSingleton<TwitchStreamBot>();
 
                     services.AddHelix(context.Configuration);
                     services.AddKraken(context.Configuration);

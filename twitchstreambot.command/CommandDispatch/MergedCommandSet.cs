@@ -17,9 +17,9 @@ namespace twitchstreambot.command.CommandDispatch
             _commandSets = commandSets;
         }
 
-        public Type GetCommand(TwitchMessage message)
+        public Type? GetCommandType(TwitchMessage message)
         {
-            return _commandSets.FirstOrDefault(cs => cs.IsRegistered(message))?.GetCommand(message) ?? null;
+            return _commandSets.FirstOrDefault(cs => cs.IsRegistered(message))?.GetCommandType(message) ?? null;
         }
 
         public bool IsRegistered(TwitchMessage message)

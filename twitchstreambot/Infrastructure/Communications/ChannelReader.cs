@@ -70,9 +70,8 @@ namespace twitchstreambot.Infrastructure.Communications
 
         public async Task ListenForMessages(CancellationToken cancellationToken)
         {
-            string buffer;
-
-            while ((buffer = await ReadLineAsync()) != null && (!_exiting || !cancellationToken.IsCancellationRequested))
+            while (await ReadLineAsync(cancellationToken) is { } buffer &&
+                   (!_exiting || !cancellationToken.IsCancellationRequested))
             {
                 OnMessageReceived?.Invoke(this, new MessageReceivedArgs(buffer));
             }

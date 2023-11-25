@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Parsing;
 
@@ -9,7 +10,9 @@ namespace twitchstreambot.command.CommandDispatch
         private readonly IServiceProvider _serviceProvider;
         private readonly ICommandSet _commandSet;
 
-        public CommandDispatcher(ICommandSet commandSet, IServiceProvider serviceProvider)
+        public CommandDispatcher(
+            ICommandSet commandSet,
+            IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
             _commandSet = commandSet;
@@ -17,13 +20,17 @@ namespace twitchstreambot.command.CommandDispatch
 
         public bool CanExecute(TwitchMessage message) => _commandSet?.IsRegistered(message) ?? false;
 
-        public string ExecuteTwitchCommand(TwitchMessage twitchMessage)
+        public string? ExecuteTwitchCommand(TwitchMessage twitchMessage)
         {
-            var commandType = _commandSet.GetCommand(twitchMessage);
+            var commandType = _commandSet.GetCommandType(twitchMessage);
 
-            var command = (ITwitchCommand)_serviceProvider.GetService(commandType);
+            if (commandType is null)
+                return null;
 
-            return command.CanExecute(twitchMessage) ? command.Execute(twitchMessage) : string.Empty;
+            if (_serviceProvider.GetRequiredService(commandType) is not ITwitchCommand command)
+                throw new InvalidOperationException($"Command {commandType.Name} is not a valid command");
+
+            return command.CanExecute(twitchMessage) ? command.Execute(twitchMessage) : null;
         }
     }
 }
