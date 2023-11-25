@@ -18,6 +18,10 @@ public class DefaultMessageDispatcher : IMessageDispatcher
 
     public MessageResult Dispatch(string message)
     {
+#if DEBUG
+        Console.WriteLine(message);
+#endif
+
         if (!TwitchCommandParser.TryMatch(message, out var twitchMessage)) return MessageResult.NoResponse();
 
         if (twitchMessage is { IsBotCommand: false }) return MessageResult.NoResponse();

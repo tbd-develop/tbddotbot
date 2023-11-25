@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Security.Authentication;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,30 +28,50 @@ namespace twitchstreambot.pubsub
         private bool _exiting;
         private readonly IDictionary<string, Dictionary<string, object>> _userData;
         private Task _listenTask;
+        private Task _pingTask;
 
         public delegate void PubSubConnectedDelegate(CancellationToken token);
+
         public delegate void SubscriptionErrorDelegate(string message);
 
         public event SubscriptionErrorDelegate OnSubscriptionError;
         public event PubSubConnectedDelegate OnPubSubConnected;
 
-        public TwitchPubSub(IConfiguration configuration, TwitchApi api, TwitchKraken kraken)
+        public TwitchPubSub(
+            IConfiguration configuration,
+            TwitchApi api,
+            TwitchKraken kraken)
         {
             _api = api;
             _kraken = kraken;
             _configuration = new PubSubOptions();
             _userData = new Dictionary<string, Dictionary<string, object>>();
 
-            configuration.GetSection("twitch:pubsub").Bind(_configuration);
+            configuration.GetSection("twitch:pubsub")
+                .Bind(_configuration);
 
             _webSocketClient = new ClientWebSocket();
+        }
+
+        private async void RunTimedPing()
+        {
+            while (!_exiting)
+            {
+                await PingServer(CancellationToken.None);
+
+                Thread.Sleep(1000 * 60 * RandomNumberGenerator.GetInt32(3, 6));
+            }
         }
 
         public async Task Stop(CancellationToken token)
         {
             _exiting = true;
 
-            Task.WaitAll(_listenTask);
+            Task.WaitAll(new[]
+                {
+                    _listenTask
+                }, cancellationToken:
+                token);
 
             await _webSocketClient.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutting down pub sub", token);
         }
@@ -65,7 +86,7 @@ namespace twitchstreambot.pubsub
 
                 var responseObject = await GetResult<PubSubListenResponse>(cancellationToken);
 
-                if (responseObject.IsError)
+                if (responseObject is not null && responseObject.IsError)
                 {
                     await _webSocketClient.CloseAsync(WebSocketCloseStatus.InternalServerError, "Not Allowed",
                         CancellationToken.None);
@@ -81,59 +102,62 @@ namespace twitchstreambot.pubsub
             }
         }
 
-        public void Listen(CancellationToken cancellationToken)
+        public async Task Listen(CancellationToken cancellationToken)
         {
-            _listenTask = new Task(async () =>
+            var bufferContent = new byte[BufferSize];
+            var buffer = new ArraySegment<byte>(bufferContent);
+            StringBuilder message = new StringBuilder();
+
+            _pingTask = new Task(RunTimedPing, cancellationToken, TaskCreationOptions.AttachedToParent);
+
+            _pingTask.Start();
+
+            do
             {
-                byte[] bufferContent = new byte[BufferSize];
-                var buffer = new ArraySegment<byte>(bufferContent);
-                StringBuilder message = new StringBuilder();
+                var response = await _webSocketClient.ReceiveAsync(buffer, cancellationToken);
 
-                do
-                {
-                    var response = await _webSocketClient.ReceiveAsync(buffer, cancellationToken);
-
+                if (buffer.Array is not null)
                     message.Append(Encoding.UTF8.GetString(buffer.Array, 0, response.Count));
 
-                    if (response.EndOfMessage)
-                    {
+                if (!response.EndOfMessage) continue;
 
-                        var content = JObject.Parse(message.ToString());
+                var content = JObject.Parse(message.ToString());
 
-                        //await DispatchEvent(message.ToString());
+                //await DispatchEvent(message.ToString());
 
-                        //var response = await GetResult<PubSubMessageBase>(cancellationToken);
+                //var response = await GetResult<PubSubMessageBase>(cancellationToken);
 
-                        //if (response == null || response.Type != "PONG")
-                        //{
-                        //    await Connect(cancellationToken);
-                        //}
+                //if (response == null || response.Type != "PONG")
+                //{
+                //    await Connect(cancellationToken);
+                //}
 
-                        message.Clear();
+                message.Clear();
 
-                        await Task.Delay(50, cancellationToken);
-                    }
-                } while (!_exiting);
-            });
-
-            _listenTask.Start();
+                await Task.Delay(50, cancellationToken);
+            } while (!_exiting || !cancellationToken.IsCancellationRequested);
         }
 
-        private async Task<T> GetResult<T>(CancellationToken cancellationToken)
+        private async Task<T?> GetResult<T>(CancellationToken cancellationToken)
         {
-            byte[] bufferContent = new byte[BufferSize];
+            var bufferContent = new byte[BufferSize];
             var buffer = new ArraySegment<byte>(bufferContent);
 
             var response = await _webSocketClient.ReceiveAsync(buffer, cancellationToken);
 
-            var responseContent = Encoding.UTF8.GetString(buffer.Array, 0, response.Count);
+            if (buffer.Array is not null)
+            {
+                var responseContent = Encoding.UTF8.GetString(buffer.Array, 0, response.Count);
 
-            var responseObject = JsonConvert.DeserializeObject<T>(responseContent);
+                var responseObject = JsonConvert.DeserializeObject<T>(responseContent);
 
-            return responseObject;
+                return responseObject;
+            }
+
+            return default;
         }
 
-        public async Task SubscribeToTopics(CancellationToken cancellationToken)
+        private async Task SubscribeToTopics(CancellationToken cancellationToken)
         {
             foreach (var listen in _configuration.Monitor)
             {
@@ -168,8 +192,8 @@ namespace twitchstreambot.pubsub
 
                 _userData.Add(monitor.User, new Dictionary<string, object>
                 {
-                    {"userId", verification.UserId},
-                    {"channelId", channel.Id}
+                    { "userId", verification.UserId },
+                    { "channelId", channel.Id }
                 });
             }
 
