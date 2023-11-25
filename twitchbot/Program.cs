@@ -37,28 +37,7 @@ namespace twitchbot
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddSingleton(provider =>
-                    {
-                        var twitchConnection = new TwitchConnection();
-
-                        context.Configuration.GetSection("bot").Bind(twitchConnection);
-
-                        return twitchConnection;
-                    });
-
-                    services.AddSingleton(provider =>
-                    {
-                        var twitchBotConfiguration = new TwitchBotConfiguration();
-
-                        context.Configuration.GetSection("twitch").Bind(twitchBotConfiguration);
-
-                        return twitchBotConfiguration;
-                    });
-
-                    services.AddCommands(typeof(UptimeCommand).Assembly);
-
-                    services.AddSingleton<IMessageDispatcher, DefaultMessageDispatcher>();
-                    services.AddSingleton<TwitchStreamBot>();
+                    services.AddTwitchStreamBot(typeof(UptimeCommand).Assembly);
 
                     services.AddHelix(context.Configuration);
                     services.AddKraken(context.Configuration);
