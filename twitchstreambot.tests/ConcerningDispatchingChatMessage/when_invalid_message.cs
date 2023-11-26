@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using FluentAssertions;
 using NSubstitute;
 using twitchstreambot.Dispatch;
@@ -10,9 +11,7 @@ namespace twitchstreambot.tests.ConcerningDispatch;
 public class when_invalid_message
 {
     private DefaultMessageDispatcher Subject = null!;
-    private ICommandLookup CommandLookup;
-    private IServiceProvider ServiceProvider;
-    private MessageResult Result = null!;
+    private IMessagingPipeline MessagingPipeline = null!;
 
     public when_invalid_message()
     {
@@ -22,22 +21,24 @@ public class when_invalid_message
     }
 
     [Fact]
-    public void no_response_is_returned()
+    public void messaging_pipeline_does_not_receive_message_context()
     {
-        Result.IsResponse.Should().BeFalse();
-        Result.WasParsed.Should().BeFalse();
+        MessagingPipeline
+            .DidNotReceive()
+            .Dispatch(Arg.Any<MessagingContext>(), Arg.Any<CancellationToken>());
     }
 
     private void Arrange()
     {
-        CommandLookup = Substitute.For<ICommandLookup>();
-        ServiceProvider = Substitute.For<IServiceProvider>();
+        MessagingPipeline = Substitute.For<IMessagingPipeline>();
 
-        Subject = new DefaultMessageDispatcher(CommandLookup, ServiceProvider);
+        Subject = new DefaultMessageDispatcher(MessagingPipeline);
     }
 
     private void Act()
     {
-        Result = Subject.Dispatch("fail message");
+        Subject.Dispatch("fail message", CancellationToken.None)
+            .GetAwaiter()
+            .GetResult();
     }
 }

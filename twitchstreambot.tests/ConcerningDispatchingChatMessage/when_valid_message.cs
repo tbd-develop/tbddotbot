@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using FluentAssertions;
 using NSubstitute;
 using twitchstreambot.Dispatch;
@@ -7,7 +8,7 @@ using Xunit;
 
 namespace twitchstreambot.tests.ConcerningDispatch;
 
-public class when_not_a_bot_command
+public class when_valid_message
 {
     private const string SampleValidMessage = """
                                               @badge-info=subscriber/54;badges=broadcaster/1,subscriber/0,turbo/1;client-nonce=d5624b7657cf2a08a8f5a870a9859ea5;color=#FF0000;display-name=tbdgamer;emotes=;
@@ -16,12 +17,10 @@ public class when_not_a_bot_command
                                               """;
 
     private DefaultMessageDispatcher Subject = null!;
-    private ICommandLookup CommandLookup = null!;
-    private IServiceProvider ServiceProvider = null!;
-
+    private IMessagingPipeline MessagingPipeline = null!;
     private MessageResult Result;
 
-    public when_not_a_bot_command()
+    public when_valid_message()
     {
         Arrange();
 
@@ -31,20 +30,23 @@ public class when_not_a_bot_command
     [Fact]
     public void no_response_is_returned()
     {
-        Result.IsResponse.Should().BeFalse();
-        Result.WasParsed.Should().BeTrue();
+        MessagingPipeline
+            .Received()
+            .Dispatch(Arg.Is<MessagingContext>(x =>
+                !x.Message.IsBotCommand && x.Message.Content == "Not A Command"), Arg.Any<CancellationToken>());
     }
 
     private void Arrange()
     {
-        CommandLookup = Substitute.For<ICommandLookup>();
-        ServiceProvider = Substitute.For<IServiceProvider>();
+        MessagingPipeline = Substitute.For<IMessagingPipeline>();
 
-        Subject = new DefaultMessageDispatcher(CommandLookup, ServiceProvider);
+        Subject = new DefaultMessageDispatcher(MessagingPipeline);
     }
 
     private void Act()
     {
-        Result = Subject.Dispatch(SampleValidMessage);
+        Subject.Dispatch(SampleValidMessage)
+            .GetAwaiter()
+            .GetResult();
     }
 }
