@@ -9,7 +9,9 @@ public class ConsoleOutMiddleware : IMessagingMiddleware
 {
     public ValueTask<MessageResult> Execute(MessagingContext context, CancellationToken cancellationToken = default)
     {
-        Console.WriteLine(context.Message.Content);
+        var message = context.Message;
+
+        Console.WriteLine($"{message?.User?.Name} says {message?.Content}");
 
         return ValueTask.FromResult(MessageResult.Success());
     }
