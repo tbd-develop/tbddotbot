@@ -1,15 +1,13 @@
 using System;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Attributes;
-using twitchstreambot.models;
+using twitchstreambot.Models;
 using twitchstreambot.Parsing;
 
-namespace twitchbot.commands
+namespace twitchstreambot.basics
 {
     [TwitchCommand("uptime")]
     public class UptimeCommand : ITwitchCommand

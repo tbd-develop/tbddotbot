@@ -4,7 +4,7 @@ using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Attributes;
 using twitchstreambot.Parsing;
 
-namespace twitchstreambot.basics.Commands
+namespace twitchstreambot.basics
 {
     [TwitchCommand("bookmark")]
     public class BookmarkCommand : ITwitchCommand

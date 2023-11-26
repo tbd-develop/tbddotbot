@@ -3,7 +3,7 @@ using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Attributes;
 using twitchstreambot.Parsing;
 
-namespace twitchstreambot.Commands
+namespace twitchstreambot.basics
 {
     [TwitchCommand("so", IsPrivate = true)]
     public class ShoutOutCommand : ITwitchCommand

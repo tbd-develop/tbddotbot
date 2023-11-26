@@ -24,20 +24,20 @@ public class DefaultMessageDispatcher : IMessageDispatcher
 
         if (!TwitchCommandParser.TryMatch(message, out var twitchMessage)) return MessageResult.NoResponse();
 
-        if (twitchMessage is { IsBotCommand: false }) return MessageResult.NoResponse();
+        if (twitchMessage is { IsBotCommand: false }) return MessageResult.NoResponse(true);
 
         var action = twitchMessage?.Command!.Action;
 
         if (action == null || !_commandLookup.TryGetCommand(action, out var commandType))
-            return MessageResult.NoResponse();
+            return MessageResult.NoResponse(true);
 
         try
         {
             if (_serviceProvider.GetRequiredService(commandType!) is not ITwitchCommand commandHandler)
-                return MessageResult.NoResponse();
+                return MessageResult.NoResponse(true);
 
             if (!commandHandler.CanExecute(twitchMessage!))
-                return MessageResult.NoResponse();
+                return MessageResult.NoResponse(true);
 
             var response = commandHandler.Execute(twitchMessage!);
 
@@ -48,6 +48,6 @@ public class DefaultMessageDispatcher : IMessageDispatcher
             Console.WriteLine(exception);
         }
 
-        return MessageResult.NoResponse();
+        return MessageResult.NoResponse(true);
     }
 }
