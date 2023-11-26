@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using twitchstreambot.Dispatch;
 using twitchstreambot.Infrastructure;
 
 namespace twitchstreambot.Middleware;
@@ -14,7 +13,7 @@ public class CommandMiddleware : IMessagingMiddleware
     private readonly IStreamOutput _streamOutput;
 
     public CommandMiddleware(
-        ICommandLookup commandLookup, 
+        ICommandLookup commandLookup,
         IServiceProvider serviceProvider,
         IStreamOutput streamOutput)
     {
@@ -23,39 +22,38 @@ public class CommandMiddleware : IMessagingMiddleware
         _streamOutput = streamOutput;
     }
 
-    public async Task Execute(MessagingContext context,
-        MiddlewareDelegate next,
-        CancellationToken cancellationToken = default)
+    public ValueTask<MessageResult> Execute(MessagingContext context, CancellationToken cancellationToken = default)
     {
         var twitchMessage = context.Message;
 
-        if (twitchMessage is { IsBotCommand: false }) return;
+        var result = MessageResult.NoAction();
 
-        var action = twitchMessage?.Command!.Action;
-
-        if (action == null || !_commandLookup.TryGetCommand(action, out var commandType))
-            return;
-
-        try
+        if (twitchMessage is { IsBotCommand: false })
         {
-            if (_serviceProvider.GetRequiredService(commandType!) is not ITwitchCommand commandHandler)
-                return;
-
-            if (!commandHandler.CanExecute(twitchMessage!))
-                return;
-
-            string response = commandHandler.Execute(twitchMessage!);
-
-            _streamOutput.WriteToStream(response);
+            return ValueTask.FromResult(result);
         }
-        catch (Exception exception)
+
+        var action = twitchMessage.Command!.Action;
+
+        if (!_commandLookup.TryGetCommand(action, out var commandType))
         {
-            Console.WriteLine(exception);
+            return ValueTask.FromResult(result);
         }
+
+        if (_serviceProvider.GetRequiredService(commandType!) is not ITwitchCommand commandHandler)
+        {
+            return ValueTask.FromResult(MessageResult.Error($"Unable to find handler {commandType}"));
+        }
+
+        if (!commandHandler.CanExecute(twitchMessage))
+        {
+            return ValueTask.FromResult(result);
+        }
+
+        var response = commandHandler.Execute(twitchMessage);
+
+        _streamOutput.SendToStream(response);
+
+        return ValueTask.FromResult(MessageResult.Success());
     }
-}
-
-public interface IStreamOutput
-{
-    void WriteToStream(string message);
 }

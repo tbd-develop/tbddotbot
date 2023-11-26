@@ -2,15 +2,15 @@
 
 public class MessageResult
 {
-    public static MessageResult NoResponse(bool parsed = false) => new() { IsResponse = false, WasParsed = parsed };
-    public static MessageResult Respond(string message) => new(message) { IsResponse = true };
+    public static MessageResult Error(string message) => new(message) { IsError = true };
+    public static MessageResult Success(string? message = default) => new(message);
+    public static MessageResult NoAction() => new();
 
     private MessageResult(string? content = default)
     {
         Content = content;
     }
 
-    public bool IsResponse { get; set; }
-    public bool WasParsed { get; set; }
+    public bool IsError { get; set; }
     public string? Content { get; private set; }
 }

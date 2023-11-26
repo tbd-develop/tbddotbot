@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using twitchstreambot.Infrastructure;
 
 namespace twitchstreambot.Dispatch;
 
-public delegate Task MiddlewareDelegate(MessagingContext context, Func<Task> next, CancellationToken cancellationToken = default);
-
-public interface IMessagingMiddleware
-{
-    Task Execute(MessagingContext context, MiddlewareDelegate next, CancellationToken cancellationToken = default);
-}
-
 public class MessagingPipeline : IMessagingPipeline
 {
-    private readonly IEnumerable<MiddlewareDelegate> _middlewares;
+    private readonly IEnumerable<IMessagingMiddleware> _middlewares;
 
-    public MessagingPipeline(IEnumerable<MiddlewareDelegate> middlewares)
+    public MessagingPipeline(IEnumerable<IMessagingMiddleware> middlewares)
     {
         _middlewares = middlewares;
     }
@@ -26,21 +17,14 @@ public class MessagingPipeline : IMessagingPipeline
     public async Task Dispatch(MessagingContext context,
         CancellationToken cancellationToken = default)
     {
-        int currentIndex = -1;
-
-        async Task Next()
+        foreach (var middleware in _middlewares)
         {
-            currentIndex++;
+            var response = await middleware.Execute(context, cancellationToken);
 
-            if (currentIndex < _middlewares.Count())
+            if (response.IsError)
             {
-                await _middlewares.ElementAt(currentIndex)(
-                    context,
-                    Next,
-                    cancellationToken);
+                break;
             }
         }
-
-        await Next();
     }
 }

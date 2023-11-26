@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Communications;
 using twitchstreambot.Infrastructure.Configuration;
+using twitchstreambot.Middleware;
 
 namespace twitchstreambot
 {
-    public class TwitchStreamBot
+    public class TwitchStreamBot : IStreamOutput
     {
         private readonly TwitchBotConfiguration _configuration;
         private readonly IMessageDispatcher _dispatcher;

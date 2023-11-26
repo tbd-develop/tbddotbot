@@ -12,8 +12,13 @@ namespace twitchstreambot.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddTwitchStreamBot(this IServiceCollection services, params Assembly[] commandAssemblies)
+    public static void AddTwitchStreamBot(this IServiceCollection services,
+        Action<TwitchBotConfigurationBuilder> configure)
     {
+        services.AddSingleton<IMessageDispatcher, DefaultMessageDispatcher>();
+        services.AddSingleton<TwitchStreamBot>();
+        services.AddSingleton<IStreamOutput>(provider => provider.GetRequiredService<TwitchStreamBot>());
+
         services.AddSingleton(provider =>
         {
             var twitchConnection = new TwitchConnection();
@@ -38,10 +43,11 @@ public static class ServiceCollectionExtensions
             return twitchBotConfiguration;
         });
 
+        var builder = new TwitchBotConfigurationBuilder(services);
 
-        services.AddSingleton<IMessageDispatcher, DefaultMessageDispatcher>();
-        services.AddSingleton<TwitchStreamBot>();
-        services.AddCommands(commandAssemblies);
+        configure(builder);
+
+        builder.ConstructMiddlewarePipeline();
     }
 
     private static void AddCommands(this IServiceCollection serviceCollection, params Assembly[] assemblies)

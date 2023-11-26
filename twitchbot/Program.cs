@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using twitchstreambot.api.Configuration;
 using twitchstreambot.basics;
 using twitchstreambot.Infrastructure.Extensions;
+using twitchstreambot.Middleware;
 using twitchstreambot.pubsub;
 
 namespace twitchbot;
@@ -32,9 +33,11 @@ class Program
                 services.AddTwitchStreamBot(configure =>
                 {
                     configure.AddCommands(typeof(BookmarkCommand).Assembly);
-                    
-                    configure.AddMessagingMiddleware<DefaultMessageHandler>();
-                    configure.AddMessagingMiddleware<AnotherMessageHandler>();
+
+#if DEBUG
+                    configure.AddMessagingMiddleware<ConsoleOutMiddleware>();
+#endif
+                    configure.AddMessagingMiddleware<CommandMiddleware>();
                 });
 
                 services.AddHelix(context.Configuration);
