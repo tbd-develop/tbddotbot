@@ -29,7 +29,13 @@ class Program
             })
             .ConfigureServices((context, services) =>
             {
-                services.AddTwitchStreamBot(typeof(UptimeCommand).Assembly);
+                services.AddTwitchStreamBot(configure =>
+                {
+                    configure.AddCommands(typeof(BookmarkCommand).Assembly);
+                    
+                    configure.AddMessagingMiddleware<DefaultMessageHandler>();
+                    configure.AddMessagingMiddleware<AnotherMessageHandler>();
+                });
 
                 services.AddHelix(context.Configuration);
                 services.AddKraken(context.Configuration);

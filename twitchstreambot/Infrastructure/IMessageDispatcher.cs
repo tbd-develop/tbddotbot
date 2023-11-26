@@ -1,6 +1,9 @@
-﻿namespace twitchstreambot.Infrastructure;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace twitchstreambot.Infrastructure;
 
 public interface IMessageDispatcher
 {
-    public MessageResult Dispatch(string message);
+    Task Dispatch(string message, CancellationToken cancellationToken = default);
 }

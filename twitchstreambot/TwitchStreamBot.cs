@@ -101,12 +101,7 @@ namespace twitchstreambot
                 return;
             }
 
-            var result = _dispatcher.Dispatch(args.Message);
-
-            if (result.IsResponse)
-            {
-                SendToStream(result.Content!);
-            }
+            _dispatcher.Dispatch(args.Message);
         }
 
         public void SendToStream(string message)
