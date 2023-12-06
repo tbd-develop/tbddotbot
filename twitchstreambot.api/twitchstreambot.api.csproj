@@ -2,10 +2,16 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <Version>1.1.2</Version>
+        <Version>0.0.1</Version>
         <AssemblyVersion>1.1.2.0</AssemblyVersion>
         <FileVersion>1.1.2.0</FileVersion>
         <Nullable>enable</Nullable>
+        <PackageId>TbdDevelop.Twitch.StreamBot.Api</PackageId>
+        <Title>Twitch Stream Api</Title>
+        <Authors>Terry Burns-Dyson</Authors>
+        <Description>Wrappers around Twitch APIs (old and new) to provide access to endpoints    </Description>
+        <PackageLicenseUrl>https://mit-license.org/</PackageLicenseUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
     <ItemGroup>

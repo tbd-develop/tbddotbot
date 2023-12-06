@@ -24,8 +24,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twitchstreambot.pubsub", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twitchstreambot.benchmarks", "twitchstreambot.benchmarks\twitchstreambot.benchmarks.csproj", "{926196F6-1725-40A4-B6A4-0D3B79CB18E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twitchstreambot.ai", "twitchstreambot.ai\twitchstreambot.ai.csproj", "{7746DC29-175E-48F2-92F2-EB5D260CA2B5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,17 +58,12 @@ Global
 		{926196F6-1725-40A4-B6A4-0D3B79CB18E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{926196F6-1725-40A4-B6A4-0D3B79CB18E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{926196F6-1725-40A4-B6A4-0D3B79CB18E1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7746DC29-175E-48F2-92F2-EB5D260CA2B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7746DC29-175E-48F2-92F2-EB5D260CA2B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7746DC29-175E-48F2-92F2-EB5D260CA2B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7746DC29-175E-48F2-92F2-EB5D260CA2B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EFA00FBE-737C-49ED-837F-A32687A9F6A3} = {6EEF38D3-F023-4461-91B6-32AAF49D4F8A}
-		{7746DC29-175E-48F2-92F2-EB5D260CA2B5} = {6EEF38D3-F023-4461-91B6-32AAF49D4F8A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {88371644-27A4-4293-A24B-AB75A8BEA0BA}
