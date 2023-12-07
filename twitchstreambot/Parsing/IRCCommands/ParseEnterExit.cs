@@ -11,7 +11,7 @@ namespace twitchstreambot.Parsing.IRCCommands
             _command = command;
         }
 
-        public override TwitchMessage Do(string input)
+        public override TwitchMessage? Do(string input)
         {
             var usernameParser = from skip in Parse.Char(':')
                 from u in Parse.AnyChar.Until(Parse.Char('!')).Text()

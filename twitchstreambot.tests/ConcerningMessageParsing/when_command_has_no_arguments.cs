@@ -1,10 +1,9 @@
 ﻿using FluentAssertions;
-using NUnit.Framework;
 using twitchstreambot.Parsing.IRCCommands;
+using Xunit;
 
 namespace twitchstreambot.tests.ConcerningMessageParsing
 {
-    [TestFixture]
     public class when_command_has_no_arguments
     {
         public ParsePrivateMessage Subject;
@@ -12,27 +11,26 @@ namespace twitchstreambot.tests.ConcerningMessageParsing
         public string MessageContent = "!test";
         public string MessageToParse;
 
-        [SetUp]
-        public void SetUp()
+        public when_command_has_no_arguments()
         {
             MessageToParse = $"{MessageStarter}{MessageContent}";
             Subject = new ParsePrivateMessage();
         }
 
-        [Test]
+        [Fact]
         public void is_identified_as_bot_command()
         {
             var result = Subject.Do(MessageToParse);
 
-            result.IsBotCommand.Should().BeTrue();
+            result!.IsBotCommand.Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public void message_is_intact()
         {
             var result = Subject.Do(MessageToParse);
 
-            result.Content.Should().Be(MessageContent);
+            result!.Content.Should().Be(MessageContent);
         }
     }
 }

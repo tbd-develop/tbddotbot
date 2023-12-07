@@ -11,13 +11,13 @@ namespace twitchbot
     public class BotService : IHostedService, IDisposable
     {
         private readonly TwitchStreamBot _bot;
-        private Task _botProcess;
-        private Task _pubSubProcess;
+        private Task _botProcess = null!;
+        private Task _pubSubProcess = null!;
         private readonly TwitchPubSub _pubSub;
 
         public BotService(TwitchStreamBot bot,
-            IConfiguration configuration,
-            TwitchPubSub pubSub)
+            TwitchPubSub pubSub,
+            IConfiguration configuration)
         {
             _bot = bot;
             _pubSub = pubSub;
@@ -31,7 +31,7 @@ namespace twitchbot
 
         protected void _pubSub_Connected(CancellationToken cancellationToken)
         {
-            _pubSubProcess = Task.Run(() => _pubSub.Listen(cancellationToken), cancellationToken);
+            _pubSubProcess = Task.Run(async () => await _pubSub.Listen(cancellationToken), cancellationToken);
         }
 
         private void _bot_OnBotDisconnected(TwitchStreamBot streamer)
@@ -48,7 +48,8 @@ namespace twitchbot
         {
             _botProcess = _bot.Start(cancellationToken);
 
-            await _pubSub.Connect(cancellationToken);
+            //await _pubSub.Connect(cancellationToken);
+            await Task.CompletedTask;
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -57,7 +58,11 @@ namespace twitchbot
 
             await _pubSub.Stop(cancellationToken);
 
-            Task.WaitAll(_botProcess, _pubSubProcess);
+            Task.WaitAll(new[]
+            {
+                _botProcess,
+                _pubSubProcess
+            }, cancellationToken);
         }
 
         public void Dispose()
@@ -66,4 +71,3 @@ namespace twitchbot
         }
     }
 }
-

@@ -2,7 +2,7 @@
 {
     public class TwitchAttribute
     {
-        public string Element { get; set; }
-        public string Arguments { get; set; }
+        public string Element { get; set; } = null!;
+        public string? Arguments { get; set; }
     }
 }

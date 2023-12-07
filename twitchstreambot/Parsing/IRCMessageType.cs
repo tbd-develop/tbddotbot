@@ -2,11 +2,11 @@
 {
     public enum IRCMessageType
     {
-        NONE,
-        PRIVMSG,
-        JOIN,
-        PART,
-        USERNOTICE,
-        USERSTATE
+        None,
+        PrivateMessage,
+        Join,
+        Part,
+        UserNotice,
+        UserState
     }
 }

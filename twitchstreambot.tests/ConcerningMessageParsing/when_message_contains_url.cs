@@ -1,39 +1,38 @@
 ﻿using FluentAssertions;
-using NUnit.Framework;
 using twitchstreambot.Parsing.IRCCommands;
+using Xunit;
 
-namespace twitchstreambot.tests.ConcerningMessageParsing
+namespace twitchstreambot.tests.ConcerningMessageParsing;
+
+public class when_message_contains_url
 {
-    [TestFixture]
-    public class when_message_contains_url
+    private ParsePrivateMessage Subject;
+    private string MessageStarter =
+        @"@badge-info=;badges=broadcaster/1,premium/1;user-type= :user!user@user.tmi.twitch.tv PRIVMSG #user :";
+
+    private string MessageContent = "Test http://twitch.tv is a url";
+    private string MessageToParse;
+
+    public when_message_contains_url()
     {
-        public ParsePrivateMessage Subject;
-        public string MessageStarter = @"@badge-info=;badges=broadcaster/1,premium/1;user-type= :user!user@user.tmi.twitch.tv PRIVMSG #user :";
-        public string MessageContent = "Test http://twitch.tv is a url";
-        public string MessageToParse;
+        MessageToParse = $"{MessageStarter}{MessageContent}";
+        Subject = new ParsePrivateMessage();
+    }
 
-        [SetUp]
-        public void SetUp()
-        {
-            MessageToParse = $"{MessageStarter}{MessageContent}";
-            Subject = new ParsePrivateMessage();
-        }
+    [Fact]
+    public void message_is_not_treated_as_bot_message()
+    {
+        var result = Subject.Do(MessageToParse);
 
-        [Test]
-        public void message_is_not_treated_as_bot_message()
-        {
-            var result = Subject.Do(MessageToParse);
+        result!.IsBotCommand.Should().BeFalse();
+        result!.Command.Should().BeNull();
+    }
 
-            result.IsBotCommand.Should().BeFalse();
-            result.Command.Should().BeNull();
-        }
+    [Fact]
+    public void message_is_intact()
+    {
+        var result = Subject.Do(MessageToParse);
 
-        [Test]
-        public void message_is_intact()
-        {
-            var result = Subject.Do(MessageToParse);
-
-            result.Content.Should().Be(MessageContent);
-        }
+        result!.Content.Should().Be(MessageContent);
     }
 }

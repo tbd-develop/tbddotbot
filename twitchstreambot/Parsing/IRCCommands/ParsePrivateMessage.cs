@@ -4,7 +4,7 @@ namespace twitchstreambot.Parsing.IRCCommands
 {
     public class ParsePrivateMessage : MessageParser
     {
-        public override TwitchMessage Do(string input)
+        public override TwitchMessage? Do(string input)
         {
             string[] components = Regex.Split(input, @":(.*!.*@.*).tmi.twitch.tv\s*");
 
@@ -15,7 +15,7 @@ namespace twitchstreambot.Parsing.IRCCommands
             return new TwitchMessage
             {
                 User = TwitchMessage.UserFromHeaders(headers),
-                MessageType = IRCMessageType.PRIVMSG,
+                MessageType = IRCMessageType.PrivateMessage,
                 Command = GetCommand(messageContents[1]),
                 Headers = headers,
                 Content = messageContents[1]

@@ -1,47 +1,51 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <LangVersion>7.3</LangVersion>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>12</LangVersion>
         <OutputType>Exe</OutputType>
         <StartupObject>twitchbot.Program</StartupObject>
         <UserSecretsId>f48c4998-bbad-40a6-905a-e7cc97bc0200</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <None Remove="appsettings.json" />
-      <None Remove="definitions.json" />
-      <Content Include="definitions.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
+        <None Remove="appsettings.json"/>
+        <None Remove="definitions.json"/>
+        <Content Include="definitions.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\twitchstreambot.api\twitchstreambot.api.csproj" />
-      <ProjectReference Include="..\twitchstreambot.basics\twitchstreambot.basics.csproj" />
-      <ProjectReference Include="..\twitchstreambot.command\twitchstreambot.command.csproj" />
-      <ProjectReference Include="..\twitchstreambot.pubsub\twitchstreambot.pubsub.csproj" />
-      <ProjectReference Include="..\twitchstreambot\twitchstreambot.csproj" />
+        <ProjectReference Include="..\twitchstreambot.api\twitchstreambot.api.csproj"/>
+        <ProjectReference Include="..\twitchstreambot.basics\twitchstreambot.basics.csproj"/>
+        <ProjectReference Include="..\twitchstreambot.pubsub\twitchstreambot.pubsub.csproj"/>
+        <ProjectReference Include="..\twitchstreambot\twitchstreambot.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-      <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.3" />
-      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.3" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.3" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.3" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.3" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.3" />
-      <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="appsettings.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
+        <Content Include="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="prompts\" />
     </ItemGroup>
 
 </Project>

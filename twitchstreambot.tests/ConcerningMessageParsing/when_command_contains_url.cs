@@ -1,46 +1,47 @@
 ﻿using FluentAssertions;
-using NUnit.Framework;
 using twitchstreambot.Parsing.IRCCommands;
+using Xunit;
 
 namespace twitchstreambot.tests.ConcerningMessageParsing
 {
-    [TestFixture]
     public class when_command_contains_url
     {
-        public ParsePrivateMessage Subject;
-        public string MessageStarter = @"@badge-info=;badges=broadcaster/1,premium/1;user-type= :user!user@user.tmi.twitch.tv PRIVMSG #user :";
-        public string MessageContent = "!test there is a url here http://test.twitch.tv/gohere";
-        public string MessageToParse;
+        private readonly ParsePrivateMessage Subject;
 
-        [SetUp]
-        public void SetUp()
+        private readonly string MessageStarter =
+            @"@badge-info=;badges=broadcaster/1,premium/1;user-type= :user!user@user.tmi.twitch.tv PRIVMSG #user :";
+
+        private readonly string MessageContent = "!test there is a url here http://test.twitch.tv/gohere";
+        private readonly string MessageToParse;
+
+        public when_command_contains_url()
         {
             MessageToParse = $"{MessageStarter}{MessageContent}";
             Subject = new ParsePrivateMessage();
         }
 
-        [Test]
+        [Fact]
         public void is_identified_as_bot_command()
         {
             var result = Subject.Do(MessageToParse);
 
-            result.IsBotCommand.Should().BeTrue();
+            result!.IsBotCommand.Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public void message_is_intact()
         {
             var result = Subject.Do(MessageToParse);
 
-            result.Content.Should().Be(MessageContent);
+            result!.Content.Should().Be(MessageContent);
         }
 
-        [Test]
+        [Fact]
         public void url_is_available_in_arguments()
         {
             var result = Subject.Do(MessageToParse);
 
-            result.Command.Arguments.Should().Contain("http://test.twitch.tv/gohere");
+            result!.Command!.Arguments.Should().Contain("http://test.twitch.tv/gohere");
         }
     }
 }
