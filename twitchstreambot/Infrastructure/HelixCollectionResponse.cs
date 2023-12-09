@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace twitchstreambot.api.Infrastructure
+namespace twitchstreambot.Infrastructure
 {
     public class HelixCollectionResponse<T>
     {

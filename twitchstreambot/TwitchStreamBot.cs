@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Communications;
 using twitchstreambot.Infrastructure.Configuration;
-using twitchstreambot.Middleware;
 
 namespace twitchstreambot
 {

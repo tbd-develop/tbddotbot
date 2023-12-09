@@ -19,7 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\twitchstreambot.api\twitchstreambot.api.csproj"/>
         <ProjectReference Include="..\twitchstreambot.basics\twitchstreambot.basics.csproj"/>
         <ProjectReference Include="..\twitchstreambot.pubsub\twitchstreambot.pubsub.csproj"/>
         <ProjectReference Include="..\twitchstreambot\twitchstreambot.csproj"/>

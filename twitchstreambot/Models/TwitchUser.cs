@@ -1,4 +1,4 @@
-﻿namespace twitchstreambot.api.Models
+﻿namespace twitchstreambot.Models
 {
     public class TwitchUser
     {

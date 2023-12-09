@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using twitchstreambot.api;
+using twitchstreambot.Api;
 using twitchstreambot.pubsub.Configuration;
 using twitchstreambot.pubsub.Infrastructure;
 using twitchstreambot.pubsub.Messaging;

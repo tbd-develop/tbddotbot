@@ -3,10 +3,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using twitchstreambot.api.Infrastructure;
-using twitchstreambot.api.Models;
+using twitchstreambot.Infrastructure;
+using twitchstreambot.Models;
 
-namespace twitchstreambot.api
+namespace twitchstreambot.Api
 {
     public class TwitchHelix
     {
@@ -27,7 +27,7 @@ namespace twitchstreambot.api
 
                 var users = JsonConvert.DeserializeObject<HelixCollectionResponse<TwitchUser>>(content);
 
-                return long.Parse(users.Data.First().Id);
+                return users is null ? 0 : long.Parse(users.Data.First().Id);
             }
 
             return 0;

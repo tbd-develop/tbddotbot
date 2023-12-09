@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace twitchstreambot.api.Models
+namespace twitchstreambot.Models
 {
     public class StreamVideo
     {

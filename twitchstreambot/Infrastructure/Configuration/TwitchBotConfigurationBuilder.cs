@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using twitchstreambot.Dispatch;
 using twitchstreambot.Infrastructure.Attributes;
+using twitchstreambot.Middleware;
 
 namespace twitchstreambot.Infrastructure.Configuration;
 
@@ -42,6 +43,9 @@ public class TwitchBotConfigurationBuilder
         }
 
         _serviceCollection.AddSingleton<ICommandLookup>(new DefaultCommandLookup(availableCommands));
+        _serviceCollection.AddSingleton<CommandMiddleware>();
+
+        _middlewares.Add(typeof(CommandMiddleware));
 
         return this;
     }

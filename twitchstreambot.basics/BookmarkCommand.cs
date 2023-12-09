@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using twitchstreambot.api;
+using twitchstreambot.Api;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Attributes;
 using twitchstreambot.Parsing;

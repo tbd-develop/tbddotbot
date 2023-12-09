@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using twitchstreambot.api.Models;
+using twitchstreambot.Models;
 
-namespace twitchstreambot.api
+namespace twitchstreambot.Api
 {
     public class TwitchKraken
     {
