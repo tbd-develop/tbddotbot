@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using twitchstreambot;
+using twitchstreambot.Infrastructure.Configuration;
 using twitchstreambot.pubsub;
 
 namespace twitchbot
@@ -16,8 +17,7 @@ namespace twitchbot
         private readonly TwitchPubSub _pubSub;
 
         public BotService(TwitchStreamBot bot,
-            TwitchPubSub pubSub,
-            IConfiguration configuration)
+            TwitchPubSub pubSub)
         {
             _bot = bot;
             _pubSub = pubSub;
