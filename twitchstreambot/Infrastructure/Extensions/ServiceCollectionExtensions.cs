@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
 
             var configuration = provider.GetRequiredService<IConfiguration>();
 
-            configuration.GetSection("bot")
+            configuration.GetSection("twitch:bot")
                 .Bind(twitchConnection);
 
             return twitchConnection;
