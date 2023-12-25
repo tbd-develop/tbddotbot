@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>TbdDevelop.TwitchStreamBot.Webhooks</PackageId>
+        <Title>Stream Bot Webhooks</Title>
+        <Authors>Terry Burns-Dyson</Authors>
+        <Description>This provides the extensions around the core twitch stream bot code to add in webhook event listening</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\twitchstreambot\twitchstreambot.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    </ItemGroup>
+
+</Project>

@@ -19,7 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\twitchstreambot.basics\twitchstreambot.basics.csproj"/>
         <ProjectReference Include="..\twitchstreambot.pubsub\twitchstreambot.pubsub.csproj"/>
         <ProjectReference Include="..\twitchstreambot\twitchstreambot.csproj"/>
     </ItemGroup>
@@ -44,6 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Commands\" />
       <Folder Include="prompts\" />
     </ItemGroup>
 

@@ -3,11 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using twitchstreambot.basics;
-using twitchstreambot.Infrastructure.Configuration;
 using twitchstreambot.Infrastructure.Extensions;
 using twitchstreambot.Middleware;
-using twitchstreambot.pubsub;
 
 namespace twitchbot;
 
@@ -32,8 +29,7 @@ class Program
             {
                 services.AddTwitchStreamBot(configure =>
                 {
-                    configure.AddCommands(typeof(BookmarkCommand).Assembly);
-
+                    // configure.AddCommands(typeof().Assembly);
 #if DEBUG
                     configure.AddMessagingMiddleware<ConsoleOutMiddleware>();
 #endif
@@ -41,10 +37,7 @@ class Program
                 });
 
                 services.AddHelix(context.Configuration);
-                services.AddKraken(context.Configuration);
-                services.AddTwitchAPI(context.Configuration);
-
-                services.AddSingleton<TwitchPubSub>();
+                services.AddTwitchApi(context.Configuration);
 
                 services.AddHostedService<BotService>();
             });

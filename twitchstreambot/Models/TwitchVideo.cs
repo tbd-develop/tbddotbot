@@ -1,26 +1,28 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace twitchstreambot.Models
 {
     public class TwitchVideo
     {
         public string Id { get; set; }
-        [JsonProperty("user_id")]
+        [JsonPropertyName("user_id")]
         public string UserId { get; set; }
-        [JsonProperty("user_name")]
+        [JsonPropertyName("user_name")]
         public string UserName { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        [JsonProperty("created_at")]
+
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        
+        [JsonPropertyName("created_at")]
         public DateTime CreatedAt { get; set; }
-        [JsonProperty("published_at")]
+        [JsonPropertyName("published_at")]
         public DateTime PublishedAt { get; set; }
         public string Url { get; set; }
-        [JsonProperty("thumbnail_url")]
+        [JsonPropertyName("thumbnail_url")]
         public string ThumbnailUrl { get; set; }
         public string Viewable { get; set; }
-        [JsonProperty("view_count")]
+        [JsonPropertyName("view_count")]
         public int ViewCount { get; set; }
         public string Language { get; set; }
         public string Type { get; set; }

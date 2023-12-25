@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace twitchstreambot.Models;
 
@@ -12,7 +12,7 @@ public class TwitchData
         public long Id { get; set; }
         public string Title { get; set; } = null!;
             
-        [JsonProperty("viewer_count")] public int Viewers { get; set; }
-        [JsonProperty("started_at")] public DateTime StartedAt { get; set; }
+        [JsonPropertyName("viewer_count")] public int Viewers { get; set; }
+        [JsonPropertyName("started_at")] public DateTime StartedAt { get; set; }
     }
 }

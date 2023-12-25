@@ -1,107 +1,40 @@
-﻿using System.Linq;
+﻿using System;
 using System.Net.Http;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using twitchstreambot.Api.Requests;
 using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.Extensions;
 using twitchstreambot.Models;
 
-namespace twitchstreambot.Api
+namespace twitchstreambot.Api;
+
+public class TwitchHelix(HttpClient client)
 {
-    public class TwitchHelix
+    public HttpClient Client => client;
+
+    internal readonly JsonSerializerOptions Options = new JsonSerializerOptions
     {
-        private readonly HttpClient _client;
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true
+    };
 
-        public TwitchHelix(HttpClient client)
-        {
-            _client = client;
-        }
+    public async Task<HelixCollectionResponse<TwitchUser>?> GetUsersByName(params string[] names)
+    {
+        var parameters = names.AsQueryParameter("login");
 
-        public async Task<long> GetUserIdByName(string name)
-        {
-            var response = await _client.GetAsync($"helix/users?login={name}");
+        var response = await client.GetAsync($"helix/users?{parameters}");
 
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode) return null;
 
-                var users = JsonConvert.DeserializeObject<HelixCollectionResponse<TwitchUser>>(content);
+        var content = await response.Content.ReadAsStringAsync();
 
-                return users is null ? 0 : long.Parse(users.Data.First().Id);
-            }
+        return JsonSerializer.Deserialize<HelixCollectionResponse<TwitchUser>>(content, Options);
+    }
 
-            return 0;
-        }
-
-        public async Task CreateStreamMarkerForUser(string name, string comment)
-        {
-            var userId = await GetUserIdByName(name);
-
-            if (userId > 0)
-            {
-                var message = JsonConvert.SerializeObject(new { user_id = userId, description = comment });
-
-                await _client.PostAsync($"helix/streams/markers",
-                    new StringContent(message, Encoding.UTF8, "application/json"));
-            }
-        }
-
-        public async Task<HelixCollectionResponse<StreamMarkerData>> GetMarkersForUser(string name)
-        {
-            var userId = await GetUserIdByName(name);
-
-            if (userId > 0)
-            {
-                var response = await _client.GetAsync($"helix/streams/markers?user_id={userId}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    var result = JsonConvert.DeserializeObject<HelixCollectionResponse<StreamMarkerData>>(content);
-
-                    return result;
-                }
-            }
-
-            return null;
-        }
-
-        public async Task<HelixCollectionResponse<StreamMarkerData>> GetMarkersForVideo(string id)
-        {
-            var response = await _client.GetAsync($"helix/streams/markers?video_id={id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-
-                var result = JsonConvert.DeserializeObject<HelixCollectionResponse<StreamMarkerData>>(content);
-
-                return result;
-            }
-
-            return null;
-        }
-
-        public async Task<HelixCollectionResponse<TwitchVideo>> GetVideosForUser(string name, string type = "archive")
-        {
-            var userId = await GetUserIdByName(name);
-
-            if (userId > 0)
-            {
-                var response = await _client.GetAsync($"helix/videos?user_id={userId}&type={type}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    var result = JsonConvert.DeserializeObject<HelixCollectionResponse<TwitchVideo>>(content);
-
-                    return result;
-                }
-            }
-
-            return null;
-        }
+    public TRequest? GetRequest<TRequest>()
+        where TRequest : HelixRequest
+    {
+        return Activator.CreateInstance(typeof(TRequest), [this]) as TRequest;
     }
 }

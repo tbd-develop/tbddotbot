@@ -1,12 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace twitchstreambot.Models
 {
     public class ChannelResponse
     {
-        [JsonProperty("mature")]
+        [JsonPropertyName("mature")]
         public bool IsMature { get; set; }
-        [JsonProperty("_id")]
+        [JsonPropertyName("_id")]
         public string Id { get; set; }
         public int Views { get; set; }
         public int Followers { get; set; }

@@ -1,4 +1,4 @@
-namespace twitchstreambot.Infrastructure.Extensions;
+namespace twitchstreambot.Infrastructure;
 
 public class StreamRole
 {
