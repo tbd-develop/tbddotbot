@@ -6,7 +6,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 namespace twitchstreambot.webhooks.Events.Channel;
 
 [WebhookEvent("channel.follow", 2)]
-public class Follow : WebhookBaseEvent
+public class Follow : WebhookFromBroadcasterEvent
 {
     [JsonPropertyName("user_id")] public string UserId { get; set; } = null!;
     [JsonPropertyName("user_name")] public string UserName { get; set; } = null!;

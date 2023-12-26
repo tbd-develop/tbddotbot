@@ -7,7 +7,7 @@ public class CheerHandler : TwitchWebhookEventHandler<Cheer>
 {
     public override Task Handle(PublishedEvent<Cheer> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Received cheer for {@event.Event.DisplayName} with {@event.Event.Bits} bits");
+        Console.WriteLine($"Received cheer for {@event.Event.UserName} with {@event.Event.Bits} bits");
 
         return Task.CompletedTask;
     }

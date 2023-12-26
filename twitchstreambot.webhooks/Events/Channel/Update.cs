@@ -6,7 +6,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 namespace twitchstreambot.webhooks.Events.Channel;
 
 [WebhookEvent("channel.update", 2)]
-public class Update : WebhookBaseEvent
+public class Update : WebhookFromBroadcasterEvent
 {
     public string Title { get; set; } = null!;
 

@@ -7,7 +7,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 namespace twitchstreambot.webhooks.Events.Channel.Chat;
 
 [WebhookEvent("channel.chat.notification")]
-public class Notification : WebhookBaseEvent
+public class Notification : WebhookFromBroadcasterEvent
 {
     [JsonPropertyName("chatter_user_id")] public string ChatterUserId { get; set; } = null!;
 

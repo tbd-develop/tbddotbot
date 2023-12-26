@@ -8,10 +8,10 @@ namespace twitchstreambot.webhooks.Infrastructure;
 
 public class EventMapper
 {
-    private static Dictionary<string, Type>? _eventTypes = null;
+    private static Dictionary<(string, int), Type>? _eventTypes = null;
     private static bool IsInitialized => _eventTypes != null;
 
-    private static JsonSerializerOptions Options = new()
+    private static readonly JsonSerializerOptions Options = new()
     {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -24,11 +24,16 @@ public class EventMapper
             return;
         }
 
-        _eventTypes =
-            Assembly.GetAssembly(typeof(WebhookBaseEvent))
-                ?.GetTypes()
-                .Where(x => x is { IsClass: true, IsAbstract: false } && x.IsSubclassOf(typeof(WebhookBaseEvent)))
-                .ToDictionary(x => x.GetCustomAttribute<WebhookEventAttribute>()!.Event);
+        _eventTypes = (from type in Assembly.GetAssembly(typeof(WebhookBaseEvent))?.GetTypes()
+            where type is { IsClass: true, IsAbstract: false } && type.IsSubclassOf(typeof(WebhookBaseEvent))
+            let attribute = type.GetCustomAttribute<WebhookEventAttribute>()
+            where attribute is not null
+            select new
+            {
+                attribute.Event,
+                attribute.Version,
+                type
+            }).ToDictionary(x => (x.Event, x.Version), x => x.type);
     }
 
 
@@ -40,7 +45,8 @@ public class EventMapper
 
         var eventType = message.Subscription.Type;
 
-        var type = _eventTypes!.GetValueOrDefault(eventType);
+        var type = _eventTypes!.GetValueOrDefault((eventType,
+            int.TryParse(message.Subscription.Version, out var version) ? version : 1));
 
         return type is null ? null : Deserialize(type, data);
     }

@@ -6,7 +6,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 namespace twitchstreambot.webhooks.Events.Channel.Chat;
 
 [WebhookEvent("channel.chat.message_delete")]
-public class MessageDelete : WebhookBaseEvent
+public class MessageDelete : WebhookFromBroadcasterEvent
 {
     [JsonPropertyName("target_user_id")] public string TargetUserId { get; set; } = null!;
 

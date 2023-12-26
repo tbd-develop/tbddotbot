@@ -6,7 +6,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 namespace twitchstreambot.webhooks.Events.Channel;
 
 [WebhookEvent("channel.ad_break.begin")]
-public class AdBreakBegin : WebhookBaseEvent
+public class AdBreakBegin : WebhookFromBroadcasterEvent
 {
     [JsonPropertyName("requester_user_id")]
     public string RequesterUserId { get; set; } = null!;
