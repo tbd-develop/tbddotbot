@@ -5,7 +5,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 namespace twitchstreambot.webhooks.Events.Channel;
 
 [WebhookEvent("channel.ban")]
-public class Ban : WebhookFromBroadcasterEvent, IContainUserInformation
+public class Ban : WebhookBaseEvent, IContainBroadcasterInformation, IContainUserInformation
 {
     [JsonPropertyName("user_id")] public string? UserId { get; set; } = null!;
     [JsonPropertyName("user_name")] public string? UserName { get; set; } = null!;
@@ -25,4 +25,7 @@ public class Ban : WebhookFromBroadcasterEvent, IContainUserInformation
     [JsonPropertyName("ends_at")] public DateTime? EndsAt { get; set; }
 
     [JsonPropertyName("is_permanent")] public bool IsPermanent { get; set; }
+    public string BroadcasterUserId { get; set; }
+    public string BroadcasterUserName { get; set; }
+    public string BroadcasterUserLogin { get; set; }
 }

@@ -5,7 +5,9 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 namespace twitchstreambot.webhooks.Events.Channel;
 
 [WebhookEvent("channel.cheer")]
-public class Cheer : WebhookFromBroadcasterEvent, IContainUserInformation
+public class Cheer : WebhookBaseEvent,
+    IContainBroadcasterInformation,
+    IContainUserInformation
 {
     [JsonPropertyName("user_id")] public string? UserId { get; set; }
     [JsonPropertyName("user_name")] public string? UserName { get; set; }
@@ -15,4 +17,13 @@ public class Cheer : WebhookFromBroadcasterEvent, IContainUserInformation
 
     public string? Message { get; set; }
     public int Bits { get; set; }
+
+    [JsonPropertyName("broadcaster_user_id")]
+    public string BroadcasterUserId { get; set; } = null!;
+
+    [JsonPropertyName("broadcaster_user_login")]
+    public string BroadcasterUserLogin { get; set; } = null!;
+
+    [JsonPropertyName("broadcaster_user_name")]
+    public string BroadcasterUserName { get; set; } = null!;
 }

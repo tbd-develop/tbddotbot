@@ -5,7 +5,10 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 namespace twitchstreambot.webhooks.Events.Channel;
 
 [WebhookEvent("channel.unban")]
-public class Unban : WebhookFromBroadcasterEvent, IContainUserInformation, IContainModeratorInformation
+public class Unban : WebhookBaseEvent,
+    IContainBroadcasterInformation,
+    IContainUserInformation,
+    IContainModeratorInformation
 {
     [JsonPropertyName("user_id")] public string? UserId { get; set; }
     [JsonPropertyName("user_name")] public string? UserName { get; set; }
@@ -20,4 +23,13 @@ public class Unban : WebhookFromBroadcasterEvent, IContainUserInformation, ICont
 
     [JsonPropertyName("moderator_user_login")]
     public string? ModeratorUserLogin { get; set; }
+
+    [JsonPropertyName("broadcaster_user_id")]
+    public string BroadcasterUserId { get; set; } = null!;
+
+    [JsonPropertyName("broadcaster_user_login")]
+    public string BroadcasterUserLogin { get; set; } = null!;
+
+    [JsonPropertyName("broadcaster_user_name")]
+    public string BroadcasterUserName { get; set; } = null!;
 }

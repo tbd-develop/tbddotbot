@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using twitchstreambot.Infrastructure;
+using twitchstreambot.webhooks.Events.Contracts;
 using twitchstreambot.webhooks.Events.Values;
 using twitchstreambot.webhooks.Infrastructure;
 using twitchstreambot.webhooks.Infrastructure.Attributes;
@@ -7,7 +8,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 namespace twitchstreambot.webhooks.Events.Channel.Chat;
 
 [WebhookEvent("channel.chat.notification")]
-public class Notification : WebhookFromBroadcasterEvent
+public class Notification : WebhookBaseEvent, IContainBroadcasterInformation
 {
     [JsonPropertyName("chatter_user_id")] public string ChatterUserId { get; set; } = null!;
 
@@ -54,4 +55,13 @@ public class Notification : WebhookFromBroadcasterEvent
     [JsonPropertyName("bits_badge_tier")] public BitsBadgeTier? BitsBadgeTier { get; set; }
 
     [JsonPropertyName("charity_donation")] public CharityDonation? CharityDonation { get; set; }
+
+    [JsonPropertyName("broadcaster_user_id")]
+    public string BroadcasterUserId { get; set; }
+
+    [JsonPropertyName("broadcaster_user_name")]
+    public string BroadcasterUserName { get; set; }
+
+    [JsonPropertyName("broadcaster_user_login")]
+    public string BroadcasterUserLogin { get; set; }
 }
