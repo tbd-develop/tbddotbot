@@ -1,4 +1,6 @@
 using twitchstreambot.webhooks.Extensions;
+using twitchstreambot.webhooks.Infrastructure;
+using webhook_testing.Handlers;
 using webhook_testing.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +15,10 @@ builder.Services.AddWebhooks(configure =>
     configure.AddSecretProvider<SampleSecretProvider>((provider, headers, _) =>
         provider.SecretForSubscriptionType(headers.SubscriptionType!));
 
-    configure.AddEventDispatcher<SampleEventDispatcher>();
+    configure.AddLocalEventHandling(builder =>
+    {
+        builder.AddHandlersFromAssembly(typeof(CheerHandler).Assembly);
+    });
 });
 
 var app = builder.Build();

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using twitchstreambot.webhooks.Extensions.Builders;
 using twitchstreambot.webhooks.Infrastructure;
-using twitchstreambot.webhooks.Infrastructure.Contracts;
 using twitchstreambot.webhooks.Models;
 
 namespace twitchstreambot.webhooks.Extensions;
@@ -22,7 +21,8 @@ public static class WebApplicationExtensions
     {
         app.MapPost(uri, async (HttpRequest request,
             [FromServices] GetSecretDelegate secretProvider,
-            [FromServices] IWebhookEventDispatcher dispatcher) =>
+            [FromServices] EventMapper eventMapper,
+            [FromServices] IEventPublisher eventPublisher) =>
         {
             var twitchHeaders = TwitchHeaderCollection.FromHeaders(request.Headers);
 
@@ -54,7 +54,14 @@ public static class WebApplicationExtensions
                 return TypedResults.BadRequest();
             }
 
-            await dispatcher.Dispatch(message, content);
+            var @event = eventMapper.Map(message, content);
+
+            if (@event is null)
+            {
+                return TypedResults.BadRequest();
+            }
+
+            await eventPublisher.Publish(@event, twitchHeaders);
 
             return TypedResults.Ok();
         });
@@ -62,14 +69,10 @@ public static class WebApplicationExtensions
         return app;
     }
 
-    public static async Task<string> GetContentAsString(Stream content)
+    private static async Task<string> GetContentAsString(Stream content)
     {
-        string body = string.Empty;
-
         using var reader = new StreamReader(content);
 
-        body = await reader.ReadToEndAsync();
-
-        return body;
+        return await reader.ReadToEndAsync();
     }
 }
