@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using twitchstreambot.webhooks.Events;
 using twitchstreambot.webhooks.Infrastructure.Attributes;
 using twitchstreambot.webhooks.Models;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace twitchstreambot.webhooks.Infrastructure;
 
@@ -11,17 +13,32 @@ public class EventMapper
     private static Dictionary<(string, int), Type>? _eventTypes = null;
     private static bool IsInitialized => _eventTypes != null;
 
-    private static readonly JsonSerializerOptions Options = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
+    private static JsonSerializerOptions Options;
 
     private static void Initialize()
     {
         if (IsInitialized)
         {
             return;
+        }
+
+        Options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        var converters = Assembly.GetAssembly(typeof(WebhookBaseEvent))?.GetTypes()
+            .Where(x => x is { IsClass: true, IsAbstract: false } && x.IsSubclassOf(typeof(JsonConverter)))
+            .Select(x => (JsonConverter)Activator.CreateInstance(x)!)
+            .ToList();
+
+        if (converters is not null)
+        {
+            foreach (var converter in converters)
+            {
+                Options.Converters.Add(converter);
+            }
         }
 
         _eventTypes = (from type in Assembly.GetAssembly(typeof(WebhookBaseEvent))?.GetTypes()
