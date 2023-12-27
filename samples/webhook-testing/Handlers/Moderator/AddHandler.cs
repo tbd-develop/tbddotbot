@@ -1,9 +1,9 @@
 ﻿using twitchstreambot.webhooks.Events.Channel.Moderator;
 using twitchstreambot.webhooks.Infrastructure;
 
-namespace webhook_testing.Handlers;
+namespace webhook_testing.Handlers.Moderator;
 
-public class ModeratorAddHandler : TwitchWebhookEventHandler<Add>
+public class AddHandler : TwitchWebhookEventHandler<Add>
 {
     public override Task Handle(PublishedEvent<Add> @event, CancellationToken cancellationToken)
     {
