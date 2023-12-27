@@ -7,7 +7,7 @@ public class ProgressHandler : TwitchWebhookEventHandler<Progress>
 {
     public override Task Handle(PublishedEvent<Progress> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Poll progress: {@event.Event.Title} {@event.Event.StartedAt}");
+        Console.WriteLine($"Poll progress: {@event.Message.Title} {@event.Message.StartedAt}");
 
         return Task.CompletedTask;
     }

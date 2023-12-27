@@ -7,7 +7,7 @@ public class AddHandler : TwitchWebhookEventHandler<Add>
 {
     public override Task Handle(PublishedEvent<Add> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Redemption added: {@event.Event.Reward.Title}");
+        Console.WriteLine($"Redemption added: {@event.Message.Reward.Title}");
 
         return Task.CompletedTask;
     }

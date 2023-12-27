@@ -7,7 +7,7 @@ public class RemoveHandler : TwitchWebhookEventHandler<Remove>
 {
     public override Task Handle(PublishedEvent<Remove> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Channel points reward removed: {@event.Event.Title}");
+        Console.WriteLine($"Channel points reward removed: {@event.Message.Title}");
 
         return Task.CompletedTask;
     }

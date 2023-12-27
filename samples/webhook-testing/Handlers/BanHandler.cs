@@ -7,7 +7,7 @@ public class BanHandler : TwitchWebhookEventHandler<Ban>
 {
     public override Task Handle(PublishedEvent<Ban> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Received ban for {@event.Event.UserName} with reason {@event.Event.Reason}");
+        Console.WriteLine($"Received ban for {@event.Message.UserName} with reason {@event.Message.Reason}");
 
         return Task.CompletedTask;
     }

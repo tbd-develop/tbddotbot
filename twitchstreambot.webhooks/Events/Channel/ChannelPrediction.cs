@@ -1,9 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 using twitchstreambot.webhooks.Events.Contracts;
+using twitchstreambot.webhooks.Events.Values;
 
 namespace twitchstreambot.webhooks.Events.Channel;
 
-public class ChannelPrediction : WebhookBaseEvent, IContainBroadcasterInformation
+public abstract class ChannelPrediction : WebhookBaseEvent, IContainBroadcasterInformation
 {
     public string Id { get; set; } = null!;
 
@@ -18,6 +19,5 @@ public class ChannelPrediction : WebhookBaseEvent, IContainBroadcasterInformatio
 
     public string Title { get; set; } = null!;
     public PredictionOutcome[] Outcomes { get; set; } = null!;
-    [JsonPropertyName("started_at")]
-    public DateTime StartedAt { get; set; }
+    [JsonPropertyName("started_at")] public DateTime StartedAt { get; set; }
 }

@@ -7,7 +7,7 @@ public class EndHandler : TwitchWebhookEventHandler<End>
 {
     public override Task Handle(PublishedEvent<End> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Poll ended: {@event.Event.Title}");
+        Console.WriteLine($"Poll ended: {@event.Message.Title}");
         
         return Task.CompletedTask;
     }

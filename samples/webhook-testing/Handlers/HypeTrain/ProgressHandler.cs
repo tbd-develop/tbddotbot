@@ -1,13 +1,13 @@
-﻿using twitchstreambot.webhooks.Events.Channel.Prediction;
+﻿using twitchstreambot.webhooks.Events.Channel.HypeTrain;
 using twitchstreambot.webhooks.Infrastructure;
 
-namespace webhook_testing.Handlers.Prediction;
+namespace webhook_testing.Handlers.HypeTrain;
 
 public class ProgressHandler : TwitchWebhookEventHandler<Progress>
 {
     public override Task Handle(PublishedEvent<Progress> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Prediction progress: {@event.Message.Title} {@event.Message.LocksAt}");
+        Console.WriteLine($"Hype train progress: {@event.Message.Progress} with {@event.Message.Total} points!");
 
         return Task.CompletedTask;
     }

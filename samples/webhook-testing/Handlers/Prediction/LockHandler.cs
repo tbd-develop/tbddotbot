@@ -7,7 +7,7 @@ public class LockHandler : TwitchWebhookEventHandler<Lock>
 {
     public override Task Handle(PublishedEvent<Lock> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Prediction locked: {@event.Event.Title} {@event.Event.LockedAt}");
+        Console.WriteLine($"Prediction locked: {@event.Message.Title} {@event.Message.LockedAt}");
 
         return Task.CompletedTask;
     }

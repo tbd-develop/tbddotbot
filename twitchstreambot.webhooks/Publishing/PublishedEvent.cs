@@ -8,8 +8,8 @@ public abstract class PublishedEvent(TwitchHeaderCollection headers)
     public object Event { get; set; } = default!;
 }
 
-public class PublishedEvent<TEvent>(TEvent @event, TwitchHeaderCollection headers) : PublishedEvent(headers)
+public class PublishedEvent<TEvent>(TEvent message, TwitchHeaderCollection headers) : PublishedEvent(headers)
     where TEvent : WebhookBaseEvent
 {
-    public new TEvent Event { get; } = @event;
+    public new TEvent Message { get; } = message;
 }

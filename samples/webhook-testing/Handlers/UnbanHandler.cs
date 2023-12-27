@@ -7,7 +7,7 @@ public class UnbanHandler : TwitchWebhookEventHandler<Unban>
 {
     public override Task Handle(PublishedEvent<Unban> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Received unban for {@event.Event.UserName} by {@event.Event.ModeratorUserName}");
+        Console.WriteLine($"Received unban for {@event.Message.UserName} by {@event.Message.ModeratorUserName}");
 
         return Task.CompletedTask;
     }

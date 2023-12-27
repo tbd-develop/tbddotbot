@@ -4,7 +4,7 @@ using twitchstreambot.webhooks.Events.Values;
 
 namespace twitchstreambot.webhooks.Events.Channel;
 
-public abstract class PollStatus : WebhookBaseEvent, IContainBroadcasterInformation
+public abstract class HypeTrainStatus : WebhookBaseEvent, IContainBroadcasterInformation
 {
     public string Id { get; set; } = null!;
 
@@ -17,15 +17,16 @@ public abstract class PollStatus : WebhookBaseEvent, IContainBroadcasterInformat
     [JsonPropertyName("broadcaster_user_login")]
     public string BroadcasterUserLogin { get; set; } = null!;
 
-    public string Title { get; set; } = null!;
+    public int Total { get; set; }
+    public int Progress { get; set; }
+    public int Goal { get; set; }
 
-    public IEnumerable<Choice> Choices { get; set; } = null!;
-    [JsonPropertyName("bits_voting")] public VotingStatus? BitsVoting { get; set; }
+    [JsonPropertyName("top_contributions")]
+    public Contribution[] TopContributions { get; set; } = null!;
 
-    [JsonPropertyName("channel_points_voting")]
-    public VotingStatus? ChannelPointsVoting { get; set; }
+    [JsonPropertyName("last_contribution")]
+    public Contribution LastContribution { get; set; } = null!;
 
+    public int Level { get; set; }
     [JsonPropertyName("started_at")] public DateTime StartedAt { get; set; }
-
-    [JsonPropertyName("ends_at")] public DateTime EndsAt { get; set; }
 }

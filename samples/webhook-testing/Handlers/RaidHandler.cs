@@ -7,7 +7,7 @@ public class RaidHandler : TwitchWebhookEventHandler<Raid>
 {
     public override Task Handle(PublishedEvent<Raid> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Raid: {@event.Event.FromBroadcasterUserName} raided with {@event.Event.Viewers} viewers");
+        Console.WriteLine($"Raid: {@event.Message.FromBroadcasterUserName} raided with {@event.Message.Viewers} viewers");
         
         return Task.CompletedTask;
     }

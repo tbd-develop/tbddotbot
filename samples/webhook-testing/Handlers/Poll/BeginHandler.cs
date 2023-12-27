@@ -7,7 +7,7 @@ public class BeginHandler : TwitchWebhookEventHandler<Begin>
 {
     public override Task Handle(PublishedEvent<Begin> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Poll started: {@event.Event.Title} {@event.Event.StartedAt}");
+        Console.WriteLine($"Poll started: {@event.Message.Title} {@event.Message.StartedAt}");
 
         return Task.CompletedTask;
     }

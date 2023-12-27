@@ -7,7 +7,7 @@ public class RemoveHandler : TwitchWebhookEventHandler<Remove>
 {
     public override Task Handle(PublishedEvent<Remove> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Moderator removed: {@event.Event.UserName}");
+        Console.WriteLine($"Moderator removed: {@event.Message.UserName}");
 
         return Task.CompletedTask;
     }

@@ -7,7 +7,7 @@ public class AddHandler : TwitchWebhookEventHandler<Add>
 {
     public override Task Handle(PublishedEvent<Add> @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Moderator added: {@event.Event.UserName}");
+        Console.WriteLine($"Moderator added: {@event.Message.UserName}");
 
         return Task.CompletedTask;
     }
