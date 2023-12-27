@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace twitchstreambot.webhooks.Events.Channel;
+namespace twitchstreambot.webhooks.Events.Values;
 
 public class PredictionOutcome
 {

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using twitchstreambot.webhooks.Events.Contracts;
 
-namespace twitchstreambot.webhooks.Events.Channel;
+namespace twitchstreambot.webhooks.Events.Values;
 
 public class TopPredictor : IContainUserInformation
 {
