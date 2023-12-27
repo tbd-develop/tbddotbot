@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace twitchstreambot.webhooks.Events.Values;
 
@@ -36,5 +38,20 @@ public class NoticeType
             .SingleOrDefault(t => t?.Type == type);
 
         return availableTypes ?? Unknown;
+    }
+
+    public class Converter : JsonConverter<ContributionType>
+    {
+        public override ContributionType Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options) =>
+            reader.GetString() ?? Unknown;
+
+        public override void Write(
+            Utf8JsonWriter writer,
+            ContributionType type,
+            JsonSerializerOptions options) =>
+            writer.WriteStringValue(type);
     }
 }

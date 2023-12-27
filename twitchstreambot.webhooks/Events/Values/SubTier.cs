@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace twitchstreambot.webhooks.Events.Values;
 
@@ -26,5 +28,20 @@ public class SubTier
             .SingleOrDefault(t => t?.Tier == tier);
 
         return availableTypes ?? Unknown;
+    }
+    
+    public class Converter : JsonConverter<SubTier>
+    {
+        public override SubTier Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options) =>
+            reader.GetString() ?? Unknown;
+
+        public override void Write(
+            Utf8JsonWriter writer,
+            SubTier type,
+            JsonSerializerOptions options) =>
+            writer.WriteStringValue(type);
     }
 }
