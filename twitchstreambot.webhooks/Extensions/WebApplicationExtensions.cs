@@ -46,7 +46,7 @@ public static class WebApplicationExtensions
             {
                 return TypedResults.Forbid();
             }
-
+            
             var message = JsonSerializer.Deserialize<IncomingSubscriptionMessage>(content, SerializerOptions);
 
             if (message is null)
