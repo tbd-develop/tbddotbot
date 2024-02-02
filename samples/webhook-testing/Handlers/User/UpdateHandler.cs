@@ -1,5 +1,6 @@
 ﻿using twitchstreambot.webhooks.Events.User;
 using twitchstreambot.webhooks.Infrastructure;
+using twitchstreambot.webhooks.Publishing;
 
 namespace webhook_testing.Handlers.User;
 
