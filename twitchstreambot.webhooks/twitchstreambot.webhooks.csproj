@@ -9,6 +9,7 @@
         <Title>Stream Bot Webhooks</Title>
         <Authors>Terry Burns-Dyson</Authors>
         <Description>This provides the extensions around the core twitch stream bot code to add in webhook event listening</Description>
+        <Version>0.0.14</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,7 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     </ItemGroup>

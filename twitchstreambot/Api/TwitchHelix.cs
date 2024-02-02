@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using twitchstreambot.Api.Requests;
 using twitchstreambot.Infrastructure;
 using twitchstreambot.Infrastructure.Extensions;
@@ -9,11 +10,11 @@ using twitchstreambot.Models;
 
 namespace twitchstreambot.Api;
 
-public class TwitchHelix(HttpClient client)
+public class TwitchHelix(HttpClient client, IServiceProvider provider)
 {
     public HttpClient Client => client;
 
-    internal readonly JsonSerializerOptions Options = new JsonSerializerOptions
+    private readonly JsonSerializerOptions _options = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true
@@ -29,12 +30,12 @@ public class TwitchHelix(HttpClient client)
 
         var content = await response.Content.ReadAsStringAsync();
 
-        return JsonSerializer.Deserialize<HelixCollectionResponse<TwitchUser>>(content, Options);
+        return JsonSerializer.Deserialize<HelixCollectionResponse<TwitchUser>>(content, _options);
     }
 
     public TRequest? GetRequest<TRequest>()
         where TRequest : HelixRequest
     {
-        return Activator.CreateInstance(typeof(TRequest), [this]) as TRequest;
+        return provider.GetService(typeof(TRequest)) as TRequest;
     }
 }

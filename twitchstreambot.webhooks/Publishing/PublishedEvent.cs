@@ -1,6 +1,7 @@
 ﻿using twitchstreambot.webhooks.Events;
+using twitchstreambot.webhooks.Infrastructure;
 
-namespace twitchstreambot.webhooks.Infrastructure;
+namespace twitchstreambot.webhooks.Publishing;
 
 public abstract class PublishedEvent(TwitchHeaderCollection headers)
 {

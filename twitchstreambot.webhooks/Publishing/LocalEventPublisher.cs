@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using twitchstreambot.webhooks.Events;
+using twitchstreambot.webhooks.Infrastructure;
+using twitchstreambot.webhooks.Publishing.Contracts;
 
-namespace twitchstreambot.webhooks.Infrastructure;
+namespace twitchstreambot.webhooks.Publishing;
 
 public class LocalEventPublisher(
     ILocalEventLookup lookup,

@@ -4,7 +4,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel;
 
-[WebhookEvent("channel.follow", 2)]
+[WebhookEvent("channel.follow", 2, RequiredScope = "moderator:read:followers")]
 public class Follow : WebhookBaseEvent, IContainBroadcasterInformation
 {
     [JsonPropertyName("user_id")] public string UserId { get; set; } = null!;

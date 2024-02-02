@@ -2,12 +2,13 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.Delegates;
 using twitchstreambot.Infrastructure.Extensions;
 using twitchstreambot.Models;
 
 namespace twitchstreambot.Api.Requests;
 
-public class GetChannelsForUsersRequest(TwitchHelix helix)
+public class GetChannelsForUsersRequest(TwitchHelix helix, CreateTwitchApiOptionsDelegate options)
     : HelixRequest<string[], HelixCollectionResponse<ChannelResponse>>(helix)
 {
     public override async Task<HelixCollectionResponse<ChannelResponse>?> Execute(string[] names)
@@ -28,7 +29,8 @@ public class GetChannelsForUsersRequest(TwitchHelix helix)
 
         var content = await response.Content.ReadAsStringAsync();
 
-        var result = JsonSerializer.Deserialize<HelixCollectionResponse<ChannelResponse>>(content, helix.Options);
+        var result = JsonSerializer.Deserialize<HelixCollectionResponse<ChannelResponse>>(
+            content, options());
 
         return result;
     }

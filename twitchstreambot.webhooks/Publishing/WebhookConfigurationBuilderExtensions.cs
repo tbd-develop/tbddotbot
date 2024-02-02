@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using twitchstreambot.webhooks.Extensions.Builders;
-using twitchstreambot.webhooks.Infrastructure.Builders;
+using twitchstreambot.webhooks.Publishing.Builders;
+using twitchstreambot.webhooks.Publishing.Contracts;
 
-namespace twitchstreambot.webhooks.Infrastructure;
+namespace twitchstreambot.webhooks.Publishing;
 
 public static class WebhookConfigurationBuilderExtensions
 {

@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using twitchstreambot.webhooks.Events;
 using twitchstreambot.webhooks.Infrastructure.Attributes;
-using twitchstreambot.webhooks.Models;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace twitchstreambot.webhooks.Infrastructure;

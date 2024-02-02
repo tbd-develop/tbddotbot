@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
+using twitchstreambot.webhooks.Infrastructure.Interim;
 
-namespace twitchstreambot.Api.Requests.WebHook;
+namespace twitchstreambot.webhooks.Api.Response;
 
 public class WebhookSubscriptionContent
 {

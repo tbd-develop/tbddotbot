@@ -2,24 +2,38 @@
 using System.Text.Json;
 using twitchstreambot.Api;
 using twitchstreambot.Api.Requests;
-using twitchstreambot.Api.Requests.WebHook;
 using twitchstreambot.Infrastructure;
+using twitchstreambot.webhooks.Api.Parameters;
+using twitchstreambot.webhooks.Api.Response;
+using twitchstreambot.webhooks.Events;
+using twitchstreambot.webhooks.Infrastructure.Delegates;
 
 namespace twitchstreambot.webhooks.Api;
 
-public class SubscribeWebhookRequest(TwitchHelix api)
-    : HelixRequest<SubscribeWebhookRequest, HelixWebHookCollectionResponse<WebhookSubscriptionContent>>(api)
+public class SubscribeWebhookRequest<TSubscriptionEvent>(TwitchHelix api, CreateTwitchWebhookOptionsDelegate options)
+    : HelixRequest<WebhookSubscriptionParameters<TSubscriptionEvent>,
+        HelixWebHookCollectionResponse<WebhookSubscriptionContent>>(api)
+    where TSubscriptionEvent : WebhookBaseEvent
 {
+    private readonly TwitchHelix _api = api;
+
     public override async Task<HelixWebHookCollectionResponse<WebhookSubscriptionContent>?> Execute(
-        SubscribeWebhookRequest parameters)
+        WebhookSubscriptionParameters<TSubscriptionEvent> parameters)
     {
-        var response = await api.Client.PostAsync("helix/eventsub/subscriptions",
-            new StringContent(JsonSerializer.Serialize(parameters), Encoding.UTF8, "application/json"));
+        var content =
+            new StringContent(JsonSerializer.Serialize(parameters, options()), Encoding.UTF8, "application/json");
+
+        var client = _api.Client;
+
+        Configure(client);
+
+        var response = await client.PostAsync("helix/eventsub/subscriptions", content);
 
         if (!response.IsSuccessStatusCode) return null;
 
-        var content = await response.Content.ReadAsStringAsync();
+        var result = await response.Content.ReadAsStringAsync();
 
-        return JsonSerializer.Deserialize<HelixWebHookCollectionResponse<WebhookSubscriptionContent>>(content);
+        return JsonSerializer
+            .Deserialize<HelixWebHookCollectionResponse<WebhookSubscriptionContent>>(result, options());
     }
 }

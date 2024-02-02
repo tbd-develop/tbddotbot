@@ -1,6 +1,7 @@
 ﻿using twitchstreambot.webhooks.Events;
+using twitchstreambot.webhooks.Infrastructure;
 
-namespace twitchstreambot.webhooks.Infrastructure;
+namespace twitchstreambot.webhooks.Publishing.Contracts;
 
 public interface IEventPublisher
 {

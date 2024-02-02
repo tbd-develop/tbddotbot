@@ -5,4 +5,5 @@ public class WebhookEventAttribute(string eventName, int version = 1) : Attribut
 {
     public string Event { get; set; } = eventName;
     public int Version { get; set; } = version;
+    public string RequiredScope { get; set; }
 }

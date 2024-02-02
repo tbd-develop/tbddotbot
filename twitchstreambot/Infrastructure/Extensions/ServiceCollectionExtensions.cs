@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using twitchstreambot.Api;
 using twitchstreambot.Dispatch;
 using twitchstreambot.Infrastructure.Attributes;
 using twitchstreambot.Infrastructure.Configuration;
+using twitchstreambot.Infrastructure.Delegates;
 
 namespace twitchstreambot.Infrastructure.Extensions;
 
@@ -19,6 +21,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IMessageDispatcher, DefaultMessageDispatcher>();
         services.AddSingleton<TwitchStreamBot>();
         services.AddSingleton<IStreamOutput>(provider => provider.GetRequiredService<TwitchStreamBot>());
+        services.AddSingleton<CreateTwitchApiOptionsDelegate>(() => new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        });
 
         services.AddSingleton(provider =>
         {
@@ -51,7 +58,7 @@ public static class ServiceCollectionExtensions
         builder.ConstructMiddlewarePipeline();
     }
 
-    private static void AddCommands(this IServiceCollection serviceCollection, params Assembly[] assemblies)
+    private static void AddCommands(this IServiceCollection services, params Assembly[] assemblies)
     {
         Dictionary<string, Type> availableCommands = new();
 
@@ -70,24 +77,21 @@ public static class ServiceCollectionExtensions
             {
                 availableCommands.Add(command.Action, command.Type);
 
-                serviceCollection.AddTransient(command.Type);
+                services.AddTransient(command.Type);
             }
         }
 
-        serviceCollection.AddSingleton<ICommandLookup>(new DefaultCommandLookup(availableCommands));
+        services.AddSingleton<ICommandLookup>(new DefaultCommandLookup(availableCommands));
     }
 
-    public static void AddTwitchApi(this IServiceCollection collection, IConfiguration configuration)
+    public static void AddTwitchApi(this IServiceCollection services, IConfiguration configuration)
     {
-        collection.AddHttpClient<TwitchApi>((provider, client) =>
-        {
-            client.BaseAddress = new Uri("https://id.twitch.tv");
-        });
+        services.AddHttpClient<TwitchApi>((_, client) => { client.BaseAddress = new Uri("https://id.twitch.tv"); });
     }
 
-    public static void AddHelix(this IServiceCollection collection, IConfiguration configuration)
+    public static void AddHelix(this IServiceCollection services, IConfiguration configuration)
     {
-        collection.AddHttpClient<TwitchHelix>((provider, client) =>
+        services.AddHttpClient<TwitchHelix>((_, client) =>
         {
             client.BaseAddress = new Uri("https://api.twitch.tv/");
             client.DefaultRequestHeaders.Add("Client-Id",

@@ -2,27 +2,24 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using twitchstreambot.webhooks.Events;
 using twitchstreambot.webhooks.Extensions.Builders;
 using twitchstreambot.webhooks.Infrastructure;
-using twitchstreambot.webhooks.Models;
+using twitchstreambot.webhooks.Infrastructure.Delegates;
+using twitchstreambot.webhooks.Publishing.Contracts;
 
 namespace twitchstreambot.webhooks.Extensions;
 
 public static class WebApplicationExtensions
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
-
     public static WebApplication UseWebhooks(this WebApplication app,
         string uri = "/api/eventsub")
     {
         app.MapPost(uri, async (HttpRequest request,
             [FromServices] GetSecretDelegate secretProvider,
             [FromServices] EventMapper eventMapper,
-            [FromServices] IEventPublisher eventPublisher) =>
+            [FromServices] IEventPublisher eventPublisher,
+            [FromServices] CreateTwitchWebhookOptionsDelegate options) =>
         {
             var twitchHeaders = TwitchHeaderCollection.FromHeaders(request.Headers);
 
@@ -46,8 +43,8 @@ public static class WebApplicationExtensions
             {
                 return TypedResults.Forbid();
             }
-            
-            var message = JsonSerializer.Deserialize<IncomingSubscriptionMessage>(content, SerializerOptions);
+
+            var message = JsonSerializer.Deserialize<IncomingSubscriptionMessage>(content, options());
 
             if (message is null)
             {

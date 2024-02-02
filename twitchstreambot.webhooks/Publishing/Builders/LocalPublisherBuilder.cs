@@ -1,9 +1,8 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using twitchstreambot.webhooks.Events;
+using twitchstreambot.webhooks.Publishing.Contracts;
 
-namespace twitchstreambot.webhooks.Infrastructure.Builders;
+namespace twitchstreambot.webhooks.Publishing.Builders;
 
 public class LocalPublisherBuilder(IServiceCollection services)
 {

@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
 
         var builder = new WebhookConfigurationBuilder(services);
 
+        builder.Initialize();
+
         configure(builder);
 
         return services;

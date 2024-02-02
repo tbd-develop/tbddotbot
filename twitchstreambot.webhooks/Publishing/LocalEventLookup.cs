@@ -1,6 +1,7 @@
 ﻿using twitchstreambot.webhooks.Events;
+using twitchstreambot.webhooks.Publishing.Contracts;
 
-namespace twitchstreambot.webhooks.Infrastructure;
+namespace twitchstreambot.webhooks.Publishing;
 
 public class LocalEventLookup(IDictionary<Type, Type> lookups) : ILocalEventLookup
 {

@@ -1,6 +1,7 @@
 ﻿using twitchstreambot.webhooks.Events;
+using twitchstreambot.webhooks.Publishing.Contracts;
 
-namespace twitchstreambot.webhooks.Infrastructure;
+namespace twitchstreambot.webhooks.Publishing;
 
 public abstract class TwitchWebhookEventHandler<TEvent> : ITwitchWebhookEventHandler<TEvent>
     where TEvent : WebhookBaseEvent

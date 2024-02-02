@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json;
 using twitchstreambot.webhooks.Events.Contracts;
 using twitchstreambot.webhooks.Infrastructure.Attributes;
 
@@ -39,10 +38,10 @@ public class Create : WebhookBaseEvent,
 
     [JsonPropertyName("started_at")] public DateTime StartedAt { get; set; }
 
-    [JsonProperty("viewer_count")] public int ViewerCount { get; set; }
+    [JsonPropertyName("viewer_count")] public int ViewerCount { get; set; }
 
-    [JsonProperty("cooldown_ends_at")] public DateTime CooldownEndsAt { get; set; }
+    [JsonPropertyName("cooldown_ends_at")] public DateTime CooldownEndsAt { get; set; }
 
-    [JsonProperty("target_cooldown_ends_at")]
+    [JsonPropertyName("target_cooldown_ends_at")]
     public DateTime TargetCooldownEndsAt { get; set; }
 }

@@ -1,6 +1,7 @@
-﻿using twitchstreambot.Api.Requests.WebHook;
+﻿using twitchstreambot.webhooks.Api.Response;
+using twitchstreambot.webhooks.Infrastructure.Interim;
 
-namespace twitchstreambot.webhooks.Models;
+namespace twitchstreambot.webhooks.Events;
 
 public class IncomingSubscriptionMessage
 {

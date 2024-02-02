@@ -8,6 +8,12 @@ namespace twitchstreambot.Api
 {
     public class TwitchApi(HttpClient client)
     {
+        private readonly JsonSerializerOptions Options = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        };
+
         public async Task<ValidationResponse?> Validate(string authToken)
         {
             var request = new HttpRequestMessage
@@ -23,6 +29,19 @@ namespace twitchstreambot.Api
 
             return
                 JsonSerializer.Deserialize<ValidationResponse>(await response.Content.ReadAsStringAsync());
+        }
+
+        public async Task<TwitchTokenResponse?> AuthorizeClientCredentials(string clientIdentifier,
+            string clientSecret)
+        {
+            string url =
+                $"oauth2/token?client_id={clientIdentifier}&client_secret={clientSecret}&grant_type=client_credentials";
+
+            var response = await client.PostAsync(url, null);
+
+            return !response.IsSuccessStatusCode
+                ? default
+                : JsonSerializer.Deserialize<TwitchTokenResponse>(await response.Content.ReadAsStringAsync(), Options);
         }
     }
 }

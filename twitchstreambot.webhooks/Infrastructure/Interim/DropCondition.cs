@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace twitchstreambot.Api.Requests.WebHook;
+namespace twitchstreambot.webhooks.Infrastructure.Interim;
 
 public class DropCondition : SubscriptionCondition
 {
