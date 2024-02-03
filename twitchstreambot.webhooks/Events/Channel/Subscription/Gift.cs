@@ -5,7 +5,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel.Subscription;
 
-[WebhookEvent("channel.subscription.gift")]
+[WebhookEvent("channel.subscription.gift", RequiredScopes = ["channel:read:subscriptions"])]
 public class Gift : Subscribe
 {
     public int Total { get; set; }

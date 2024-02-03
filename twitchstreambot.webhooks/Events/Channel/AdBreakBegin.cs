@@ -6,7 +6,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel;
 
-[WebhookEvent("channel.ad_break.begin")]
+[WebhookEvent("channel.ad_break.begin", RequiredScopes = ["channel:read:ads"])]
 public class AdBreakBegin : WebhookBaseEvent,
     IContainBroadcasterInformation
 {

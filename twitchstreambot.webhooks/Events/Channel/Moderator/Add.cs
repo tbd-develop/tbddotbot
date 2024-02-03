@@ -4,7 +4,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel.Moderator;
 
-[WebhookEvent("channel.moderator.add")]
+[WebhookEvent("channel.moderator.add", RequiredScopes = ["moderation:read"])]
 public class Add : WebhookBaseEvent, IContainBroadcasterInformation, IContainUserInformation
 {
     [JsonPropertyName("broadcaster_user_id")]

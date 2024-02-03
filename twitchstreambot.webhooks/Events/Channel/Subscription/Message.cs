@@ -6,7 +6,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel.Subscription;
 
-[WebhookEvent("channel.subscription.message")]
+[WebhookEvent("channel.subscription.message", RequiredScopes = ["channel.subscriptions.message"])]
 public class Message : Subscribe
 {
     [JsonPropertyName("message")] public SubscribeMessage Content { get; set; } = null!;

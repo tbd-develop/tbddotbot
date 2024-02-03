@@ -7,7 +7,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel;
 
-[WebhookEvent("channel.subscribe")]
+[WebhookEvent("channel.subscribe", RequiredScopes = ["channel:read:subscriptions"])]
 public class Subscribe : WebhookBaseEvent, IContainBroadcasterInformation
 {
     [JsonPropertyName("user_id")] public string UserId { get; set; } = null!;

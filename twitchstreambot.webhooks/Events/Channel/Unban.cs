@@ -4,7 +4,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel;
 
-[WebhookEvent("channel.unban")]
+[WebhookEvent("channel.unban", RequiredScopes = ["channel:moderate"])]
 public class Unban : WebhookBaseEvent,
     IContainBroadcasterInformation,
     IContainUserInformation,

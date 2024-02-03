@@ -4,7 +4,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel;
 
-[WebhookEvent("channel.ban")]
+[WebhookEvent("channel.ban", RequiredScopes = ["channel:moderate"])]
 public class Ban : WebhookBaseEvent, IContainBroadcasterInformation, IContainUserInformation
 {
     [JsonPropertyName("user_id")] public string? UserId { get; set; } = null!;

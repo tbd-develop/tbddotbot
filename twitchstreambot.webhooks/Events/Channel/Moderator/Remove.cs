@@ -4,7 +4,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel.Moderator;
 
-[WebhookEvent("channel.moderator.remove")]
+[WebhookEvent("channel.moderator.remove", RequiredScopes = ["moderation:read"])]
 public class Remove : WebhookBaseEvent, IContainBroadcasterInformation, IContainUserInformation
 {
     [JsonPropertyName("broadcaster_user_id")]

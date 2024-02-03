@@ -4,7 +4,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel;
 
-[WebhookEvent("channel.cheer")]
+[WebhookEvent("channel.cheer", RequiredScopes = ["bits:read"])]
 public class Cheer : WebhookBaseEvent,
     IContainBroadcasterInformation,
     IContainUserInformation

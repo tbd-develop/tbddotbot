@@ -4,7 +4,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel.Subscription;
 
-[WebhookEvent("channel.subscription.end")]
+[WebhookEvent("channel.subscription.end", RequiredScopes = ["channel.subscription.end"])]
 public class End : Subscribe
 {
 }

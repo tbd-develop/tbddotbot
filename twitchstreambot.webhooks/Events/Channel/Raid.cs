@@ -3,7 +3,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel;
 
-[WebhookEvent("channel.raid")]
+[WebhookEvent("channel.raid", RequiredScopes = ["channel:moderate"])]
 public class Raid : WebhookBaseEvent
 {
     [JsonPropertyName("from_broadcaster_user_id")]
