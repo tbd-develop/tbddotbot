@@ -2,25 +2,22 @@
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using twitchstreambot.Api.Requests;
 using twitchstreambot.Infrastructure;
+using twitchstreambot.Infrastructure.Delegates;
 using twitchstreambot.Infrastructure.Extensions;
 using twitchstreambot.Models;
 
 namespace twitchstreambot.Api;
 
-public class TwitchHelix(HttpClient client, IServiceProvider provider)
+public class TwitchHelix(
+    HttpClient client,
+    IServiceProvider provider,
+    CreateTwitchApiOptionsDelegate options)
 {
     public HttpClient Client => client;
 
-    private readonly JsonSerializerOptions _options = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true
-    };
-
-    public async Task<HelixCollectionResponse<TwitchUser>?> GetUsersByName(params string[] names)
+    public async Task<HelixCollectionResponse<TwitchUser>?> GetUsersByName(params string[] names) 
     {
         var parameters = names.AsQueryParameter("login");
 
@@ -30,7 +27,7 @@ public class TwitchHelix(HttpClient client, IServiceProvider provider)
 
         var content = await response.Content.ReadAsStringAsync();
 
-        return JsonSerializer.Deserialize<HelixCollectionResponse<TwitchUser>>(content, _options);
+        return JsonSerializer.Deserialize<HelixCollectionResponse<TwitchUser>>(content, options());
     }
 
     public TRequest? GetRequest<TRequest>()
