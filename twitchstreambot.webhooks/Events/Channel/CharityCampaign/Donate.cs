@@ -5,7 +5,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel.CharityCampaign;
 
-[WebhookEvent("channel.charity_campaign.donate")]
+[WebhookEvent("channel.charity_campaign.donate", RequiredScopes = ["channel:read:charity"])]
 public class Donate : WebhookBaseEvent, IContainBroadcasterInformation, IContainUserInformation
 {
     public string Id { get; set; } = null!;

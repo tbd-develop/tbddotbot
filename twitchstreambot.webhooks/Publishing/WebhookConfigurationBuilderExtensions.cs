@@ -10,7 +10,7 @@ public static class WebhookConfigurationBuilderExtensions
     public static WebhookConfigurationBuilder AddLocalEventHandling(this WebhookConfigurationBuilder parent,
         Action<LocalPublisherBuilder> configure)
     {
-        parent.Services.AddSingleton<IEventPublisher, LocalEventPublisher>();
+        parent.Services.AddSingleton<IWebhookEventPublisher, LocalWebhookEventPublisher>();
 
         var builder = new LocalPublisherBuilder(parent.Services);
 

@@ -5,6 +5,8 @@ namespace twitchstreambot.webhooks.Publishing;
 
 public class LocalEventLookup(IDictionary<Type, Type> lookups) : ILocalEventLookup
 {
+    public IEnumerable<Type> EventTypes => lookups.Keys;
+
     public Type? FetchHandlerForEventType<TEvent>()
         where TEvent : WebhookBaseEvent
     {

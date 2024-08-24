@@ -15,10 +15,17 @@ public static class WebApplicationExtensions
     public static WebApplication UseWebhooks(this WebApplication app,
         string uri = "/api/eventsub")
     {
+        ConfigureEventEndpoint(app, uri);
+
+        return app;
+    }
+
+    private static void ConfigureEventEndpoint(WebApplication app, string uri)
+    {
         app.MapPost(uri, async (HttpRequest request,
             [FromServices] GetSecretDelegate secretProvider,
             [FromServices] EventMapper eventMapper,
-            [FromServices] IEventPublisher eventPublisher,
+            [FromServices] IWebhookEventPublisher eventPublisher,
             [FromServices] CreateTwitchWebhookOptionsDelegate options) =>
         {
             var twitchHeaders = TwitchHeaderCollection.FromHeaders(request.Headers);
@@ -62,8 +69,6 @@ public static class WebApplicationExtensions
 
             return TypedResults.Ok();
         });
-
-        return app;
     }
 
     private static async Task<string> GetContentAsString(Stream content)

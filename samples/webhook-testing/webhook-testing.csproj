@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>true</InvariantGlobalization>
         <RootNamespace>webhook_testing</RootNamespace>
+        <UserSecretsId>d5c9e59d-cd12-4396-a98b-07faae832a31</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>

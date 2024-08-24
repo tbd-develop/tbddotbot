@@ -9,15 +9,9 @@ using twitchstreambot.Middleware;
 
 namespace twitchstreambot.Infrastructure.Configuration;
 
-public class TwitchBotConfigurationBuilder
+public class TwitchBotConfigurationBuilder(IServiceCollection serviceCollection)
 {
-    private readonly IServiceCollection _serviceCollection;
     private readonly List<Type> _middlewares = new();
-
-    public TwitchBotConfigurationBuilder(IServiceCollection serviceCollection)
-    {
-        _serviceCollection = serviceCollection;
-    }
 
     public TwitchBotConfigurationBuilder AddCommands(params Assembly[] commandAssemblies)
     {
@@ -38,12 +32,12 @@ public class TwitchBotConfigurationBuilder
             {
                 availableCommands.Add(command.Action, command.Type);
 
-                _serviceCollection.AddTransient(command.Type);
+                serviceCollection.AddTransient(command.Type);
             }
         }
 
-        _serviceCollection.AddSingleton<ICommandLookup>(new DefaultCommandLookup(availableCommands));
-        _serviceCollection.AddSingleton<CommandMiddleware>();
+        serviceCollection.AddSingleton<ICommandLookup>(new DefaultCommandLookup(availableCommands));
+        serviceCollection.AddSingleton<CommandMiddleware>();
 
         _middlewares.Add(typeof(CommandMiddleware));
 
@@ -53,7 +47,7 @@ public class TwitchBotConfigurationBuilder
     public TwitchBotConfigurationBuilder AddMessagingMiddleware<TMiddleware>()
         where TMiddleware : class, IMessagingMiddleware
     {
-        _serviceCollection.AddSingleton<TMiddleware>();
+        serviceCollection.AddSingleton<TMiddleware>();
 
         _middlewares.Add(typeof(TMiddleware));
 
@@ -62,7 +56,7 @@ public class TwitchBotConfigurationBuilder
 
     public void ConstructMiddlewarePipeline()
     {
-        _serviceCollection.AddSingleton<IMessagingPipeline>(provider =>
+        serviceCollection.AddSingleton<IMessagingPipeline>(provider =>
         {
             var middlewares = _middlewares
                 .Select(provider.GetRequiredService)

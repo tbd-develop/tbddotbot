@@ -1,0 +1,71 @@
+﻿{
+  "starting": "room1",
+  "rooms": {
+    "room1": {
+      "description": "You are in a large, poorly lit room. A door covered in ivy lies to the north of you. In the center of the room there is a large iron grate covering a sewer.",
+      "commands": [
+        {
+          "aliases": [
+            "look at door"
+          ],
+          "description": "The door is covered in ivy. It looks like it hasn't been opened in years."
+        },
+        {
+          "aliases": [
+            "open door"
+          ],
+          "requires": [
+            "room1:north:key"
+          ],
+          "description": "You try to open the door, but it won't budge."
+        },
+        {
+          "aliases": [
+            "look at grate"
+          ],
+          "description": "The grate is rusted and covered in slime. You see a shimmering object at the bottom of the sewer."
+        },
+        {
+          "aliases": [
+            "open grate"
+          ],
+          "description": "You lift the grate, a warm breeze carries the putrid smell of the sewer up to you."
+        },
+        {
+          "aliases": [
+            "enter sewer",
+            "climb down"
+          ],
+          "description": "You climb down into the sewer",
+          "exit": "sewer1"
+        }
+      ],
+      "exits": {
+        "north": "room2",
+        "sewer": "sewer1"
+      }
+    },
+    "sewer1": {
+      "description": "You are in a sewer. The walls are covered in slime and the water is up to your knees. You see a shimmering object in the water.",
+      "commands": [
+        {
+          "aliases": [
+            "look at object"
+          ],
+          "description": "The shimmering object is a key."
+        }
+      ],
+      "exits": {
+        "up": "room1"
+      }
+    },
+    "room2": {
+      "description": "You are in a room with three doors, atop the doors are crests. A lion, a snake, and a badger.",
+      "commands": [],
+      "exits": {
+        "south": "room1",
+        "north": "room3"
+      }
+    }
+  }
+}

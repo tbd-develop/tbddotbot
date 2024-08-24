@@ -3,7 +3,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel.Prediction;
 
-[WebhookEvent("channel.prediction.end")]
+[WebhookEvent("channel.prediction.end", RequiredScopes = ["channel:read:predictions", "channel:manage:predictions"])]
 public class End : ChannelPrediction
 {
     [JsonPropertyName("winning_outcome_id")]

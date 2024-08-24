@@ -16,6 +16,10 @@
         <Content Include="definitions.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <None Remove="Games\game1.json" />
+        <Content Include="Games\game1.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
@@ -43,7 +47,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Commands\" />
       <Folder Include="prompts\" />
     </ItemGroup>
 

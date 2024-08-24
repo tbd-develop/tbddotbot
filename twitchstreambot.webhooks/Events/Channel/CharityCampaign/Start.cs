@@ -3,7 +3,7 @@ using twitchstreambot.webhooks.Infrastructure.Attributes;
 
 namespace twitchstreambot.webhooks.Events.Channel.CharityCampaign;
 
-[WebhookEvent("channel.charity_campaign.start")]
+[WebhookEvent("channel.charity_campaign.start", RequiredScopes = ["channel:read:charity"])]
 public class Start : CharityStatus
 {
     [JsonPropertyName("started_at")] public DateTime StartedAt { get; set; }

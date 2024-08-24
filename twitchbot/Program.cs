@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using twitchbot.Commands;
+using twitchbot.Infrastructure;
+using twitchbot.Middleware;
 using twitchstreambot.Infrastructure.Extensions;
-using twitchstreambot.Middleware;
 
 namespace twitchbot;
 
@@ -18,26 +20,26 @@ class Program
     private static IHostBuilder CreateHostedService(string[] args)
     {
         return Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((context, builder) =>
+            .ConfigureAppConfiguration((_, builder) =>
             {
                 builder
                     .SetBasePath(AppContext.BaseDirectory)
                     .AddJsonFile("appsettings.json")
                     .AddUserSecrets<BotService>();
             })
-            .ConfigureServices((context, services) =>
+            .ConfigureServices((_, services) =>
             {
-                services.AddTwitchStreamBot(configure =>
-                {
-                    // configure.AddCommands(typeof().Assembly);
-#if DEBUG
-                    configure.AddMessagingMiddleware<ConsoleOutMiddleware>();
-#endif
-                    configure.AddMessagingMiddleware<CommandMiddleware>();
-                });
+                services.AddSingleton<GameState>();
 
-                services.AddHelix(context.Configuration);
-                services.AddTwitchApi(context.Configuration);
+                services.AddTwitch(configure =>
+                {
+                    configure.AddIrcBot(config =>
+                    {
+                        config.AddCommands(typeof(HelloWorldCommand).Assembly)
+                            .AddMessagingMiddleware<GameMiddleware>();
+                    });
+                    configure.AddTwitchApis();
+                });
 
                 services.AddHostedService<BotService>();
             });

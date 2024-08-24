@@ -24,7 +24,7 @@ public class LocalPublisherBuilder(IServiceCollection services)
             services.AddTransient(lookup.Value);
         }
 
-        services.AddSingleton<ILocalEventLookup>(provider => new LocalEventLookup(lookups));
+        services.AddSingleton<ILocalEventLookup>(_ => new LocalEventLookup(lookups));
 
         return this;
     }

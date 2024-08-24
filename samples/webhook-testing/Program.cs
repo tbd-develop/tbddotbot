@@ -18,22 +18,66 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddWebhooks(configure =>
+builder.Services.AddTwitch(configure =>
 {
-    configure.AddSecretProvider<SampleSecretProvider>((provider, headers, _) =>
-        provider.SecretForSubscriptionType(headers.SubscriptionType!));
-
-    configure.AddLocalEventHandling(builder => { builder.AddHandlersFromAssembly(typeof(CheerHandler).Assembly); });
+    configure
+        .AddIrcBot(configure => { });
 });
 
-builder.Services.AddHelix(builder.Configuration);
-builder.Services.AddScoped<SubscribeWebhookRequest<Follow>>();
+//
+// builder.Services.AddTwitchStreamBot(configure =>
+//     configure.AddCommands(typeof(Program).Assembly));
+//
+// builder.Services.AddWebhooks(configure =>
+// {
+//     configure.AddSecretProvider<SampleSecretProvider>((provider, headers, _) =>
+//         provider.SecretForSubscriptionType(headers.SubscriptionType!));
+//
+//     configure.AddLocalEventHandling(builder => { builder.AddHandlersFromAssembly(typeof(CheerHandler).Assembly); });
+// });
+//
+// builder.Services.AddTwitchApi(builder.Configuration);
+// builder.Services.AddScoped<SubscribeWebhookRequest<Follow>>();
 
 var app = builder.Build();
 
-app.MapGet("/verify", async ([FromServices] TwitchHelix helix) =>
+app.MapGet("/verify", async (
+    [FromServices] IConfiguration configuration,
+    [FromServices] TwitchApi api,
+    [FromServices] TwitchHelix helix) =>
 {
-    
+    var response = await helix.GetUsersByName("tbdgamer");
+
+    if (response?.HasData ?? false)
+    {
+        var broadcaster = response.Data.First();
+
+        var authentication =
+            await api.AuthorizeClientCredentials();
+
+        var subscribeRequest = helix.GetRequest<SubscribeWebhookRequest<Follow>>();
+
+        if (authentication is not null && subscribeRequest is not null)
+        {
+            subscribeRequest.OnConfiguring += delegate(HttpClient client)
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", authentication.AccessToken);
+            };
+
+            await subscribeRequest
+                .Execute(new WebhookSubscriptionParameters<Follow>(
+                    new BroadcasterOnlyCondition
+                    {
+                        BroadcasterUserId = $"{broadcaster.Id}"
+                    }, new SubscriptionTransportDefinition
+                    {
+                        Callback = "https://tbddotbot.ngrok.io/api/eventsub",
+                        Method = "webhook",
+                        Secret = "this-is-a-secret"
+                    }));
+        }
+    }
 });
 
 // Configure the HTTP request pipeline.
