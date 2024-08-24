@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,17 +20,7 @@ public class TwitchAttributesCollection : IEnumerable<TwitchAttribute>
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        throw new NotImplementedException();
-    }
-
-    public string? this[string name]
-    {
-        get
-        {
-            return _attributes
-                .SingleOrDefault(atr => atr.Element.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-                ?.Arguments;
-        }
+        return _attributes.GetEnumerator();
     }
 
     public static implicit operator TwitchAttributesCollection(Dictionary<string, string> dictionary)
